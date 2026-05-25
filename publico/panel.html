@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+Mi Emprendimiento
+</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet"
+>
+
+<link
+rel="stylesheet"
+href="styles.css"
+>
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+>
+
+<style>
+
+.foto-panel{
+
+width:100%;
+
+height:300px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+}
+
+</style>
+
+</head>
+
+<body class="
+d-flex
+flex-column
+min-vh-100
+">
+
+<div id="navbar"></div>
+
+<div class="
+container
+mt-5
+mb-5
+flex-grow-1
+">
+
+<div
+id="contenido"
+class="row g-4"
+></div>
+
+</div>
+
+<div id="footer"></div>
+
+<script src="navbar.js"></script>
+<script src="footer.js"></script>
+
+<script>
+
+async function cargarPanel(){
+
+const contenedor =
+document.getElementById(
+'contenido'
+);
+
+try{
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/panel-datos'
+
+);
+
+const datos =
+await respuesta.json();
+
+/* ERROR LOGIN */
+if(!datos.ok){
+
+contenedor.innerHTML = `
+
+<div class="
+col-12
+">
+
+<div class="
+alert
+alert-danger
+text-center
+">
+
+Debes iniciar sesión
+
+</div>
+
+</div>
+
+`;
+
+return;
+
+}
+
+/* SIN EMPRENDIMIENTO */
+if(!datos.tieneDatos){
+
+contenedor.innerHTML = `
+
+<div class="
+col-12
+">
+
+<div class="
+card
+shadow-lg
+border-0
+rounded-4
+overflow-hidden
+">
+
+<div class="
+card-body
+p-5
+text-center
+">
+
+<div class="
+mb-4
+">
+
+<i class="
+fa-solid
+fa-store
+text-primary
+"
+
+style="
+font-size:80px;
+"></i>
+
+</div>
+
+<h1 class="
+fw-bold
+text-primary
+mb-3
+">
+
+Mi Emprendimiento
+
+</h1>
+
+<p class="
+text-muted
+fs-5
+mb-4
+">
+
+Aún no has registrado un emprendimiento.
+
+Comienza ahora y muestra tu negocio,
+productos o servicios dentro de
+Visita Quibdó.
+
+</p>
+
+<div class="
+d-flex
+justify-content-center
+">
+
+<a
+
+href="
+crear_emprendimiento.html
+"
+
+class="
+btn
+btn-primary
+btn-lg
+px-5
+py-3
+rounded-pill
+shadow
+"
+
+>
+
+<i class="
+fa-solid
+fa-plus
+me-2
+"></i>
+
+Registrar emprendimiento
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+return;
+
+}
+
+/* EMPRENDIMIENTO */
+const e =
+datos.emprendimiento;
+
+/* MOSTRAR */
+contenedor.innerHTML = `
+
+<div class="
+col-md-4
+">
+
+<div class="
+card
+shadow-sm
+h-100
+">
+
+<img
+
+src="
+${
+e.foto
+
+?
+
+'http://localhost:3000/' + e.foto
+
+:
+
+'https://via.placeholder.com/500x300?text=Emprendimiento'
+}
+"
+
+class="
+foto-panel
+"
+
+>
+
+<div class="
+card-body
+text-center
+">
+
+<a
+
+href="
+emprendimientos.html?id=${e.id}
+"
+
+class="
+btn
+btn-outline-primary
+w-100
+"
+
+>
+
+Ver Público
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="
+col-md-8
+">
+
+<div class="
+card
+shadow-sm
+border-0
+h-100
+">
+
+<div class="
+card-body
+">
+
+<h2 class="
+text-primary
+fw-bold
+mb-4
+">
+
+Información
+
+</h2>
+
+<p>
+
+<strong>
+Nombre:
+</strong>
+
+${e.nombre_emprendimiento || ''}
+
+</p>
+
+<p>
+
+<strong>
+Categoría:
+</strong>
+
+${e.categoria || ''}
+
+</p>
+
+<p>
+
+<strong>
+Ubicación:
+</strong>
+
+${e.ubicacion || ''}
+
+</p>
+
+<p>
+
+<strong>
+Horarios:
+</strong>
+
+${e.horarios || ''}
+
+</p>
+
+<p>
+
+<strong>
+Servicios:
+</strong>
+
+${e.servicios || ''}
+
+</p>
+
+<p>
+
+<strong>
+Descripción:
+</strong>
+
+<br>
+
+${e.descripcion || ''}
+
+</p>
+
+<a
+
+href="
+editar_emprendimiento.html
+"
+
+class="
+btn
+btn-primary
+mt-3
+"
+
+>
+
+Editar emprendimiento
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}catch(error){
+
+console.log(error);
+
+contenedor.innerHTML = `
+
+<div class="
+col-12
+">
+
+<div class="
+alert
+alert-danger
+text-center
+">
+
+Ocurrió un error al cargar el panel
+
+</div>
+
+</div>
+
+`;
+
+}
+
+}
+
+cargarPanel();
+
+</script>
+
+<script src="
+https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+Ver Lugar Turístico
+</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet"
+>
+
+<link
+rel="stylesheet"
+href="styles.css"
+>
+
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+>
+
+<style>
+
+#mapa{
+
+height:350px;
+
+width:100%;
+
+border-radius:10px;
+
+margin-top:15px;
+
+}
+
+.foto-lugar{
+
+width:100%;
+
+max-height:350px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="navbar"></div>
+
+<div class="container mt-5 mb-5">
+
+<h2
+
+id="titulo"
+
+class="
+text-primary
+fw-bold
+text-center
+mb-4
+d-flex
+justify-content-center
+align-items-center
+gap-2
+flex-wrap
+"
+
+></h2>
+
+<div class="row">
+
+<!-- FOTO -->
+<div class="
+col-md-6
+mb-3
+">
+
+<img
+
+id="foto"
+
+class="foto-lugar"
+
+src="
+https://via.placeholder.com/700x450?text=Lugar+Turistico
+"
+
+>
+
+</div>
+
+<!-- INFO -->
+<div class="
+col-md-6
+">
+
+<div id="info"></div>
+
+</div>
+
+</div>
+
+<!-- MAPA -->
+<div id="mapa"></div>
+
+<!-- VOLVER -->
+<div class="
+text-center
+mt-4
+">
+
+<a
+
+href="lugares_turisticos.html"
+
+class="
+btn
+btn-secondary
+"
+
+>
+
+Volver
+
+</a>
+
+</div>
+
+<!-- RESEÑAS -->
+<div class="
+row
+mt-4
+mb-4
+">
+
+<div class="
+col-lg-8
+mx-auto
+">
+
+<h4 class="
+fw-bold
+text-primary
+mb-3
+">
+
+Calificaciones y comentarios
+
+</h4>
+
+<form
+
+id="formularioResena"
+
+class="
+card
+p-3
+mb-3
+"
+
+>
+
+<div class="mb-3">
+
+<label class="form-label">
+Tu nombre
+</label>
+
+<input
+
+type="text"
+
+id="nombre"
+
+class="form-control"
+
+placeholder="
+Anónimo
+"
+
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Calificación
+</label>
+
+<select
+
+id="calificacion"
+
+class="form-select"
+
+required
+
+>
+
+<option value="">
+Selecciona una opción
+</option>
+
+<option value="5">
+5 estrellas
+</option>
+
+<option value="4">
+4 estrellas
+</option>
+
+<option value="3">
+3 estrellas
+</option>
+
+<option value="2">
+2 estrellas
+</option>
+
+<option value="1">
+1 estrella
+</option>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Comentario
+</label>
+
+<textarea
+
+id="comentario"
+
+class="form-control"
+
+rows="4"
+
+required
+
+></textarea>
+
+</div>
+
+<div class="text-end">
+
+<button class="
+btn
+btn-primary
+">
+
+Enviar reseña
+
+</button>
+
+</div>
+
+</form>
+
+<div
+id="resenas"
+class="list-group"
+></div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="footer"></div>
+
+<script src="navbar.js"></script>
+<script src="footer.js"></script>
+
+<script src="
+https://unpkg.com/leaflet/dist/leaflet.js
+"></script>
+
+<script>
+
+/* URL */
+const parametros =
+new URLSearchParams(
+window.location.search
+);
+
+const id =
+parametros.get('id');
+
+let mapa;
+
+/* DATOS */
+async function cargarLugar(){
+
+const respuesta =
+await fetch(
+
+`http://localhost:3000/lugar/${id}`
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+document.getElementById(
+'titulo'
+).innerHTML =
+'Lugar no encontrado';
+
+return;
+
+}
+
+const l =
+datos.lugar;
+
+/* TITULO */
+document.getElementById(
+'titulo'
+).innerHTML =
+
+`${l.nombre_lugar || l.nombre}`;
+
+/* FOTO */
+document.getElementById(
+'foto'
+).src =
+
+l.imagen
+
+?
+
+'http://localhost:3000/' + l.imagen
+
+:
+
+'https://via.placeholder.com/700x450?text=Lugar+Turistico';
+
+/* INFO */
+document.getElementById(
+'info'
+).innerHTML = `
+
+<p>
+
+<strong>
+Descripción:
+</strong>
+
+<br>
+
+${l.descripcion || 'No disponible'}
+
+</p>
+
+<p>
+
+<strong>
+Ubicación:
+</strong>
+
+<br>
+
+${l.ubicacion || 'No disponible'}
+
+</p>
+
+<p>
+
+<strong>
+Latitud:
+</strong>
+
+${l.latitud || 'No disponible'}
+
+</p>
+
+<p>
+
+<strong>
+Longitud:
+</strong>
+
+${l.longitud || 'No disponible'}
+
+</p>
+
+${
+l.latitud && l.longitud
+
+?
+
+`
+
+`
+
+:
+
+''
+}
+
+`;
+
+/* MAPA */
+if(
+l.latitud &&
+l.longitud
+){
+
+mapa = L.map('mapa').setView(
+
+[
+l.latitud,
+l.longitud
+],
+
+15
+
+);
+
+L.tileLayer(
+
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
+{
+
+attribution:'© OpenStreetMap'
+
+}
+
+).addTo(mapa);
+
+L.marker(
+
+[
+l.latitud,
+l.longitud
+]
+
+)
+
+.addTo(mapa)
+
+.bindPopup(
+l.nombre_lugar || l.nombre
+)
+
+.openPopup();
+
+}
+
+}
+
+cargarLugar();
+
+/* RESEÑAS */
+async function cargarResenas(){
+
+const respuesta =
+await fetch(
+
+`http://localhost:3000/resenas-lugar/${id}`
+
+);
+
+const resenas =
+await respuesta.json();
+
+const contenedor =
+document.getElementById(
+'resenas'
+);
+
+/* LIMPIAR */
+contenedor.innerHTML = '';
+
+/* PROMEDIO */
+let promedio = 0;
+
+resenas.forEach(r=>{
+
+promedio += Number(
+r.calificacion
+);
+
+});
+
+if(resenas.length > 0){
+
+promedio =
+(
+promedio /
+resenas.length
+).toFixed(1);
+
+document.getElementById(
+'titulo'
+).innerHTML += `
+
+<span class="
+badge
+bg-warning
+text-dark
+">
+
+${promedio} ★
+(${resenas.length})
+
+</span>
+
+`;
+
+}
+
+/* VACIO */
+if(resenas.length === 0){
+
+contenedor.innerHTML = `
+
+<p class="
+text-muted
+">
+
+Aún no hay reseñas
+
+</p>
+
+`;
+
+return;
+
+}
+
+/* MOSTRAR */
+resenas.forEach(r=>{
+
+contenedor.innerHTML += `
+
+<div class="
+list-group-item
+mb-3
+">
+
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-1
+">
+
+<strong>
+
+${r.nombre || 'Anónimo'}
+
+</strong>
+
+<span class="
+badge
+bg-warning
+text-dark
+">
+
+${r.calificacion} ★
+
+</span>
+
+</div>
+
+<p class="
+mb-1
+">
+
+${r.comentario}
+
+</p>
+
+<small class="
+text-muted
+">
+
+${r.creado_en || ''}
+
+</small>
+
+</div>
+
+`;
+
+});
+
+}
+
+cargarResenas();
+
+/* ENVIAR */
+document.getElementById(
+'formularioResena'
+)
+
+.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/crear-resena-lugar',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+item_id:id,
+
+nombre:
+document.getElementById(
+'nombre'
+).value,
+
+calificacion:
+document.getElementById(
+'calificacion'
+).value,
+
+comentario:
+document.getElementById(
+'comentario'
+).value
+
+})
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+e.target.reset();
+
+cargarResenas();
+
+}
+
+}
+
+);
+
+</script>
+
+<script src="
+https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+"></script>
+
+</body>
+</html>
