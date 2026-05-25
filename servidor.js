@@ -961,9 +961,10 @@ app.post('/crear-emprendimiento', subirFoto.single('foto'), (req,res)=>{
             servicios,
             servicios_extra,
             foto,
-            rol
+            rol,
+            estado
         )
-        VALUES(?,?,?,?,?,?,?,?,?,?)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?)
     `;
 
     conexion.query(sql,[
@@ -976,7 +977,8 @@ app.post('/crear-emprendimiento', subirFoto.single('foto'), (req,res)=>{
         servicioFinal,
         servicios_extra,
         foto,
-        'emprendedor'
+        'emprendedor',
+        'pendiente'
     ],(error)=>{
 
         if(error){
@@ -1021,7 +1023,10 @@ app.get('/emprendimientos',(req,res)=>{
 
     let sql = `
         SELECT *
-        FROM emprendedores
+       FROM emprendedores
+
+       WHERE 1=1
+       AND estado='aprobado'
     `;
 
     let parametros = [];
@@ -1157,77 +1162,7 @@ app.get('/emprendimiento/:id',(req,res)=>{
 
 });
 
-/* =========================
-   RESEÑAS
-========================= */
 
-app.get('/resenas/:id',(req,res)=>{
-
-    const id = req.params.id;
-
-    const sql = `
-        SELECT *
-        FROM resenas
-        WHERE tipo='emprendimiento'
-        AND item_id=?
-        ORDER BY creado_en DESC
-    `;
-
-    conexion.query(sql,[id],(error,resultados)=>{
-
-        if(error){
-            return res.json([]);
-        }
-
-        res.json(resultados);
-
-    });
-
-});
-
-/* =========================
-   CREAR RESEÑA
-========================= */
-
-app.post('/crear-resena',(req,res)=>{
-
-    const {
-        item_id,
-        nombre,
-        calificacion,
-        comentario
-    } = req.body;
-
-    const sql = `
-        INSERT INTO resenas(
-            tipo,
-            item_id,
-            nombre,
-            calificacion,
-            comentario
-        )
-        VALUES(
-            'emprendimiento',
-            ?,?,?,?
-        )
-    `;
-
-    conexion.query(sql,[
-        item_id,
-        nombre || 'Anónimo',
-        calificacion,
-        comentario
-    ],(error)=>{
-
-        if(error){
-            return res.json({ ok:false });
-        }
-
-        res.json({ ok:true });
-
-    });
-
-});
 
 /* =========================
    HOTELES
@@ -1292,10 +1227,22 @@ app.get(
 
         const sql = `
 
-            SELECT *
+           SELECT
 
-            FROM hoteles
+             id,
+             nombre,
+             descripcion,
+             direccion,
+             telefono,
+             sitio_web,
+             indicaciones,
+             estrellas,
+             latitud,
+             longitud,
+             imagen
 
+          FROM hoteles
+             
             WHERE id = ?
 
             LIMIT 1
@@ -1351,142 +1298,7 @@ app.get(
 
 );
 
-/* =====================================
-   RESEÑAS HOTEL
-===================================== */
 
-app.get(
-
-    '/resenas-hotel/:id',
-
-    (req,res)=>{
-
-        const id =
-            req.params.id;
-
-        const sql = `
-
-            SELECT *
-
-            FROM resenas
-
-            WHERE
-                tipo='hotel'
-
-            AND item_id=?
-
-            ORDER BY creado_en DESC
-
-        `;
-
-        conexion.query(
-
-            sql,
-
-            [id],
-
-            (error,resultados)=>{
-
-                if(error){
-
-                    return res.json([]);
-
-                }
-
-                res.json(resultados);
-
-            }
-
-        );
-
-    }
-
-);
-
-/* =====================================
-   CREAR RESEÑA HOTEL
-===================================== */
-
-app.post(
-
-    '/crear-resena-hotel',
-
-    (req,res)=>{
-
-        const {
-
-            item_id,
-            nombre,
-            calificacion,
-            comentario
-
-        } = req.body;
-
-        const sql = `
-
-            INSERT INTO resenas(
-
-                tipo,
-                item_id,
-                nombre,
-                calificacion,
-                comentario
-
-            )
-
-            VALUES(
-
-                'hotel',
-                ?,
-                ?,
-                ?,
-                ?
-
-            )
-
-        `;
-
-        conexion.query(
-
-            sql,
-
-            [
-
-                item_id,
-
-                nombre || 'Anónimo',
-
-                calificacion,
-
-                comentario
-
-            ],
-
-            (error)=>{
-
-                if(error){
-
-                    return res.json({
-
-                        ok:false
-
-                    });
-
-                }
-
-                res.json({
-
-                    ok:true
-
-                });
-
-            }
-
-        );
-
-    }
-
-);
 
 /* RESTAURANTES */
 app.get('/restaurantes',(req,res)=>{
@@ -1654,139 +1466,7 @@ app.get(
 
 );
 
-/* RESEÑAS RESTAURANTE */
-app.get(
 
-    '/resenas-restaurante/:id',
-
-    (req,res)=>{
-
-        const id =
-            req.params.id;
-
-        const sql = `
-
-            SELECT
-                *
-
-            FROM resenas
-
-            WHERE
-                tipo='restaurante'
-
-            AND item_id=?
-
-            ORDER BY creado_en DESC
-
-        `;
-
-        conexion.query(
-
-            sql,
-
-            [id],
-
-            (error,resultados)=>{
-
-                if(error){
-
-                    return res.json([]);
-
-                }
-
-                res.json(
-                    resultados
-                );
-
-            }
-
-        );
-
-    }
-
-);
-
-/* CREAR RESEÑA RESTAURANTE */
-app.post(
-
-    '/crear-resena-restaurante',
-
-    (req,res)=>{
-
-        const {
-
-            item_id,
-            nombre,
-            calificacion,
-            comentario
-
-        } = req.body;
-
-        const sql = `
-
-            INSERT INTO resenas(
-
-                tipo,
-                item_id,
-                nombre,
-                calificacion,
-                comentario
-
-            )
-
-            VALUES(
-
-                'restaurante',
-                ?,
-                ?,
-                ?,
-                ?
-
-            )
-
-        `;
-
-        conexion.query(
-
-            sql,
-
-            [
-
-                item_id,
-
-                nombre || 'Anónimo',
-
-                calificacion,
-
-                comentario
-
-            ],
-
-            (error)=>{
-
-                if(error){
-
-                    return res.json({
-
-                        ok:false
-
-                    });
-
-                }
-
-                res.json({
-
-                    ok:true
-
-                });
-
-            }
-
-        );
-
-    }
-
-);
 
 /* LUGARES TURISTICOS */
 app.get('/lugares',(req,res)=>{
@@ -2154,54 +1834,391 @@ app.get(
 );
 
 /* =====================================
+   RESEÑAS HOTEL
+===================================== */
+
+app.get(
+
+'/resenas-hotel/:id',
+
+(req,res)=>{
+
+const id =
+req.params.id;
+
+const sql = `
+
+SELECT *
+
+FROM resenas
+
+WHERE tipo='hotel'
+
+AND item_id=?
+
+ORDER BY creado_en DESC
+
+`;
+
+conexion.query(
+
+sql,
+
+[id],
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json([]);
+
+}
+
+res.json(resultados);
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   CREAR RESEÑA HOTEL
+===================================== */
+
+app.post(
+
+'/crear-resena-hotel',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false,
+
+mensaje:
+'Debes iniciar sesión'
+
+});
+
+}
+
+const {
+
+item_id,
+calificacion,
+comentario
+
+} = req.body;
+
+const nombre =
+req.session.usuario.nombre;
+
+/* VALIDAR */
+if(
+!calificacion ||
+!comentario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* INSERT */
+const sql = `
+
+INSERT INTO resenas(
+
+tipo,
+item_id,
+nombre,
+calificacion,
+comentario
+
+)
+
+VALUES(
+
+'hotel',
+?,
+?,
+?,
+?
+
+)
+
+`;
+
+conexion.query(
+
+sql,
+
+[
+item_id,
+nombre,
+calificacion,
+comentario
+],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   RESEÑAS RESTAURANTE
+===================================== */
+
+app.get(
+
+'/resenas-restaurante/:id',
+
+(req,res)=>{
+
+const id =
+req.params.id;
+
+const sql = `
+
+SELECT *
+
+FROM resenas
+
+WHERE tipo='restaurante'
+
+AND item_id=?
+
+ORDER BY creado_en DESC
+
+`;
+
+conexion.query(
+
+sql,
+
+[id],
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json([]);
+
+}
+
+res.json(resultados);
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   CREAR RESEÑA RESTAURANTE
+===================================== */
+
+app.post(
+
+'/crear-resena-restaurante',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false,
+
+mensaje:
+'Debes iniciar sesión'
+
+});
+
+}
+
+const {
+
+item_id,
+calificacion,
+comentario
+
+} = req.body;
+
+const nombre =
+req.session.usuario.nombre;
+
+/* VALIDAR */
+if(
+!calificacion ||
+!comentario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* INSERT */
+const sql = `
+
+INSERT INTO resenas(
+
+tipo,
+item_id,
+nombre,
+calificacion,
+comentario
+
+)
+
+VALUES(
+
+'restaurante',
+?,
+?,
+?,
+?
+
+)
+
+`;
+
+conexion.query(
+
+sql,
+
+[
+item_id,
+nombre,
+calificacion,
+comentario
+],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
    RESEÑAS EVENTO
 ===================================== */
 
 app.get(
 
-    '/resenas-evento/:id',
+'/resenas-evento/:id',
 
-    (req,res)=>{
+(req,res)=>{
 
-        const id =
-            req.params.id;
+const id =
+req.params.id;
 
-        const sql = `
+const sql = `
 
-            SELECT *
+SELECT *
 
-            FROM resenas
+FROM resenas
 
-            WHERE
-                tipo='evento'
+WHERE tipo='evento'
 
-            AND item_id=?
+AND item_id=?
 
-            ORDER BY creado_en DESC
+ORDER BY creado_en DESC
 
-        `;
+`;
 
-        conexion.query(
+conexion.query(
 
-            sql,
+sql,
 
-            [id],
+[id],
 
-            (error,resultados)=>{
+(error,resultados)=>{
 
-                if(error){
+if(error){
 
-                    return res.json([]);
+console.log(error);
 
-                }
+return res.json([]);
 
-                res.json(resultados);
+}
 
-            }
+res.json(resultados);
 
-        );
+}
 
-    }
+);
+
+}
 
 );
 
@@ -2211,212 +2228,439 @@ app.get(
 
 app.post(
 
-    '/crear-resena-evento',
+'/crear-resena-evento',
 
-    (req,res)=>{
+(req,res)=>{
 
-        const {
+if(
+!req.session.usuario
+){
 
-            item_id,
-            nombre,
-            calificacion,
-            comentario
+return res.json({
 
-        } = req.body;
+ok:false,
 
-        const sql = `
+mensaje:
+'Debes iniciar sesión'
 
-            INSERT INTO resenas(
+});
 
-                tipo,
-                item_id,
-                nombre,
-                calificacion,
-                comentario
+}
 
-            )
+const {
 
-            VALUES(
+item_id,
+calificacion,
+comentario
 
-                'evento',
-                ?,
-                ?,
-                ?,
-                ?
+} = req.body;
 
-            )
+const nombre =
+req.session.usuario.nombre;
 
-        `;
+if(
+!calificacion ||
+!comentario
+){
 
-        conexion.query(
+return res.json({
 
-            sql,
+ok:false
 
-            [
+});
 
-                item_id,
+}
 
-                nombre || 'Anónimo',
+const sql = `
 
-                calificacion,
+INSERT INTO resenas(
 
-                comentario
+tipo,
+item_id,
+nombre,
+calificacion,
+comentario
 
-            ],
+)
 
-            (error)=>{
+VALUES(
 
-                if(error){
+'evento',
+?,
+?,
+?,
+?
 
-                    return res.json({
+)
 
-                        ok:false
+`;
 
-                    });
+conexion.query(
 
-                }
+sql,
 
-                res.json({
+[
+item_id,
+nombre,
+calificacion,
+comentario
+],
 
-                    ok:true
+(error)=>{
 
-                });
+if(error){
 
-            }
+console.log(error);
 
-        );
+return res.json({
 
-    }
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
 
 );
 
-/* RESEÑAS LUGAR */
+}
+
+);
+
+/* =====================================
+   RESEÑAS LUGAR
+===================================== */
+
 app.get(
 
-    '/resenas-lugar/:id',
+'/resenas-lugar/:id',
 
-    (req,res)=>{
+(req,res)=>{
 
-        const id =
-            req.params.id;
+const id =
+req.params.id;
 
-        const sql = `
+const sql = `
 
-            SELECT *
-            FROM resenas
+SELECT *
 
-            WHERE
-                tipo='lugar'
+FROM resenas
 
-            AND item_id=?
+WHERE tipo='lugar'
 
-            ORDER BY creado_en DESC
+AND item_id=?
 
-        `;
+ORDER BY creado_en DESC
 
-        conexion.query(
+`;
 
-            sql,
+conexion.query(
 
-            [id],
+sql,
 
-            (error,resultados)=>{
+[id],
 
-                if(error){
+(error,resultados)=>{
 
-                    return res.json([]);
+if(error){
 
-                }
+console.log(error);
 
-                res.json(resultados);
+return res.json([]);
 
-            }
+}
 
-        );
+res.json(resultados);
 
-    }
+}
 
 );
 
-/* CREAR RESEÑA LUGAR */
+}
+
+);
+
+/* =====================================
+   CREAR RESEÑA LUGAR
+===================================== */
+
 app.post(
 
-    '/crear-resena-lugar',
+'/crear-resena-lugar',
 
-    (req,res)=>{
+(req,res)=>{
 
-        const {
+if(
+!req.session.usuario
+){
 
-            item_id,
-            nombre,
-            calificacion,
-            comentario
+return res.json({
 
-        } = req.body;
+ok:false,
 
-        const sql = `
+mensaje:
+'Debes iniciar sesión'
 
-            INSERT INTO resenas(
+});
 
-                tipo,
-                item_id,
-                nombre,
-                calificacion,
-                comentario
+}
 
-            )
+const {
 
-            VALUES(
+item_id,
+calificacion,
+comentario
 
-                'lugar',
-                ?,
-                ?,
-                ?,
-                ?
+} = req.body;
 
-            )
+const nombre =
+req.session.usuario.nombre;
 
-        `;
+if(
+!calificacion ||
+!comentario
+){
 
-        conexion.query(
+return res.json({
 
-            sql,
+ok:false
 
-            [
+});
 
-                item_id,
+}
 
-                nombre || 'Anónimo',
+const sql = `
 
-                calificacion,
+INSERT INTO resenas(
 
-                comentario
+tipo,
+item_id,
+nombre,
+calificacion,
+comentario
 
-            ],
+)
 
-            (error)=>{
+VALUES(
 
-                if(error){
+'lugar',
+?,
+?,
+?,
+?
 
-                    return res.json({
+)
 
-                        ok:false
+`;
 
-                    });
+conexion.query(
 
-                }
+sql,
 
-                res.json({
+[
+item_id,
+nombre,
+calificacion,
+comentario
+],
 
-                    ok:true
+(error)=>{
 
-                });
+if(error){
 
-            }
+console.log(error);
 
-        );
+return res.json({
 
-    }
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   RESEÑAS EMPRENDIMIENTO
+===================================== */
+
+app.get(
+
+'/resenas-emprendimiento/:id',
+
+(req,res)=>{
+
+const id =
+req.params.id;
+
+const sql = `
+
+SELECT *
+
+FROM resenas
+
+WHERE tipo='emprendimiento'
+
+AND item_id=?
+
+ORDER BY creado_en DESC
+
+`;
+
+conexion.query(
+
+sql,
+
+[id],
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json([]);
+
+}
+
+res.json(resultados);
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   CREAR RESEÑA EMPRENDIMIENTO
+===================================== */
+
+app.post(
+
+'/crear-resena-emprendimiento',
+
+(req,res)=>{
+
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false,
+
+mensaje:
+'Debes iniciar sesión'
+
+});
+
+}
+
+const {
+
+item_id,
+calificacion,
+comentario
+
+} = req.body;
+
+const nombre =
+req.session.usuario.nombre;
+
+if(
+!calificacion ||
+!comentario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+const sql = `
+
+INSERT INTO resenas(
+
+tipo,
+item_id,
+nombre,
+calificacion,
+comentario
+
+)
+
+VALUES(
+
+'emprendimiento',
+?,
+?,
+?,
+?
+
+)
+
+`;
+
+conexion.query(
+
+sql,
+
+[
+item_id,
+nombre,
+calificacion,
+comentario
+],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
 
 );
 
@@ -2752,6 +2996,47 @@ resultados[0].total
 );
 
 /* =====================================
+   TOTAL LUGARES
+===================================== */
+
+app.get(
+
+'/total-lugares',
+
+(req,res)=>{
+
+conexion.query(
+
+`
+SELECT COUNT(*) AS total
+FROM lugares_turisticos
+`,
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+total:0
+});
+
+}
+
+res.json({
+total:
+resultados[0].total
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
    TOTAL EMPRENDIMIENTOS
 ===================================== */
 
@@ -2822,8 +3107,9 @@ ok:false
 
 /* VALIDAR SUPERADMIN */
 if(
-req.session.usuario.rol
-!== 'superadmin'
+req.session.usuario.rol !== 'superadmin'
+&&
+req.session.usuario.rol !== 'admin'
 ){
 
 return res.json({
@@ -2902,8 +3188,9 @@ ok:false
 
 /* VALIDAR SUPERADMIN */
 if(
-req.session.usuario.rol
-!== 'superadmin'
+req.session.usuario.rol !== 'superadmin'
+&&
+req.session.usuario.rol !== 'admin'
 ){
 
 return res.json({
@@ -2992,6 +3279,16 @@ app.post(
 
 (req,res)=>{
 
+if(!req.session.usuario){
+return res.json({ok:false});
+}
+
+if(
+req.session.usuario.rol !== 'superadmin'
+){
+return res.json({ok:false});
+}
+
 console.log(
 'BODY:',
 req.body
@@ -3003,6 +3300,18 @@ req.body.id;
 console.log(
 'ID:',
 id
+);
+
+/* ELIMINAR EMPRENDIMIENTO DEL USUARIO */
+conexion.query(
+
+`
+DELETE FROM emprendedores
+WHERE id=?
+`,
+
+[id]
+
 );
 
 /* QUERY */
@@ -3077,8 +3386,9 @@ ok:false
 
 /* SUPERADMIN */
 if(
-req.session.usuario.rol
-!== 'superadmin'
+req.session.usuario.rol !== 'superadmin'
+&&
+req.session.usuario.rol !== 'admin'
 ){
 
 return res.json({
@@ -3097,7 +3407,10 @@ SELECT
 e.id,
 e.nombre_emprendimiento,
 e.categoria,
+e.descripcion,
+e.estado,
 e.foto,
+
 u.nombre AS propietario,
 u.correo
 
@@ -3169,8 +3482,9 @@ ok:false
 
 /* SUPERADMIN */
 if(
-req.session.usuario.rol
-!== 'superadmin'
+req.session.usuario.rol !== 'superadmin'
+&&
+req.session.usuario.rol !== 'admin'
 ){
 
 return res.json({
@@ -3239,6 +3553,100 @@ ok:true
 );
 
 /* =====================================
+   APROBAR EMPRENDIMIENTO
+===================================== */
+
+app.post(
+
+'/aprobar-emprendimiento',
+
+(req,res)=>{
+
+const { id } = req.body;
+
+conexion.query(
+
+`
+UPDATE emprendedores
+SET estado='aprobado'
+WHERE id=?
+`,
+
+[id],
+
+(error)=>{
+
+if(error){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   RECHAZAR EMPRENDIMIENTO
+===================================== */
+
+app.post(
+
+'/rechazar-emprendimiento',
+
+(req,res)=>{
+
+const { id } = req.body;
+
+conexion.query(
+
+`
+UPDATE emprendedores
+SET estado='rechazado'
+WHERE id=?
+`,
+
+[id],
+
+(error)=>{
+
+if(error){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
    ACTIVIDAD RECIENTE
 ===================================== */
 
@@ -3287,6 +3695,1853 @@ actividades
 
 }
 );
+
+/* =====================================
+   HOTELES ADMIN
+===================================== */
+
+app.get(
+
+'/hoteles-admin',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* VALIDAR ROL */
+if(
+
+req.session.usuario.rol !== 'superadmin'
+&&
+
+req.session.usuario.rol !== 'admin'
+
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* CONSULTA */
+conexion.query(
+
+`
+SELECT
+
+id,
+nombre,
+descripcion,
+direccion,
+telefono,
+indicaciones,
+estrellas,
+imagen
+
+FROM hoteles
+ORDER BY id DESC
+`,
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true,
+
+hoteles:
+resultados
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   RESTAURANTES ADMIN
+===================================== */
+
+app.get(
+
+'/restaurantes-admin',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* VALIDAR ROL */
+if(
+
+req.session.usuario.rol !== 'superadmin'
+&&
+
+req.session.usuario.rol !== 'admin'
+
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* CONSULTA */
+conexion.query(
+
+`
+SELECT
+id,
+nombre,
+direccion,
+imagen
+FROM restaurantes
+ORDER BY id DESC
+`,
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true,
+
+restaurantes:
+resultados
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   AGREGAR RESTAURANTE
+===================================== */
+
+app.post(
+
+'/agregar-restaurante',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* ADMIN */
+if(
+req.session.usuario.rol !== 'superadmin'
+&&
+req.session.usuario.rol !== 'admin'
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* DATOS */
+const {
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud
+
+} = req.body;
+
+/* FOTO */
+let imagen = '';
+
+if(req.file){
+
+imagen =
+'fotos/' + req.file.filename;
+
+}
+
+/* INSERT */
+const sql = `
+
+INSERT INTO restaurantes(
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+imagen
+
+)
+
+VALUES(?,?,?,?,?,?)
+
+`;
+
+conexion.query(
+
+sql,
+
+[
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+imagen
+],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false,
+
+mensaje:error.sqlMessage
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   ELIMINAR RESTAURANTE
+===================================== */
+
+app.post(
+
+'/eliminar-restaurante',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* ADMIN */
+if(
+req.session.usuario.rol !== 'superadmin'
+&&
+req.session.usuario.rol !== 'admin'
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+const {
+
+id
+
+} = req.body;
+
+/* DELETE */
+conexion.query(
+
+`
+DELETE FROM restaurantes
+WHERE id=?
+`,
+
+[id],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   EVENTOS ADMIN
+===================================== */
+
+app.get(
+
+'/eventos-admin',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* VALIDAR ROL */
+if(
+
+req.session.usuario.rol !== 'superadmin'
+&&
+
+req.session.usuario.rol !== 'admin'
+
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* CONSULTA */
+conexion.query(
+
+`
+SELECT
+id,
+titulo,
+fecha,
+imagen
+FROM eventos_culturales
+ORDER BY id DESC
+`,
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true,
+
+eventos:
+resultados
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   LUGARES ADMIN
+===================================== */
+
+app.get(
+
+'/lugares-admin',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* VALIDAR ROL */
+if(
+
+req.session.usuario.rol !== 'superadmin'
+&&
+
+req.session.usuario.rol !== 'admin'
+
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* CONSULTA */
+conexion.query(
+
+`
+SELECT
+id,
+nombre,
+direccion,
+imagen
+FROM lugares_turisticos
+ORDER BY id DESC
+`,
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true,
+
+lugares:
+resultados
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   CREAR HOTEL
+===================================== */
+
+app.post(
+
+'/crear-hotel',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* VALIDAR ROL */
+if(
+
+req.session.usuario.rol !== 'superadmin'
+&&
+
+req.session.usuario.rol !== 'admin'
+
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+const {
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+telefono,
+sitio_web,
+indicaciones,
+estrellas
+
+} = req.body;
+
+/* IMAGEN */
+let imagen = '';
+
+if(req.file){
+
+imagen =
+'fotos/' + req.file.filename;
+
+}
+
+/* INSERT */
+conexion.query(
+
+`
+INSERT INTO hoteles(
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+telefono,
+sitio_web,
+indicaciones,
+estrellas,
+imagen
+
+)
+
+VALUES(?,?,?,?,?,?,?,?,?,?)
+
+`,
+
+[
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+telefono,
+sitio_web,
+indicaciones,
+estrellas,
+imagen
+],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   EDITAR HOTEL
+===================================== */
+
+app.post(
+
+'/editar-hotel',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* VALIDAR ROL */
+if(
+
+req.session.usuario.rol !== 'superadmin'
+&&
+
+req.session.usuario.rol !== 'admin'
+
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+const {
+
+id,
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+telefono,
+sitio_web,
+indicaciones,
+estrellas
+
+} = req.body;
+
+/* IMAGEN */
+let sql = `
+
+UPDATE hoteles
+SET
+
+nombre=?,
+descripcion=?,
+direccion=?,
+latitud=?,
+longitud=?,
+telefono=?,
+sitio_web=?,
+indicaciones=?,
+estrellas=?
+
+`;
+
+let valores = [
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+telefono,
+sitio_web,
+indicaciones,
+estrellas
+
+];
+
+/* NUEVA FOTO */
+if(req.file){
+
+sql += `,
+imagen=?
+`;
+
+valores.push(
+'fotos/' + req.file.filename
+);
+
+}
+
+/* WHERE */
+sql += `
+WHERE id=?
+`;
+
+valores.push(id);
+
+/* UPDATE */
+conexion.query(
+
+sql,
+
+valores,
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false,
+
+mensaje:error.sqlMessage
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   EDITAR RESTAURANTE
+===================================== */
+
+app.post(
+
+'/editar-restaurante',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* ADMIN */
+if(
+req.session.usuario.rol !== 'superadmin'
+&&
+req.session.usuario.rol !== 'admin'
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+const {
+
+id,
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud
+
+} = req.body;
+
+/* FOTO */
+let sql = `
+UPDATE restaurantes
+SET
+nombre=?,
+descripcion=?,
+direccion=?,
+latitud=?,
+longitud=?
+`;
+
+const valores = [
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud
+
+];
+
+/* NUEVA FOTO */
+if(req.file){
+
+sql += `,
+imagen=?
+`;
+
+valores.push(
+'fotos/' + req.file.filename
+);
+
+}
+
+/* WHERE */
+sql += `
+WHERE id=?
+`;
+
+valores.push(id);
+
+/* UPDATE */
+conexion.query(
+
+sql,
+
+valores,
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   ELIMINAR HOTEL
+===================================== */
+
+app.post(
+
+'/eliminar-hotel',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+/* VALIDAR ROL */
+if(
+
+req.session.usuario.rol !== 'superadmin'
+&&
+
+req.session.usuario.rol !== 'admin'
+
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+const {
+
+id
+
+} = req.body;
+
+/* DELETE */
+conexion.query(
+
+`
+DELETE FROM hoteles
+WHERE id=?
+`,
+
+[id],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false,
+
+mensaje:error.sqlMessage
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   AGREGAR EVENTO
+===================================== */
+
+app.post(
+
+'/agregar-evento',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+if(
+!req.session.usuario
+){
+
+return res.json({
+ok:false
+});
+
+}
+
+const {
+
+titulo,
+descripcion,
+fecha,
+hora,
+lugar
+
+} = req.body;
+
+let imagen = '';
+
+if(req.file){
+
+imagen =
+'fotos/' + req.file.filename;
+
+}
+
+conexion.query(
+
+`
+INSERT INTO eventos_culturales(
+
+titulo,
+descripcion,
+fecha,
+hora,
+lugar,
+imagen
+
+)
+
+VALUES(?,?,?,?,?,?)
+`,
+
+[
+titulo,
+descripcion,
+fecha,
+hora,
+lugar,
+imagen
+],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+ok:true
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   EDITAR EVENTO
+===================================== */
+
+app.post(
+
+'/editar-evento',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+const {
+
+id,
+titulo,
+descripcion,
+fecha,
+hora,
+lugar
+
+} = req.body;
+
+let sql = `
+UPDATE eventos_culturales
+SET
+titulo=?,
+descripcion=?,
+fecha=?,
+hora=?,
+lugar=?
+`;
+
+let valores = [
+
+titulo,
+descripcion,
+fecha,
+hora,
+lugar
+
+];
+
+if(req.file){
+
+sql += `,
+imagen=?
+`;
+
+valores.push(
+'fotos/' + req.file.filename
+);
+
+}
+
+sql += `
+WHERE id=?
+`;
+
+valores.push(id);
+
+conexion.query(
+
+sql,
+
+valores,
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+ok:true
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   ELIMINAR EVENTO
+===================================== */
+
+app.post(
+
+'/eliminar-evento',
+
+(req,res)=>{
+
+const { id } =
+req.body;
+
+conexion.query(
+
+`
+DELETE FROM eventos_culturales
+WHERE id=?
+`,
+
+[id],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+ok:true
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   AGREGAR LUGAR
+===================================== */
+
+app.post(
+
+'/agregar-lugar',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+const {
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud
+
+} = req.body;
+
+let imagen = '';
+
+if(req.file){
+
+imagen =
+'fotos/' + req.file.filename;
+
+}
+
+conexion.query(
+
+`
+INSERT INTO lugares_turisticos(
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+imagen
+
+)
+
+VALUES(?,?,?,?,?,?)
+`,
+
+[
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud,
+imagen
+],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+ok:true
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   EDITAR LUGAR
+===================================== */
+
+app.post(
+
+'/editar-lugar',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+const {
+
+id,
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud
+
+} = req.body;
+
+let sql = `
+UPDATE lugares_turisticos
+SET
+nombre=?,
+descripcion=?,
+direccion=?,
+latitud=?,
+longitud=?
+`;
+
+let valores = [
+
+nombre,
+descripcion,
+direccion,
+latitud,
+longitud
+
+];
+
+if(req.file){
+
+sql += `,
+imagen=?
+`;
+
+valores.push(
+'fotos/' + req.file.filename
+);
+
+}
+
+sql += `
+WHERE id=?
+`;
+
+valores.push(id);
+
+conexion.query(
+
+sql,
+
+valores,
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+ok:true
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   ELIMINAR LUGAR
+===================================== */
+
+app.post(
+
+'/eliminar-lugar',
+
+(req,res)=>{
+
+const { id } =
+req.body;
+
+conexion.query(
+
+`
+DELETE FROM lugares_turisticos
+WHERE id=?
+`,
+
+[id],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+ok:true
+});
+
+}
+
+);
+
+}
+);
+
+/* =====================================
+   ACTIVIDADES RECIENTES
+===================================== */
+
+app.get(
+
+'/actividades-recientes',
+
+(req,res)=>{
+
+let actividades = [];
+
+/* USUARIO */
+conexion.query(
+
+`
+SELECT nombre
+FROM usuarios
+ORDER BY id DESC
+LIMIT 1
+`,
+
+(error,usuarios)=>{
+
+if(!error && usuarios.length > 0){
+
+actividades.push({
+
+titulo:
+'Nuevo usuario registrado',
+
+descripcion:
+usuarios[0].nombre
+
+});
+
+}
+
+/* HOTEL */
+conexion.query(
+
+`
+SELECT nombre
+FROM hoteles
+ORDER BY id DESC
+LIMIT 1
+`,
+
+(error,hoteles)=>{
+
+if(!error && hoteles.length > 0){
+
+actividades.push({
+
+titulo:
+'Nuevo hotel agregado',
+
+descripcion:
+hoteles[0].nombre
+
+});
+
+}
+
+/* EVENTO */
+conexion.query(
+
+`
+SELECT titulo
+FROM eventos_culturales
+ORDER BY id DESC
+LIMIT 1
+`,
+
+(error,eventos)=>{
+
+if(!error && eventos.length > 0){
+
+actividades.push({
+
+titulo:
+'Evento cultural publicado',
+
+descripcion:
+eventos[0].titulo
+
+});
+
+}
+
+/* RESTAURANTE */
+conexion.query(
+
+`
+SELECT nombre
+FROM restaurantes
+ORDER BY id DESC
+LIMIT 1
+`,
+
+(error,restaurantes)=>{
+
+if(
+!error &&
+restaurantes.length > 0
+){
+
+actividades.push({
+
+titulo:
+'Nuevo restaurante agregado',
+
+descripcion:
+restaurantes[0].nombre
+
+});
+
+}
+
+/* LUGAR */
+conexion.query(
+
+`
+SELECT nombre
+FROM lugares_turisticos
+ORDER BY id DESC
+LIMIT 1
+`,
+
+(error,lugares)=>{
+
+if(
+!error &&
+lugares.length > 0
+){
+
+actividades.push({
+
+titulo:
+'Nuevo lugar turístico agregado',
+
+descripcion:
+lugares[0].nombre
+
+});
+
+}
+
+/* EMPRENDIMIENTO */
+conexion.query(
+
+`
+SELECT nombre_emprendimiento
+FROM emprendedores
+ORDER BY id DESC
+LIMIT 1
+`,
+
+(error,emprendimientos)=>{
+
+if(
+!error &&
+emprendimientos.length > 0
+){
+
+actividades.push({
+
+titulo:
+'Nuevo emprendimiento creado',
+
+descripcion:
+emprendimientos[0]
+.nombre_emprendimiento
+
+});
+
+}
+
+res.json({
+
+ok:true,
+
+actividades
+
+});
+
+});
+
+});
+
+});
+
+});
+
+});
+
+});
+
+}
+);
+
+/* =====================================
+   SESION ACTUAL
+===================================== */
+
+app.get(
+
+'/sesion-actual',
+
+(req,res)=>{
+
+if(!req.session.usuario){
+
+return res.json({
+
+logueado:false
+
+});
+
+}
+
+res.json({
+
+logueado:true,
+
+usuario:
+req.session.usuario
+
+});
+
+}
+);
+
+/* =====================================
+   NOTIFICACIONES ADMIN
+===================================== */
+
+app.get(
+
+'/notificaciones-admin',
+
+(req,res)=>{
+
+let notificaciones = [];
+
+/* EMPRENDIMIENTOS PENDIENTES */
+conexion.query(
+
+`
+SELECT COUNT(*) AS total
+FROM emprendedores
+WHERE estado='pendiente'
+`,
+
+(error,resultados)=>{
+
+if(
+!error &&
+resultados[0].total > 0
+){
+
+notificaciones.push({
+
+mensaje:
+'Tienes ' +
+
+resultados[0].total +
+
+' emprendimientos pendientes de aprobación'
+
+});
+
+}
+
+/* EVENTOS */
+conexion.query(
+
+`
+SELECT COUNT(*) AS total
+FROM eventos_culturales
+`,
+
+(error,eventos)=>{
+
+if(
+!error &&
+eventos[0].total > 0
+){
+
+notificaciones.push({
+
+mensaje:
+'Eventos registrados: ' +
+
+eventos[0].total
+
+});
+
+}
+
+/* LUGARES */
+conexion.query(
+
+`
+SELECT COUNT(*) AS total
+FROM lugares_turisticos
+`,
+
+(error,lugares)=>{
+
+if(
+!error &&
+lugares[0].total > 0
+){
+
+notificaciones.push({
+
+mensaje:
+'Lugares turísticos registrados: ' +
+
+lugares[0].total
+
+});
+
+}
+
+/* RESTAURANTES */
+conexion.query(
+
+`
+SELECT COUNT(*) AS total
+FROM restaurantes
+`,
+
+(error,restaurantes)=>{
+
+if(
+!error &&
+restaurantes[0].total > 0
+){
+
+notificaciones.push({
+
+mensaje:
+'Restaurantes registrados: ' +
+
+restaurantes[0].total
+
+});
+
+}
+
+res.json({
+
+ok:true,
+
+notificaciones
+
+});
+
+});
+
+});
+
+});
+
+});
+
+}
+);
+
+
 
 /* =========================
    SERVIDOR

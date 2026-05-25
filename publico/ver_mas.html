@@ -172,6 +172,20 @@ Calificaciones y comentarios
 
 </h4>
 
+<div
+id="mensajeLogin"
+class="
+alert
+alert-warning
+d-none
+mb-3
+"
+>
+
+Debes iniciar sesión para escribir una reseña.
+
+</div>
+
 <form
 
 id="formularioResena"
@@ -190,27 +204,7 @@ type="hidden"
 id="item_id"
 >
 
-<div class="mb-3">
 
-<label class="form-label">
-Tu nombre
-</label>
-
-<input
-
-type="text"
-
-id="nombre"
-
-class="form-control"
-
-placeholder="
-Anónimo
-"
-
->
-
-</div>
 
 <div class="mb-3">
 
@@ -318,6 +312,39 @@ window.location.search
 const id =
 parametros.get('id');
 
+/* SESION */
+async function verificarSesion(){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/sesion'
+
+);
+
+const datos =
+await respuesta.json();
+
+/* NO LOGIN */
+if(!datos.logueado){
+
+document.getElementById(
+'formularioResena'
+).style.display =
+'none';
+
+document.getElementById(
+'mensajeLogin'
+).classList.remove(
+'d-none'
+);
+
+}
+
+}
+
+verificarSesion();
+
 document.getElementById(
 'item_id'
 ).value = id;
@@ -350,6 +377,9 @@ return;
 
 const e =
 datos.emprendimiento;
+
+window.nombreEmprendimiento =
+e.nombre_emprendimiento;
 
 /* TITULO */
 document.getElementById(
@@ -536,7 +566,7 @@ try{
 const respuesta =
 await fetch(
 
-`http://localhost:3000/resenas/${id}`
+'http://localhost:3000/resenas-emprendimiento/' + id
 
 );
 
@@ -562,6 +592,7 @@ r.calificacion
 
 });
 
+
 if(resenas.length > 0){
 
 promedio =
@@ -573,9 +604,9 @@ resenas.length
 const titulo =
 document.getElementById(
 'titulo'
-);
+).innerHTML = `
 
-titulo.innerHTML += `
+${window.nombreEmprendimiento}
 
 <span class="
 badge
@@ -612,9 +643,11 @@ return;
 }
 
 /* MOSTRAR */
+let html = '';
+
 resenas.forEach(r=>{
 
-contenedor.innerHTML += `
+html += `
 
 <div class="
 list-group-item
@@ -660,7 +693,9 @@ ${r.comentario}
 text-muted
 ">
 
-${r.creado_en || ''}
+${new Date(
+r.creado_en
+).toLocaleString()}
 
 </small>
 
@@ -669,6 +704,8 @@ ${r.creado_en || ''}
 `;
 
 });
+
+contenedor.innerHTML = html;
 
 }catch(error){
 
@@ -681,6 +718,10 @@ console.log(error);
 cargarResenas();
 
 /* ENVIAR RESEÑA */
+document.getElementById(
+'formularioResena'
+).onsubmit = null;
+
 document.getElementById(
 'formularioResena'
 )
@@ -696,7 +737,7 @@ evento.preventDefault();
 const respuesta =
 await fetch(
 
-'http://localhost:3000/crear-resena',
+'http://localhost:3000/crear-resena-emprendimiento',
 
 {
 
@@ -710,13 +751,8 @@ headers:{
 },
 
 body:JSON.stringify({
-
+ 
 item_id:id,
-
-nombre:
-document.getElementById(
-'nombre'
-).value,
 
 calificacion:
 document.getElementById(

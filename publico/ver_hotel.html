@@ -16,13 +16,18 @@ rel="stylesheet"
 
 <link
 rel="stylesheet"
-href="styles.css"
->
+href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
 
 <link
 rel="stylesheet"
-href="https://unpkg.com/leaflet/dist/leaflet.css"
+href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
 />
+
+<link
+rel="stylesheet"
+href="styles.css"
+>
 
 <link
 rel="stylesheet"
@@ -33,13 +38,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 #mapa{
 
-height:350px;
+height:500px;
 
 width:100%;
 
-border-radius:10px;
+border-radius:20px;
 
-margin-top:15px;
+margin-top:30px;
 
 }
 
@@ -47,11 +52,9 @@ margin-top:15px;
 
 width:100%;
 
-max-height:350px;
+height:450px;
 
 object-fit:cover;
-
-border-radius:10px;
 
 }
 
@@ -63,58 +66,14 @@ border-radius:10px;
 
 <div id="navbar"></div>
 
-<div class="container mt-5 mb-5">
-
-<h2
-
-id="titulo"
-
-class="
-text-primary
-fw-bold
-text-center
-mb-4
-d-flex
-justify-content-center
-align-items-center
-gap-2
-flex-wrap
-"
-
-></h2>
-
-<div class="row">
-
-<!-- FOTO -->
 <div class="
-col-md-6
-mb-3
+container
+mt-5
+mb-5
 ">
 
-<img
-
-id="foto"
-
-class="foto-hotel"
-
-src="
-https://via.placeholder.com/700x450?text=Hotel
-"
-
->
-
-</div>
-
-<!-- INFO -->
-<div class="
-col-md-6
-">
-
-<div id="info"></div>
-
-</div>
-
-</div>
+<!-- HOTEL -->
+<div id="hotel"></div>
 
 <!-- MAPA -->
 <div id="mapa"></div>
@@ -145,7 +104,7 @@ Volver
 <!-- RESEÑAS -->
 <div class="
 row
-mt-4
+mt-5
 mb-4
 ">
 
@@ -164,6 +123,534 @@ Calificaciones y comentarios
 
 </h4>
 
+<div id="contenedorFormulario"></div>
+
+<div
+id="resenas"
+class="list-group"
+></div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="footer"></div>
+
+<script src="navbar.js"></script>
+
+<script src="footer.js"></script>
+
+<script src="
+https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+"></script>
+
+<script src="
+https://unpkg.com/leaflet/dist/leaflet.js
+"></script>
+
+<script src="
+https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js
+"></script>
+
+<script>
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const id =
+params.get('id');
+
+/* =====================================
+   HOTEL
+===================================== */
+
+async function cargarHotel(){
+
+const respuesta =
+await fetch(
+
+`http://localhost:3000/hotel/${id}`
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+document.getElementById(
+'hotel'
+).innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Hotel no encontrado
+
+</div>
+
+`;
+
+return;
+
+}
+
+const hotel =
+datos.hotel;
+
+window.nombreHotel =
+hotel.nombre;
+
+/* HTML */
+document.getElementById(
+'hotel'
+).innerHTML = `
+
+<div class="
+card
+shadow-lg
+border-0
+overflow-hidden
+">
+
+<img
+
+src="
+${
+hotel.imagen
+
+?
+
+hotel.imagen.startsWith('http')
+
+?
+
+hotel.imagen
+
+:
+
+'http://localhost:3000/' + hotel.imagen
+
+:
+
+'https://via.placeholder.com/1200x500'
+}
+"
+
+class="
+foto-hotel
+"
+
+>
+
+<div class="card-body p-4">
+
+<h1 class="
+fw-bold
+text-primary
+mb-3
+">
+
+${hotel.nombre}
+
+</h1>
+
+<p class="
+fs-5
+text-warning
+fw-bold
+">
+
+⭐ ${hotel.estrellas || '0'}
+
+</p>
+
+<p class="
+fs-5
+">
+
+${hotel.descripcion || ''}
+
+</p>
+
+<hr>
+
+<p>
+
+📞
+<strong>Teléfono:</strong>
+
+${hotel.telefono || 'No disponible'}
+
+</p>
+
+<p>
+
+🌐
+<strong>Sitio web:</strong>
+
+${
+hotel.sitio_web
+
+?
+
+`<a
+href="${hotel.sitio_web}"
+target="_blank"
+>
+
+${hotel.sitio_web}
+
+</a>`
+
+:
+
+'No disponible'
+}
+
+</p>
+
+<p>
+
+📍
+<strong>Dirección:</strong>
+
+${hotel.direccion || ''}
+
+</p>
+
+<p>
+
+🧭
+<strong>Indicaciones:</strong>
+
+${hotel.indicaciones || ''}
+
+</p>
+
+</div>
+
+</div>
+
+`;
+
+/* =====================================
+   MAPA
+===================================== */
+
+const mapa = L.map(
+'mapa'
+).setView(
+
+[
+hotel.latitud,
+hotel.longitud
+],
+
+15
+
+);
+
+L.tileLayer(
+
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
+{
+attribution:
+'© OpenStreetMap'
+}
+
+).addTo(mapa);
+
+/* UBICACION USUARIO */
+navigator.geolocation.getCurrentPosition(
+
+(posicion)=>{
+
+const latUsuario =
+posicion.coords.latitude;
+
+const lngUsuario =
+posicion.coords.longitude;
+
+/* MARCADOR HOTEL */
+L.marker(
+
+[
+hotel.latitud,
+hotel.longitud
+]
+
+)
+
+.addTo(mapa)
+
+.bindPopup(
+hotel.nombre
+)
+
+.openPopup();
+
+/* MARCADOR USUARIO */
+L.marker(
+
+[
+latUsuario,
+lngUsuario
+]
+
+)
+
+.addTo(mapa)
+
+.bindPopup(
+'Tu ubicación'
+);
+
+/* RUTA */
+L.Routing.control({
+
+waypoints:[
+
+L.latLng(
+latUsuario,
+lngUsuario
+),
+
+L.latLng(
+hotel.latitud,
+hotel.longitud
+)
+
+],
+
+routeWhileDragging:false,
+
+show:false,
+
+addWaypoints:false,
+
+draggableWaypoints:false,
+
+fitSelectedRoutes:true
+
+})
+
+.addTo(mapa);
+
+},
+
+()=>{
+
+console.log(
+'No se pudo obtener ubicación'
+);
+
+}
+
+);
+
+}
+
+/* =====================================
+   RESEÑAS
+===================================== */
+
+async function cargarResenas(){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/resenas-hotel/' + id
+
+);
+
+const resenas =
+await respuesta.json();
+
+const contenedor =
+document.getElementById(
+'resenas'
+);
+
+contenedor.innerHTML = '';
+
+let promedio = 0;
+
+resenas.forEach(r=>{
+
+promedio += Number(
+r.calificacion
+);
+
+});
+
+
+if(resenas.length > 0){
+
+promedio =
+(
+promedio /
+resenas.length
+).toFixed(1);
+
+document.querySelector(
+'#hotel h1'
+).innerHTML = `
+
+${window.nombreHotel}
+
+<span class="
+badge
+bg-warning
+text-dark
+ms-2
+">
+
+${promedio} ★
+(${resenas.length})
+
+</span>
+
+`;
+
+}
+
+if(resenas.length === 0){
+
+contenedor.innerHTML = `
+
+<p class="
+text-muted
+">
+
+Aún no hay reseñas
+
+</p>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+resenas.forEach(r=>{
+
+html += `
+
+<div class="
+list-group-item
+mb-3
+">
+
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-1
+">
+
+<strong>
+
+${r.nombre}
+
+</strong>
+
+<span class="
+badge
+bg-warning
+text-dark
+">
+
+${r.calificacion} ★
+
+</span>
+
+</div>
+
+<p class="
+mb-1
+">
+
+${r.comentario}
+
+</p>
+
+<small class="
+text-muted
+">
+
+${new Date(r.creado_en).toLocaleString()}
+
+</small>
+
+</div>
+
+`;
+
+});
+
+contenedor.innerHTML = html;
+
+}
+
+/* =====================================
+   SESION
+===================================== */
+
+async function verificarSesion(){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/sesion-actual',
+
+{
+credentials:'include'
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+const contenedor =
+document.getElementById(
+'contenedorFormulario'
+);
+
+/* NO LOGIN */
+if(!datos.logueado){
+
+contenedor.innerHTML = `
+
+<div class="
+alert
+alert-warning
+text-center
+">
+
+Debes iniciar sesión para escribir una reseña.
+
+</div>
+
+`;
+
+return;
+
+}
+
+/* FORMULARIO */
+contenedor.innerHTML = `
+
 <form
 
 id="formularioResena"
@@ -175,28 +662,6 @@ mb-3
 "
 
 >
-
-<div class="mb-3">
-
-<label class="form-label">
-Tu nombre
-</label>
-
-<input
-
-type="text"
-
-id="nombre"
-
-class="form-control"
-
-placeholder="
-Anónimo
-"
-
->
-
-</div>
 
 <div class="mb-3">
 
@@ -277,341 +742,13 @@ Enviar reseña
 
 </form>
 
-<div
-id="resenas"
-class="list-group"
-></div>
-
-</div>
-
-</div>
-
-</div>
-
-<div id="footer"></div>
-
-<script src="navbar.js"></script>
-<script src="footer.js"></script>
-
-<script src="
-https://unpkg.com/leaflet/dist/leaflet.js
-"></script>
-
-<script>
-
-/* URL */
-const parametros =
-new URLSearchParams(
-window.location.search
-);
-
-const id =
-parametros.get('id');
-
-let mapa;
-
-/* DATOS */
-async function cargarHotel(){
-
-const respuesta =
-await fetch(
-
-`http://localhost:3000/hotel/${id}`
-
-);
-
-const datos =
-await respuesta.json();
-
-if(!datos.ok){
-
-document.getElementById(
-'titulo'
-).innerHTML =
-'Hotel no encontrado';
-
-return;
-
-}
-
-const h =
-datos.hotel;
-
-/* TITULO */
-document.getElementById(
-'titulo'
-).innerHTML =
-
-`${h.nombre}`;
-
-/* FOTO */
-document.getElementById(
-'foto'
-).src =
-
-h.imagen
-
-?
-
-'http://localhost:3000/' + h.imagen
-
-:
-
-'https://via.placeholder.com/700x450?text=Hotel';
-
-/* INFO */
-document.getElementById(
-'info'
-).innerHTML = `
-
-<p>
-
-<strong>
-Descripción:
-</strong>
-
-<br>
-
-${h.descripcion || 'No disponible'}
-
-</p>
-
-<p>
-
-<strong>
-Dirección:
-</strong>
-
-<br>
-
-${h.direccion || 'No disponible'}
-
-</p>
-
-${
-h.latitud && h.longitud
-
-?
-
-`
-
-<p>
-
-<strong>
-Latitud:
-</strong>
-
-${h.latitud}
-
-</p>
-
-<p>
-
-<strong>
-Longitud:
-</strong>
-
-${h.longitud}
-
-</p>
-
-`
-
-:
-
-''
-}
-
 `;
 
-/* MAPA */
-if(
-h.latitud &&
-h.longitud
-){
-
-mapa = L.map('mapa').setView(
-
-[
-h.latitud,
-h.longitud
-],
-
-15
-
-);
-
-L.tileLayer(
-
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-
-{
-
-attribution:'© OpenStreetMap'
-
-}
-
-).addTo(mapa);
-
-L.marker(
-
-[
-h.latitud,
-h.longitud
-]
-
-)
-
-.addTo(mapa)
-
-.bindPopup(
-h.nombre
-)
-
-.openPopup();
-
-}
-
-}
-
-cargarHotel();
-
-/* RESEÑAS */
-async function cargarResenas(){
-
-const respuesta =
-await fetch(
-
-`http://localhost:3000/resenas-hotel/${id}`
-
-);
-
-const resenas =
-await respuesta.json();
-
-const contenedor =
+/* EVENTO */
 document.getElementById(
-'resenas'
-);
+'formularioResena'
+).onsubmit = null;
 
-contenedor.innerHTML = '';
-
-let promedio = 0;
-
-resenas.forEach(r=>{
-
-promedio += Number(
-r.calificacion
-);
-
-});
-
-if(resenas.length > 0){
-
-promedio =
-(
-promedio /
-resenas.length
-).toFixed(1);
-
-document.getElementById(
-'titulo'
-).innerHTML += `
-
-<span class="
-badge
-bg-warning
-text-dark
-">
-
-${promedio} ★
-(${resenas.length})
-
-</span>
-
-`;
-
-}
-
-if(resenas.length === 0){
-
-contenedor.innerHTML = `
-
-<p class="
-text-muted
-">
-
-Aún no hay reseñas
-
-</p>
-
-`;
-
-return;
-
-}
-
-resenas.forEach(r=>{
-
-contenedor.innerHTML += `
-
-<div class="
-list-group-item
-mb-3
-">
-
-<div class="
-d-flex
-justify-content-between
-align-items-center
-mb-1
-">
-
-<strong>
-
-${r.nombre || 'Anónimo'}
-
-</strong>
-
-<span class="
-badge
-bg-warning
-text-dark
-">
-
-${r.calificacion} ★
-
-</span>
-
-</div>
-
-<p class="
-mb-1
-">
-
-${r.comentario}
-
-</p>
-
-<small class="
-text-muted
-">
-
-${r.creado_en || ''}
-
-</small>
-
-</div>
-
-`;
-
-});
-
-}
-
-cargarResenas();
-
-/* ENVIAR */
 document.getElementById(
 'formularioResena'
 )
@@ -633,6 +770,8 @@ await fetch(
 
 method:'POST',
 
+credentials:'include',
+
 headers:{
 
 'Content-Type':
@@ -643,11 +782,6 @@ headers:{
 body:JSON.stringify({
 
 item_id:id,
-
-nombre:
-document.getElementById(
-'nombre'
-).value,
 
 calificacion:
 document.getElementById(
@@ -676,15 +810,31 @@ cargarResenas();
 
 }
 
+else{
+
+alert(
+resultado.mensaje
+);
+
+}
+
 }
 
 );
 
-</script>
+}
 
-<script src="
-https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
-"></script>
+/* =====================================
+   INICIAR
+===================================== */
+
+cargarHotel();
+
+cargarResenas();
+
+verificarSesion();
+
+</script>
 
 </body>
 </html>

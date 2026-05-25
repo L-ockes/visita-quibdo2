@@ -164,6 +164,20 @@ Calificaciones y comentarios
 
 </h4>
 
+<div
+id="mensajeLogin"
+class="
+alert
+alert-warning
+d-none
+mb-3
+"
+>
+
+Debes iniciar sesión para escribir una reseña.
+
+</div>
+
 <form
 
 id="formularioResena"
@@ -176,27 +190,7 @@ mb-3
 
 >
 
-<div class="mb-3">
 
-<label class="form-label">
-Tu nombre
-</label>
-
-<input
-
-type="text"
-
-id="nombre"
-
-class="form-control"
-
-placeholder="
-Anónimo
-"
-
->
-
-</div>
 
 <div class="mb-3">
 
@@ -308,6 +302,39 @@ window.location.search
 const id =
 parametros.get('id');
 
+/* SESION */
+async function verificarSesion(){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/sesion'
+
+);
+
+const datos =
+await respuesta.json();
+
+/* NO LOGIN */
+if(!datos.logueado){
+
+document.getElementById(
+'formularioResena'
+).style.display =
+'none';
+
+document.getElementById(
+'mensajeLogin'
+).classList.remove(
+'d-none'
+);
+
+}
+
+}
+
+verificarSesion();
+
 let mapa;
 
 /* DATOS */
@@ -336,6 +363,9 @@ return;
 
 const l =
 datos.lugar;
+
+window.nombreLugar =
+l.nombre;
 
 /* TITULO */
 document.getElementById(
@@ -481,9 +511,7 @@ async function cargarResenas(){
 
 const respuesta =
 await fetch(
-
-`http://localhost:3000/resenas-lugar/${id}`
-
+'http://localhost:3000/resenas-lugar/' + id
 );
 
 const resenas =
@@ -508,6 +536,7 @@ r.calificacion
 
 });
 
+
 if(resenas.length > 0){
 
 promedio =
@@ -518,7 +547,9 @@ resenas.length
 
 document.getElementById(
 'titulo'
-).innerHTML += `
+).innerHTML = `
+
+${window.nombreLugar}
 
 <span class="
 badge
@@ -555,9 +586,11 @@ return;
 }
 
 /* MOSTRAR */
+let html = '';
+
 resenas.forEach(r=>{
 
-contenedor.innerHTML += `
+html += `
 
 <div class="
 list-group-item
@@ -601,7 +634,9 @@ ${r.comentario}
 text-muted
 ">
 
-${r.creado_en || ''}
+${new Date(
+r.creado_en
+).toLocaleString()}
 
 </small>
 
@@ -611,11 +646,17 @@ ${r.creado_en || ''}
 
 });
 
+contenedor.innerHTML = html;
+
 }
 
 cargarResenas();
 
 /* ENVIAR */
+document.getElementById(
+'formularioResena'
+).onsubmit = null;
+
 document.getElementById(
 'formularioResena'
 )
@@ -648,10 +689,7 @@ body:JSON.stringify({
 
 item_id:id,
 
-nombre:
-document.getElementById(
-'nombre'
-).value,
+
 
 calificacion:
 document.getElementById(
