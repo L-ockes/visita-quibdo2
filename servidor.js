@@ -1,5 +1,14 @@
 const express = require('express');
 const app = express();
+const editarEmprendimiento =
+require(
+'./rutas/editarEmprendimiento'
+);
+
+const path = require('path');
+const multer = require('multer');
+const bcrypt = require('bcrypt');
+const session = require('express-session');
 app.use(express.json());
 
 app.use(express.urlencoded({
@@ -7,14 +16,7 @@ app.use(express.urlencoded({
 extended:true
 
 }));
-const path = require('path');
-const multer = require('multer');
-const bcrypt = require('bcrypt');
-const session = require('express-session');
-
 const conexion = require('./configuracion/conexion');
-
-
 
 /* =========================
    CONFIGURACION
@@ -30,6 +32,14 @@ app.use(session({
     resave:false,
     saveUninitialized:false
 }));
+
+app.use(
+
+editarEmprendimiento(
+conexion
+)
+
+);
 
 /* =========================
    MULTER
@@ -606,169 +616,6 @@ mensaje:
 );
 
 /* =====================================
-   EDITAR EMPRENDIMIENTO
-===================================== */
-
-app.post(
-
-'/editar-emprendimiento',
-
-subirFoto.single('foto'),
-
-(req,res)=>{
-
-/* LOGIN */
-if(!req.session.usuario){
-
-return res.json({
-
-ok:false,
-
-mensaje:'Debes iniciar sesión'
-
-});
-
-}
-
-const idUsuario =
-req.session.usuario.id;
-
-/* DATOS */
-const {
-
-nombre_emprendimiento,
-categoria,
-categoria_nueva,
-descripcion,
-ubicacion,
-horarios,
-servicios,
-servicio_nuevo,
-servicios_extra
-
-} = req.body;
-
-/* CATEGORIA */
-const categoriaFinal =
-
-categoria === 'Otro'
-
-?
-
-categoria_nueva
-
-:
-
-categoria;
-
-/* SERVICIO */
-const servicioFinal =
-
-servicios === 'Otro'
-
-?
-
-servicio_nuevo
-
-:
-
-servicios;
-
-/* FOTO */
-let foto = null;
-
-if(req.file){
-
-foto =
-'fotos/' + req.file.filename;
-
-}
-
-/* SQL */
-let sql = `
-UPDATE emprendedores
-SET
-
-nombre_emprendimiento=?,
-categoria=?,
-descripcion=?,
-ubicacion=?,
-horarios=?,
-servicios=?,
-servicios_extra=?
-`;
-
-let valores = [
-
-nombre_emprendimiento,
-categoriaFinal,
-descripcion,
-ubicacion,
-horarios,
-servicioFinal,
-servicios_extra
-
-];
-
-/* FOTO */
-if(foto){
-
-sql += `,
-foto=?
-`;
-
-valores.push(foto);
-
-}
-
-/* WHERE */
-sql += `
-WHERE id=?
-`;
-
-valores.push(idUsuario);
-
-/* GUARDAR */
-conexion.query(
-
-sql,
-
-valores,
-
-(error)=>{
-
-if(error){
-
-console.log(error);
-
-return res.json({
-
-ok:false,
-
-mensaje:error.sqlMessage
-
-});
-
-}
-
-res.json({
-
-ok:true,
-
-mensaje:
-'Emprendimiento actualizado'
-
-});
-
-}
-
-);
-
-}
-
-);
-
-/* =====================================
    DATOS USUARIO
 ===================================== */
 
@@ -990,18 +837,37 @@ app.post('/crear-emprendimiento', subirFoto.single('foto'), (req,res)=>{
             });
         }
 
-        /* CAMBIAR ROL */
-           conexion.query(
+        /* =====================================
+   CAMBIAR ROL A EMPRENDEDOR
+===================================== */
 
-           `
-           UPDATE usuarios
-           SET rol='emprendedor'
-           WHERE id=?
-            `,
+conexion.query(
 
-           [req.session.usuario.id]
+`
+UPDATE usuarios
+SET rol='emprendedor'
+WHERE id=?
+`,
 
-        );
+[req.session.usuario.id],
+
+(error)=>{
+
+if(error){
+
+console.log(
+'ERROR CAMBIAR ROL:',
+error
+);
+
+}
+
+}
+);
+
+/* ACTUALIZAR SESION */
+req.session.usuario.rol =
+'emprendedor';
 
         res.json({
             ok:true,
@@ -1034,9 +900,10 @@ app.get('/emprendimientos',(req,res)=>{
     if(busqueda !== ''){
 
         sql += `
-            WHERE
+            AND (
                 nombre_emprendimiento LIKE ?
                 OR descripcion LIKE ?
+            )
         `;
 
         const like = `%${busqueda}%`;
@@ -1123,6 +990,54 @@ app.get('/emprendimiento',(req,res)=>{
 
 });
 
+/* =====================================
+   IMAGENES EMPRENDIMIENTO
+===================================== */
+
+app.get(
+
+'/imagenes-emprendimiento/:id',
+
+(req,res)=>{
+
+const id =
+req.params.id;
+
+/* SQL */
+conexion.query(
+
+`
+SELECT *
+
+FROM imagenes_emprendedores
+
+WHERE emprendimiento_id=?
+
+ORDER BY id ASC
+`,
+
+[id],
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json([]);
+
+}
+
+res.json(resultados);
+
+}
+
+);
+
+}
+
+);
+
 /* =========================
    VER EMPRENDIMIENTO
 ========================= */
@@ -1153,6 +1068,55 @@ app.get('/emprendimiento/:id',(req,res)=>{
             return res.json({ ok:false });
         }
 
+        const emprendimiento =
+resultados[0];
+
+/* =====================================
+   IMAGENES EXTRA
+===================================== */
+
+conexion.query(
+
+`
+SELECT *
+FROM imagenes_emprendedores
+WHERE emprendimiento_id=?
+ORDER BY id ASC
+`,
+
+[id],
+
+(errorImagenes,imagenes)=>{
+
+if(errorImagenes){
+
+console.log(errorImagenes);
+
+return res.json({
+ok:false
+});
+
+}
+
+/* AGREGAR */
+emprendimiento.imagenes_extra =
+imagenes;
+
+/* RESPUESTA */
+res.json({
+
+ok:true,
+
+emprendimiento
+
+});
+
+}
+
+);
+
+return;
+
         res.json({
             ok:true,
             emprendimiento:resultados[0]
@@ -1161,8 +1125,6 @@ app.get('/emprendimiento/:id',(req,res)=>{
     });
 
 });
-
-
 
 /* =========================
    HOTELES
@@ -3525,7 +3487,10 @@ ok:false
 
 }
 
-/* CAMBIAR ROL */
+/* =====================================
+   CAMBIAR ROL A USUARIO
+===================================== */
+
 conexion.query(
 
 `
@@ -3534,9 +3499,31 @@ SET rol='usuario'
 WHERE id=?
 `,
 
-[id]
+[id],
 
+(error)=>{
+
+if(error){
+
+console.log(
+'ERROR CAMBIAR ROL:',
+error
 );
+
+}
+
+}
+);
+
+/* SESION */
+if(
+req.session.usuario.id == id
+){
+
+req.session.usuario.rol =
+'usuario';
+
+}
 
 res.json({
 
@@ -4474,6 +4461,7 @@ valores.push(
 );
 
 }
+
 
 /* WHERE */
 sql += `
@@ -5539,6 +5527,94 @@ notificaciones
 });
 
 }
+);
+
+/* =====================================
+   RECUPERAR PASSWORD
+===================================== */
+
+app.post(
+
+'/recuperar-password',
+
+async (req,res)=>{
+
+const correo =
+req.body.correo;
+
+const nueva =
+req.body.nueva;
+
+/* ENCRIPTAR */
+const hash =
+await bcrypt.hash(
+nueva,
+10
+);
+
+/* SQL */
+const sql = `
+
+UPDATE usuarios
+
+SET contrasena = ?
+
+WHERE correo = ?
+
+`;
+
+/* CONSULTA */
+conexion.query(
+
+sql,
+
+[
+hash,
+correo
+],
+
+(error,resultado)=>{
+
+if(error){
+
+return res.json({
+
+ok:false,
+
+mensaje:
+'Error servidor'
+
+});
+
+}
+
+if(
+resultado.affectedRows === 0
+){
+
+return res.json({
+
+ok:false,
+
+mensaje:
+'Correo no encontrado'
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+
 );
 
 

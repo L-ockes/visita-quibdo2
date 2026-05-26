@@ -31,17 +31,75 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 <style>
 
-.foto-negocio{
+.card{
+
+transition:0.3s;
+
+}
+
+.card:hover{
+
+transform:translateY(-3px);
+
+}
+
+/* =====================================
+   IMAGEN PRINCIPAL
+===================================== */
+
+#foto{
 
 width:100%;
+height:550px;
 
-max-width:500px;
+object-fit:contain;
 
-height:auto;
+background:#fff;
+
+border-radius:20px;
+
+}
+
+/* =====================================
+   MINIATURAS
+===================================== */
+
+.miniaturas{
+
+display:flex;
+
+gap:10px;
+
+margin-top:15px;
+
+flex-wrap:wrap;
+
+justify-content:center;
+
+}
+
+.miniatura{
+
+width:90px;
+height:90px;
+
+object-fit:cover;
 
 border-radius:15px;
 
-object-fit:cover;
+cursor:pointer;
+
+border:3px solid transparent;
+
+transition:0.2s;
+
+}
+
+.miniatura:hover{
+
+transform:scale(1.05);
+
+border-color:#0d6efd;
 
 }
 
@@ -93,27 +151,94 @@ flex-wrap
 
 ></h2>
 
+<div class="row">
+
 <div class="
-row
-vermas-align
+col-12
+mb-4
 ">
 
-<!-- FOTO -->
 <div class="
-col-md-6
-text-center
-mb-4
+card
+shadow-lg
+border-0
+rounded-4
+overflow-hidden
 ">
 
 <img
 
 id="foto"
 
-class="foto-negocio"
+class="
+w-100
+"
 
-src="https://via.placeholder.com/500x350?text=Sin+Imagen"
+style="
+max-height:550px;
+object-fit:cover;
+"
+
+src="
+https://via.placeholder.com/1200x500?text=Sin+Imagen
+"
 
 >
+
+<div
+id="miniaturas"
+class="miniaturas"
+></div>
+
+<div class="
+p-4
+text-center
+">
+
+<div
+id="calificacionBox"
+></div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="
+col-12
+">
+
+<div class="
+card
+shadow-lg
+border-0
+rounded-4
+p-4
+"
+>
+
+<h4 class="
+fw-bold
+text-primary
+mb-4
+">
+
+Información del emprendimiento
+
+</h4>
+
+<div
+id="info"
+class="
+row
+g-4
+"
+></div>
+
+</div>
+
+</div>
 
 </div>
 
@@ -121,8 +246,6 @@ src="https://via.placeholder.com/500x350?text=Sin+Imagen"
 <div class="
 col-md-6
 ">
-
-<div id="info"></div>
 
 </div>
 
@@ -381,6 +504,8 @@ datos.emprendimiento;
 window.nombreEmprendimiento =
 e.nombre_emprendimiento;
 
+
+
 /* TITULO */
 document.getElementById(
 'titulo'
@@ -388,7 +513,10 @@ document.getElementById(
 
 `${e.nombre_emprendimiento}`;
 
-/* FOTO */
+/* =====================================
+   IMAGEN PRINCIPAL
+===================================== */
+
 document.getElementById(
 'foto'
 ).src =
@@ -403,122 +531,357 @@ e.foto
 
 'https://via.placeholder.com/500x350?text=Sin+Imagen';
 
+/* =====================================
+   MINIATURAS
+===================================== */
+
+const miniaturas =
+document.getElementById(
+'miniaturas'
+);
+
+miniaturas.innerHTML = '';
+
+/* IMAGEN PRINCIPAL */
+if(e.foto){
+
+const img =
+document.createElement('img');
+
+img.src = e.foto;
+
+img.className =
+'miniatura';
+
+img.onclick = ()=>{
+
+document.getElementById(
+'foto'
+).src = e.foto;
+
+};
+
+miniaturas.appendChild(img);
+
+}
+
+/* IMAGENES EXTRA */
+if(
+e.imagenes_extra
+&&
+e.imagenes_extra.length > 0
+){
+
+e.imagenes_extra.forEach(imagen=>{
+
+const img =
+document.createElement('img');
+
+img.src = imagen.imagen;
+
+img.className =
+'miniatura';
+
+img.onclick = ()=>{
+
+document.getElementById(
+'foto'
+).src = imagen.imagen;
+
+};
+
+miniaturas.appendChild(img);
+
+});
+
+}
+
 /* INFORMACION */
 document.getElementById(
 'info'
 ).innerHTML = `
 
-<p>
+<div class="col-md-6">
 
-<strong>
-Categoría:
-</strong>
+<div class="
+bg-light
+rounded-4
+p-3
+h-100
+">
+
+<p class="
+fw-bold
+text-primary
+mb-2
+">
+
+<i class="
+fa-solid
+fa-layer-group
+me-2
+"></i>
+
+Categoría
+
+</p>
+
+<p class="mb-0">
 
 ${e.categoria || 'No disponible'}
 
 </p>
 
-<p>
+</div>
 
-<strong>
-Ubicación:
-</strong>
+</div>
+
+<div class="col-md-6">
+
+<div class="
+bg-light
+rounded-4
+p-3
+h-100
+">
+
+<p class="
+fw-bold
+text-danger
+mb-2
+">
+
+<i class="
+fa-solid
+fa-location-dot
+me-2
+"></i>
+
+Ubicación
+
+</p>
+
+<p class="mb-0">
 
 ${e.ubicacion || 'No disponible'}
 
 </p>
 
-<p>
+</div>
 
-<strong>
-Descripción:
-</strong>
+</div>
 
-<br>
+<div class="col-md-6">
 
-${e.descripcion || 'No disponible'}
+<div class="
+bg-light
+rounded-4
+p-3
+h-100
+">
+
+<p class="
+fw-bold
+text-success
+mb-2
+">
+
+<i class="
+fa-solid
+fa-clock
+me-2
+"></i>
+
+Horarios
 
 </p>
 
-<p>
-
-<strong>
-Horarios:
-</strong>
-
-<br>
+<p class="mb-0">
 
 ${e.horarios || 'No disponible'}
 
 </p>
 
-<p>
+</div>
 
-<strong>
-Servicios:
-</strong>
+</div>
 
-<br>
+<div class="col-md-6">
+
+<div class="
+bg-light
+rounded-4
+p-3
+h-100
+">
+
+<p class="
+fw-bold
+text-warning
+mb-2
+">
+
+<i class="
+fa-solid
+fa-handshake
+me-2
+"></i>
+
+Servicios
+
+</p>
+
+<p class="mb-0">
 
 ${e.servicios || 'No disponible'}
 
 </p>
 
-${
-e.servicios_extra
+</div>
 
-?
+</div>
 
-`
+<div class="col-md-6">
 
-<p>
+<div class="
+bg-light
+rounded-4
+p-3
+h-100
+">
 
-<strong>
-Servicios adicionales:
-</strong>
+<p class="
+fw-bold
+text-secondary
+mb-2
+">
 
-<br>
+<i class="
+fa-solid
+fa-user
+me-2
+"></i>
 
-${e.servicios_extra}
+Propietario
 
 </p>
 
-`
-
-:
-
-''
-}
-
-<p>
-
-<strong>
-Propietario:
-</strong>
+<p class="mb-0">
 
 ${e.usuario_nombre || 'No disponible'}
 
 </p>
 
-<p>
+</div>
 
-<strong>
-Teléfono:
-</strong>
+</div>
+
+<div class="col-md-6">
+
+<div class="
+bg-light
+rounded-4
+p-3
+h-100
+">
+
+<p class="
+fw-bold
+text-success
+mb-2
+">
+
+<i class="
+fa-solid
+fa-phone
+me-2
+"></i>
+
+Teléfono
+
+</p>
+
+<p class="mb-0">
 
 ${e.usuario_telefono || 'No disponible'}
 
 </p>
 
-<p>
+</div>
 
-<strong>
-Correo:
-</strong>
+</div>
+
+<div class="col-12">
+
+<div class="
+bg-light
+rounded-4
+p-4
+"
+>
+
+<p class="
+fw-bold
+text-info
+mb-2
+">
+
+<i class="
+fa-solid
+fa-align-left
+me-2
+"></i>
+
+Descripción
+
+</p>
+
+<p class="mb-0">
+
+${e.descripcion || 'No disponible'}
+
+</p>
+
+</div>
+
+</div>
+
+<div class="col-12">
+
+<div class="
+bg-light
+rounded-4
+p-4
+"
+>
+
+<p class="
+fw-bold
+text-danger
+mb-2
+">
+
+<i class="
+fa-solid
+fa-envelope
+me-2
+"></i>
+
+Correo
+
+</p>
+
+<p class="mb-0">
 
 ${e.usuario_correo || 'No disponible'}
 
 </p>
+
+</div>
+
+</div>
+
+<div class="col-12">
 
 <a
 
@@ -532,7 +895,10 @@ class="
 btn
 btn-success
 w-100
-mt-3
+py-3
+fw-bold
+rounded-4
+shadow-sm
 "
 
 >
@@ -540,11 +906,14 @@ mt-3
 <i class="
 fa-brands
 fa-whatsapp
+me-2
 "></i>
 
 Contactar por WhatsApp
 
 </a>
+
+</div>
 
 `;
 
@@ -601,23 +970,27 @@ promedio /
 resenas.length
 ).toFixed(1);
 
-const titulo =
+/* CALIFICACION */
 document.getElementById(
-'titulo'
+'calificacionBox'
 ).innerHTML = `
 
-${window.nombreEmprendimiento}
-
-<span class="
-badge
+<div class="
+d-inline-block
 bg-warning
 text-dark
+fw-bold
+px-4
+py-2
+rounded-3
+shadow-sm
+fs-5
 ">
 
 ${promedio} ★
-(${resenas.length})
+(${resenas.length} reseñas)
 
-</span>
+</div>
 
 `;
 
