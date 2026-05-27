@@ -10,7 +10,7 @@ favicon.rel = 'icon';
 favicon.type = 'image/png';
 
 favicon.href =
-'/fotos/Mascota visita quibdó.png';
+'/fotos/mascota';
 
 document.head.appendChild(
 favicon
@@ -186,7 +186,7 @@ href="index.html">
 
 <img
 
-src="/fotos/Mascota visita quibdó.png"
+src="/fotos/mascota.png"
 
 width="50"
 
@@ -497,7 +497,7 @@ datos.usuario.rol === 'superadmin'
 dropdown-item
 "
 
-href="Panel_Superadmin.html">
+href="panel_superadmin.html">
 
 Panel SuperAdmin
 
