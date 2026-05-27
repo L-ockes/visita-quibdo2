@@ -3,13 +3,15 @@ const mysql = require('mysql2');
 /* CONEXIÓN MYSQL */
 const conexion = mysql.createConnection({
 
-    host: 'localhost',
+       host:process.env.DB_HOST,
 
-    user: 'root',
+       user:process.env.DB_USER,
 
-    password: 'Visita+2026',
+       password:process.env.DB_PASSWORD,
 
-    database: 'visita_quibdo'
+       database:process.env.DB_NAME,
+
+       port:process.env.DB_PORT
 
 });
 
