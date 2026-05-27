@@ -21,23 +21,4 @@ queueLimit: 0
 
 });
 
-/* VERIFICAR */
-conexion.connect((error)=>{
-
-    if(error){
-
-        console.log(
-            'Error de conexión',
-            error
-        );
-
-        return;
-    }
-
-    console.log(
-        'Conexión exitosa a MySQL'
-    );
-
-});
-
 module.exports = conexion;
