@@ -328,7 +328,7 @@ try{
 const respuesta =
 await fetch(
 
-'http://localhost:3000/editar-emprendimiento/' + id
+'https://visita-quibdo2.onrender.com/editar-emprendimiento/' + id
 
 )
 
@@ -401,7 +401,7 @@ id="imagenPrincipal"
 src="${
 emprendimiento.foto
 ?
-'http://localhost:3000/' + emprendimiento.foto
+'https://visita-quibdo2.onrender.com/' + emprendimiento.foto
 :
 'https://via.placeholder.com/1200x500?text=Sin+Imagen'
 }"
@@ -753,7 +753,7 @@ imagenes.push({
 tipo:'principal',
 
 src:
-'http://localhost:3000/' +
+'https://visita-quibdo2.onrender.com/' +
 emprendimiento.foto
 
 });
@@ -764,7 +764,7 @@ emprendimiento.foto
 const respuesta =
 await fetch(
 
-`http://localhost:3000/imagenes-emprendimiento/${emprendimiento.id}`
+`https://visita-quibdo2.onrender.com/imagenes-emprendimiento/${emprendimiento.id}`
 
 );
 
@@ -781,7 +781,7 @@ id:img.id,
 tipo:'extra',
 
 src:
-'http://localhost:3000/' +
+'https://visita-quibdo2.onrender.com/' +
 img.imagen,
 
 ruta:
@@ -1019,7 +1019,7 @@ try{
 const respuesta =
 await fetch(
 
-'http://localhost:3000/eliminar-imagen-emprendimiento/' + imagen.id,
+'https://visita-quibdo2.onrender.com/eliminar-imagen-emprendimiento/' + imagen.id,
 
 {
 method:'DELETE'
@@ -1224,7 +1224,7 @@ img
 const respuesta =
 await fetch(
 
-'http://localhost:3000/editar-emprendimiento',
+'https://visita-quibdo2.onrender.com/editar-emprendimiento',
 
 {
 

@@ -359,7 +359,7 @@ try{
 const respuesta =
 await fetch(
 
-'http://localhost:3000/usuario',
+'https://visita-quibdo2.onrender.com/usuario',
 
 {
 
@@ -407,7 +407,7 @@ datos.usuario.foto
 
 ?
 
-'http://localhost:3000/' + datos.usuario.foto
+'https://visita-quibdo2.onrender.com/' + datos.usuario.foto
 
 :
 
@@ -521,7 +521,7 @@ dropdown-item
 text-danger
 "
 
-href="http://localhost:3000/logout">
+href="https://visita-quibdo2.onrender.com/logout">
 
 Cerrar sesión
 

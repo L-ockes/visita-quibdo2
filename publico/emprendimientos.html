@@ -118,7 +118,7 @@ async function cargarCategorias(){
 
 const respuesta =
 await fetch(
-'http://localhost:3000/categorias'
+'https://visita-quibdo2.onrender.com/categorias'
 );
 
 const categorias =
@@ -165,7 +165,7 @@ document.getElementById(
 const respuesta =
 await fetch(
 
-`http://localhost:3000/emprendimientos?q=${q}&categoria=${categoria}`
+`https://visita-quibdo2.onrender.com/emprendimientos?q=${q}&categoria=${categoria}`
 
 );
 
@@ -225,7 +225,7 @@ e.foto
 
 ?
 
-'http://localhost:3000/' + e.foto
+'https://visita-quibdo2.onrender.com/' + e.foto
 
 :
 

@@ -666,7 +666,7 @@ async function verificarSesion(){
 const respuesta =
 await fetch(
 
-'http://localhost:3000/sesion'
+'https://visita-quibdo2.onrender.com/sesion'
 
 );
 
@@ -721,7 +721,7 @@ try{
 const respuesta =
 await fetch(
 
-`http://localhost:3000/emprendimiento/${id}`
+`https://visita-quibdo2.onrender.com/emprendimiento/${id}`
 
 );
 
@@ -771,7 +771,7 @@ e.foto
 
 ?
 
-'http://localhost:3000/' + e.foto
+'https://visita-quibdo2.onrender.com/' + e.foto
 
 :
 
@@ -795,7 +795,7 @@ const img =
 document.createElement('img');
 
 img.src =
-'http://localhost:3000/' + e.foto;
+'https://visita-quibdo2.onrender.com/' + e.foto;
 
 img.className =
 'miniatura';
@@ -806,7 +806,7 @@ document.getElementById(
 'imagenPrincipal'
 ).src =
 
-'http://localhost:3000/' + e.foto;
+'https://visita-quibdo2.onrender.com/' + e.foto;
 
 };
 
@@ -827,7 +827,7 @@ const img =
 document.createElement('img');
 
 img.src =
-'http://localhost:3000/' +
+'https://visita-quibdo2.onrender.com/' +
 imagen.imagen;
 
 img.className =
@@ -839,7 +839,7 @@ document.getElementById(
 'imagenPrincipal'
 ).src =
 
-'http://localhost:3000/' +
+'https://visita-quibdo2.onrender.com/' +
 imagen.imagen;
 
 };
@@ -1189,7 +1189,7 @@ try{
 const respuesta =
 await fetch(
 
-'http://localhost:3000/resenas-emprendimiento/' + id
+'https://visita-quibdo2.onrender.com/resenas-emprendimiento/' + id
 
 );
 
@@ -1629,7 +1629,7 @@ evento.preventDefault();
 const respuesta =
 await fetch(
 
-'http://localhost:3000/crear-resena-emprendimiento',
+'https://visita-quibdo2.onrender.com/crear-resena-emprendimiento',
 
 {
 
@@ -1760,7 +1760,7 @@ try{
 const respuesta =
 await fetch(
 
-'http://localhost:3000/eliminar-resena-emprendimiento',
+'https://visita-quibdo2.onrender.com/eliminar-resena-emprendimiento',
 
 {
 
@@ -1871,7 +1871,7 @@ try{
 const respuesta =
 await fetch(
 
-'http://localhost:3000/editar-resena-emprendimiento',
+'https://visita-quibdo2.onrender.com/editar-resena-emprendimiento',
 
 {
 
