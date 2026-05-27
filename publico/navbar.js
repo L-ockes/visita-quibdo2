@@ -10,7 +10,7 @@ favicon.rel = 'icon';
 favicon.type = 'image/png';
 
 favicon.href =
-'/fotos/mascota';
+'/fotos/mascota.png';
 
 document.head.appendChild(
 favicon
