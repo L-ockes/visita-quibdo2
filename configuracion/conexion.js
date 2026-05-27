@@ -1,17 +1,23 @@
 const mysql = require('mysql2');
 
 /* CONEXIÓN MYSQL */
-const conexion = mysql.createConnection({
+const conexion = mysql.createPool({
 
-       host:process.env.DB_HOST,
+host: process.env.DB_HOST,
 
-       user:process.env.DB_USER,
+user: process.env.DB_USER,
 
-       password:process.env.DB_PASSWORD,
+password: process.env.DB_PASSWORD,
 
-       database:process.env.DB_NAME,
+database: process.env.DB_NAME,
 
-       port:process.env.DB_PORT
+port: process.env.DB_PORT,
+
+waitForConnections: true,
+
+connectionLimit: 10,
+
+queueLimit: 0
 
 });
 
