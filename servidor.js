@@ -1,8 +1,34 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
+
+app.use(cors({
+    origin:'http://127.0.0.1:5500',
+    credentials:true
+}));
 const editarEmprendimiento =
 require(
 './rutas/editarEmprendimiento'
+);
+const emprendimientos =
+require(
+'./rutas/emprendimientos'
+);
+const verEmprendimiento =
+require(
+'./rutas/verEmprendimiento'
+);
+const panel =
+require(
+'./rutas/panel'
+);
+const editarUsuario =
+require(
+'./rutas/editarUsuario'
+);
+const crearEmprendimiento =
+require(
+'./rutas/crearEmprendimiento'
 );
 
 const path = require('path');
@@ -37,6 +63,52 @@ app.use(
 
 editarEmprendimiento(
 conexion
+)
+
+);
+
+app.use(
+
+emprendimientos(
+conexion
+)
+
+);
+app.use(
+
+verEmprendimiento(
+conexion
+)
+
+);
+app.use(
+
+panel(
+conexion
+)
+
+
+);
+app.use(
+
+editarUsuario(
+conexion
+)
+
+);
+app.use(
+
+crearEmprendimiento(
+conexion
+)
+
+);
+app.use(
+
+'/fotos',
+
+express.static(
+'publico/fotos'
 )
 
 );
@@ -302,9 +374,7 @@ res.redirect(
    PANEL EMPRENDIMIENTO
 ===================================== */
 
-app.get(
 
-'/panel-datos',
 
 (req,res)=>{
 
@@ -331,9 +401,7 @@ SELECT *
 
 FROM emprendedores
 
-WHERE id = ?
-
-LIMIT 1
+WHERE usuario_id = ?
 
 `;
 
@@ -390,15 +458,12 @@ resultados[0]
 
 }
 
-);
 
 /* =====================================
    EDITAR USUARIO
 ===================================== */
 
-app.post(
 
-'/editar-usuario',
 
 subirFoto.single('foto'),
 
@@ -613,15 +678,13 @@ mensaje:
 
 }
 
-);
+
 
 /* =====================================
    DATOS USUARIO
 ===================================== */
 
-app.get(
 
-'/datos-usuario',
 
 (req,res)=>{
 
@@ -654,8 +717,6 @@ rol
 FROM usuarios
 
 WHERE id = ?
-
-LIMIT 1
 
 `;
 
@@ -704,13 +765,12 @@ resultados[0]
 
 }
 
-);
 
 /* =========================
    CATEGORIAS
 ========================= */
 
-app.get('/categorias',(req,res)=>{
+(req,res)=>{
 
     const sql = `
         SELECT *
@@ -728,13 +788,13 @@ app.get('/categorias',(req,res)=>{
 
     });
 
-});
+};
 
 /* =========================
    SERVICIOS
 ========================= */
 
-app.get('/servicios',(req,res)=>{
+(req,res)=>{
 
     const sql = `
         SELECT *
@@ -752,13 +812,13 @@ app.get('/servicios',(req,res)=>{
 
     });
 
-});
+}
 
 /* =========================
    CREAR EMPRENDIMIENTO
 ========================= */
 
-app.post('/crear-emprendimiento', subirFoto.single('foto'), (req,res)=>{
+subirFoto.single('foto'), (req,res)=>{
 
     if(!req.session.usuario){
 
@@ -799,7 +859,8 @@ app.post('/crear-emprendimiento', subirFoto.single('foto'), (req,res)=>{
 
     const sql = `
         INSERT INTO emprendedores(
-            id,
+
+            usuario_id,
             nombre_emprendimiento,
             categoria,
             descripcion,
@@ -876,13 +937,13 @@ req.session.usuario.rol =
 
     });
 
-});
+}
 
 /* =========================
    EMPRENDIMIENTOS
 ========================= */
 
-app.get('/emprendimientos',(req,res)=>{
+(req,res)=>{
 
     const busqueda = req.query.q || '';
     const categoria = req.query.categoria || '';
@@ -899,39 +960,28 @@ app.get('/emprendimientos',(req,res)=>{
 
     if(busqueda !== ''){
 
-        sql += `
-            AND (
-                nombre_emprendimiento LIKE ?
-                OR descripcion LIKE ?
-            )
-        `;
+    sql += `
+        AND nombre_emprendimiento LIKE ?
+    `;
 
-        const like = `%${busqueda}%`;
+    const like = `%${busqueda}%`;
 
-        parametros.push(like);
-        parametros.push(like);
+    parametros.push(like);
 
-    }
+}
 
     if(categoria !== ''){
 
-        if(busqueda !== ''){
+    sql += `
+        AND LOWER(categoria)
+        LIKE LOWER(?)
+    `;
 
-            sql += `
-                AND categoria = ?
-            `;
+    parametros.push(
+        `%${categoria}%`
+    );
 
-        }else{
-
-            sql += `
-                WHERE categoria = ?
-            `;
-
-        }
-
-        parametros.push(categoria);
-
-    }
+}
 
     sql += `
         ORDER BY id DESC
@@ -948,13 +998,13 @@ app.get('/emprendimientos',(req,res)=>{
 
     });
 
-});
+};
 
 /* =========================
    EMPRENDIMIENTO ACTUAL
 ========================= */
 
-app.get('/emprendimiento',(req,res)=>{
+(req,res)=>{
 
     if(!req.session.usuario){
 
@@ -967,8 +1017,7 @@ app.get('/emprendimiento',(req,res)=>{
     const sql = `
         SELECT *
         FROM emprendedores
-        WHERE id = ?
-        LIMIT 1
+        WHERE usuario_id = ?
     `;
 
     conexion.query(sql,[req.session.usuario.id],(error,resultados)=>{
@@ -988,15 +1037,11 @@ app.get('/emprendimiento',(req,res)=>{
 
     });
 
-});
+}
 
 /* =====================================
    IMAGENES EMPRENDIMIENTO
 ===================================== */
-
-app.get(
-
-'/imagenes-emprendimiento/:id',
 
 (req,res)=>{
 
@@ -1036,96 +1081,6 @@ res.json(resultados);
 
 }
 
-);
-
-/* =========================
-   VER EMPRENDIMIENTO
-========================= */
-
-app.get('/emprendimiento/:id',(req,res)=>{
-
-    const id = req.params.id;
-
-    const sql = `
-        SELECT
-            e.*,
-            u.nombre AS usuario_nombre,
-            u.telefono AS usuario_telefono,
-            u.correo AS usuario_correo
-        FROM emprendedores e
-        JOIN usuarios u
-            ON e.id = u.id
-        WHERE e.id = ?
-    `;
-
-    conexion.query(sql,[id],(error,resultados)=>{
-
-        if(error){
-            return res.json({ ok:false });
-        }
-
-        if(resultados.length === 0){
-            return res.json({ ok:false });
-        }
-
-        const emprendimiento =
-resultados[0];
-
-/* =====================================
-   IMAGENES EXTRA
-===================================== */
-
-conexion.query(
-
-`
-SELECT *
-FROM imagenes_emprendedores
-WHERE emprendimiento_id=?
-ORDER BY id ASC
-`,
-
-[id],
-
-(errorImagenes,imagenes)=>{
-
-if(errorImagenes){
-
-console.log(errorImagenes);
-
-return res.json({
-ok:false
-});
-
-}
-
-/* AGREGAR */
-emprendimiento.imagenes_extra =
-imagenes;
-
-/* RESPUESTA */
-res.json({
-
-ok:true,
-
-emprendimiento
-
-});
-
-}
-
-);
-
-return;
-
-        res.json({
-            ok:true,
-            emprendimiento:resultados[0]
-        });
-
-    });
-
-});
-
 /* =========================
    HOTELES
 ========================= */
@@ -1145,14 +1100,12 @@ app.get('/hoteles',(req,res)=>{
 
         sql += `
             WHERE
-                nombre LIKE ?
-                OR descripcion LIKE ?
-                OR direccion LIKE ?
+    nombre LIKE ?
         `;
 
         const like = `%${terminoBusqueda}%`;
 
-        parametros = [like,like,like];
+        parametros = [like];
 
     }
 
@@ -1206,8 +1159,6 @@ app.get(
           FROM hoteles
              
             WHERE id = ?
-
-            LIMIT 1
 
         `;
 
@@ -1377,8 +1328,6 @@ app.get(
 
             WHERE id = ?
 
-            LIMIT 1
-
         `;
 
         conexion.query(
@@ -1541,7 +1490,7 @@ app.get(
 
             WHERE id = ?
 
-            LIMIT 1
+            
 
         `;
 
@@ -1742,8 +1691,6 @@ app.get(
 
             WHERE id = ?
 
-            LIMIT 1
-
         `;
 
         conexion.query(
@@ -1904,6 +1851,7 @@ const sql = `
 
 INSERT INTO resenas(
 
+usuario_id,
 tipo,
 item_id,
 nombre,
@@ -1914,6 +1862,7 @@ comentario
 
 VALUES(
 
+?,
 'hotel',
 ?,
 ?,
@@ -1929,6 +1878,7 @@ conexion.query(
 sql,
 
 [
+req.session.usuario.id,
 item_id,
 nombre,
 calificacion,
@@ -2072,6 +2022,7 @@ const sql = `
 
 INSERT INTO resenas(
 
+usuario_id,
 tipo,
 item_id,
 nombre,
@@ -2082,6 +2033,7 @@ comentario
 
 VALUES(
 
+?,
 'restaurante',
 ?,
 ?,
@@ -2097,6 +2049,7 @@ conexion.query(
 sql,
 
 [
+req.session.usuario.id,
 item_id,
 nombre,
 calificacion,
@@ -2237,6 +2190,7 @@ const sql = `
 
 INSERT INTO resenas(
 
+usuario_id,
 tipo,
 item_id,
 nombre,
@@ -2247,6 +2201,7 @@ comentario
 
 VALUES(
 
+?,
 'evento',
 ?,
 ?,
@@ -2262,6 +2217,7 @@ conexion.query(
 sql,
 
 [
+req.session.usuario.id,
 item_id,
 nombre,
 calificacion,
@@ -2402,6 +2358,7 @@ const sql = `
 
 INSERT INTO resenas(
 
+usuario_id,
 tipo,
 item_id,
 nombre,
@@ -2412,6 +2369,7 @@ comentario
 
 VALUES(
 
+?,
 'lugar',
 ?,
 ?,
@@ -2427,6 +2385,7 @@ conexion.query(
 sql,
 
 [
+req.session.usuario.id,
 item_id,
 nombre,
 calificacion,
@@ -2569,6 +2528,7 @@ INSERT INTO resenas(
 
 tipo,
 item_id,
+usuario_id,
 nombre,
 calificacion,
 comentario
@@ -2578,6 +2538,7 @@ comentario
 VALUES(
 
 'emprendimiento',
+?,
 ?,
 ?,
 ?,
@@ -2593,6 +2554,7 @@ sql,
 
 [
 item_id,
+req.session.usuario.id,
 nombre,
 calificacion,
 comentario
@@ -2625,6 +2587,174 @@ ok:true
 }
 
 );
+
+/* =====================================
+   ELIMINAR RESEÑA EMPRENDIMIENTO
+===================================== */
+
+app.post(
+
+'/eliminar-resena',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+ok:false
+});
+
+}
+
+const {
+
+id,
+tipo
+
+} = req.body;
+
+/* DELETE */
+conexion.query(
+
+`
+DELETE FROM resenas
+
+WHERE id=?
+AND usuario_id=?
+AND tipo=?
+`,
+
+[
+id,
+req.session.usuario.id,
+tipo
+],
+
+(error,resultado)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+/* NO ELIMINÓ */
+if(
+resultado.affectedRows === 0
+){
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+ok:true
+});
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   EDITAR RESEÑA EMPRENDIMIENTO
+===================================== */
+
+app.post(
+
+'/editar-resena',
+
+(req,res)=>{
+
+/* LOGIN */
+if(
+!req.session.usuario
+){
+
+return res.json({
+ok:false
+});
+
+}
+
+const {
+
+id,
+tipo,
+calificacion,
+comentario
+
+} = req.body;
+
+/* UPDATE */
+conexion.query(
+
+`
+UPDATE resenas
+
+SET
+calificacion=?,
+comentario=?
+
+WHERE id=?
+AND usuario_id=?
+AND tipo=?
+`,
+
+[
+calificacion,
+comentario,
+id,
+req.session.usuario.id,
+tipo
+],
+
+(error,resultado)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+if(
+resultado.affectedRows === 0
+){
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+ok:true
+});
+
+}
+
+);
+
+}
+
+);
+
 
 /* =====================================
    CREAR ADMIN
@@ -3379,7 +3509,7 @@ u.correo
 FROM emprendedores e
 
 JOIN usuarios u
-ON e.id = u.id
+ON e.usuario_id = u.id
 
 ORDER BY e.id DESC
 
@@ -3459,7 +3589,8 @@ ok:false
 
 const {
 
-id
+id,
+tipo
 
 } = req.body;
 
@@ -3496,7 +3627,7 @@ conexion.query(
 `
 UPDATE usuarios
 SET rol='usuario'
-WHERE id=?
+WHERE id = ?
 `,
 
 [id],
@@ -4019,7 +4150,8 @@ ok:false
 
 const {
 
-id
+id,
+tipo
 
 } = req.body;
 
@@ -4675,7 +4807,8 @@ ok:false
 
 const {
 
-id
+id,
+tipo
 
 } = req.body;
 
@@ -5313,7 +5446,7 @@ conexion.query(
 SELECT nombre_emprendimiento
 FROM emprendedores
 ORDER BY id DESC
-LIMIT 1
+
 `,
 
 (error,emprendimientos)=>{
@@ -5617,7 +5750,98 @@ ok:true
 
 );
 
+/* =====================================
+   RESEÑAS ADMIN
+===================================== */
 
+app.get(
+
+'/resenas-admin',
+
+(req,res)=>{
+
+conexion.query(
+
+`
+SELECT *
+
+FROM resenas
+
+ORDER BY creado_en DESC
+`,
+
+(err,resultados)=>{
+
+if(err){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true,
+resenas:resultados
+
+});
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   ELIMINAR RESEÑA ADMIN
+===================================== */
+
+app.post(
+
+'/eliminar-resena-admin',
+
+(req,res)=>{
+
+const {id} = req.body;
+
+conexion.query(
+
+`
+DELETE FROM resenas
+WHERE id=?
+`,
+
+[id],
+
+(err)=>{
+
+if(err){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+);
 
 /* =========================
    SERVIDOR
@@ -5631,4 +5855,13 @@ app.listen(3000,()=>{
 
 });
 
+app.use((error,req,res,next)=>{
 
+console.log('ERROR GENERAL:', error);
+
+res.status(500).json({
+    ok:false,
+    mensaje:'Error interno servidor'
+});
+
+});

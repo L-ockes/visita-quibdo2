@@ -56,12 +56,95 @@ storage
 });
 
 /* =====================================
-   EDITAR EMPRENDIMIENTO
+   EXPORTAR
 ===================================== */
 
 module.exports = function(
 conexion
 ){
+
+/* =====================================
+   OBTENER EMPRENDIMIENTO
+===================================== */
+
+router.get(
+
+'/editar-emprendimiento/:id',
+
+(req,res)=>{
+
+if(
+!req.session.usuario
+){
+
+return res.json({
+ok:false
+});
+
+}
+
+const id =
+req.params.id;
+
+/* SQL */
+conexion.query(
+
+`
+SELECT *
+
+FROM emprendedores
+
+WHERE id=?
+AND usuario_id=?
+`,
+
+[
+id,
+req.session.usuario.id
+],
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+ok:false
+});
+
+}
+
+if(resultados.length === 0){
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+
+ok:true,
+
+tieneDatos:true,
+
+emprendimiento:
+resultados[0]
+
+});
+
+}
+
+);
+
+}
+
+/* =====================================
+   EDITAR EMPRENDIMIENTO
+===================================== */
+
+);
 
 router.post(
 
@@ -85,23 +168,12 @@ maxCount:5
 
 try{
 
-/* =====================================
-   USUARIO
-===================================== */
-
 if(
-!req.session
-||
 !req.session.usuario
 ){
 
 return res.json({
-
-ok:false,
-
-mensaje:
-'Sesión no iniciada'
-
+ok:false
 });
 
 }
@@ -127,10 +199,10 @@ let foto = null;
 
 if(
 
-req.files['foto']
-
+req.files
 &&
-
+req.files['foto']
+&&
 req.files['foto'][0]
 
 ){
@@ -146,6 +218,8 @@ req.files['foto'][0]
 /* EXTRA */
 const imagenesExtra =
 
+req.files
+&&
 req.files['imagenes_extra']
 
 ?
@@ -155,6 +229,10 @@ req.files['imagenes_extra']
 :
 
 [];
+
+/* ID */
+const id =
+req.body.id;
 
 /* SQL */
 let sql = `
@@ -168,17 +246,19 @@ categoria=?,
 ubicacion=?,
 horarios=?,
 servicios=?,
+telefono=?,
 descripcion=?
 
 `;
 
 let valores = [
 
-nombre_emprendimiento,   
+nombre_emprendimiento,
 categoria,
 ubicacion,
 horarios,
 servicios,
+telefono,
 descripcion
 
 ];
@@ -199,9 +279,11 @@ foto
 /* WHERE */
 sql += `
 WHERE id=?
+AND usuario_id=?
 `;
 
 valores.push(
+id,
 idUsuario
 );
 
@@ -229,10 +311,7 @@ mensaje:
 
 }
 
-/* =====================================
-   TELEFONO USUARIO
-===================================== */
-
+/* TELEFONO */
 conexion.query(
 
 `
@@ -248,16 +327,12 @@ idUsuario
 
 );
 
-/* =====================================
-   IMAGENES EXTRA
-===================================== */
-
+/* IMAGENES EXTRA */
 imagenesExtra.forEach(imagen=>{
 
 conexion.query(
 
 `
-
 INSERT INTO imagenes_emprendedores(
 
 emprendimiento_id,
@@ -266,11 +341,10 @@ imagen
 )
 
 VALUES(?,?)
-
 `,
 
 [
-idUsuario,
+id,
 'fotos/' + imagen.filename
 ]
 
@@ -284,7 +358,7 @@ res.json({
 ok:true,
 
 mensaje:
-'Emprendimiento actualizado'
+'Actualizado'
 
 });
 
@@ -301,7 +375,7 @@ res.json({
 ok:false,
 
 mensaje:
-'Error del servidor'
+'Error servidor'
 
 });
 
@@ -314,3 +388,4 @@ mensaje:
 return router;
 
 };
+
