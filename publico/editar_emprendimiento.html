@@ -118,6 +118,52 @@ object-fit:cover;
 
 }
 
+/* =====================================
+   BOTON ELIMINAR
+===================================== */
+
+.eliminar-btn{
+
+width:24px;
+height:24px;
+
+border:none;
+
+border-radius:50%;
+
+background:
+rgba(0,0,0,0.6);
+
+color:white;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:12px;
+
+cursor:pointer;
+
+top:6px;
+right:6px;
+
+z-index:20;
+
+transition:0.2s;
+
+}
+
+.eliminar-btn:hover{
+
+background:
+rgba(220,53,69,0.9);
+
+transform:scale(1.1);
+
+}
+
 </style>
 
 </head>
@@ -150,6 +196,75 @@ id="editorEmprendimiento"
 <!-- FOOTER -->
 <div id="footer"></div>
 
+<!-- TOAST -->
+
+<div
+
+id="toastGuardado"
+
+class="
+position-fixed
+top-0
+end-0
+p-3
+"
+
+style="
+z-index:9999;
+"
+
+>
+
+<div
+
+class="
+toast
+align-items-center
+text-bg-success
+border-0
+shadow-lg
+"
+
+role="alert"
+
+id="toastContenido"
+
+>
+
+<div class="
+d-flex
+">
+
+<div class="
+toast-body
+fw-semibold
+">
+
+✅ Cambios guardados correctamente
+
+</div>
+
+<button
+
+type="button"
+
+class="
+btn-close
+btn-close-white
+me-2
+m-auto
+"
+
+data-bs-dismiss="toast"
+
+></button>
+
+</div>
+
+</div>
+
+</div>
+
 <!-- SCRIPTS -->
 <script src="navbar.js"></script>
 <script src="footer.js"></script>
@@ -166,6 +281,41 @@ let imagenes = [];
 
 let nuevasImagenes = [];
 
+/* PARAMETROS */
+const parametros =
+
+new URLSearchParams(
+window.location.search
+);
+
+const id =
+parametros.get('id');
+
+/* =====================================
+   TOAST
+===================================== */
+
+function mostrarToast(){
+
+const toastElemento =
+
+document.getElementById(
+'toastContenido'
+);
+
+const toast =
+
+new bootstrap.Toast(
+toastElemento,
+{
+delay:2000
+}
+);
+
+toast.show();
+
+}
+
 /* =====================================
    CARGAR DATOS
 ===================================== */
@@ -177,8 +327,10 @@ try{
 /* FETCH */
 const respuesta =
 await fetch(
-'http://localhost:3000/panel-datos'
-);
+
+'http://localhost:3000/editar-emprendimiento/' + id
+
+)
 
 const datos =
 await respuesta.json();
@@ -353,6 +505,10 @@ id="nombre"
 
 class="
 form-control
+"
+
+value="
+${emprendimiento.nombre_emprendimiento || ''}
 "
 
 >
@@ -620,10 +776,15 @@ imagenesDB.forEach(img=>{
 
 imagenes.push({
 
+id:img.id,
+
 tipo:'extra',
 
 src:
 'http://localhost:3000/' +
+img.imagen,
+
+ruta:
 img.imagen
 
 });
@@ -685,6 +846,31 @@ imagen
 src="${imagen.src}"
 
 >
+
+<button
+
+type="button"
+
+class="
+position-absolute
+top-0
+end-0
+eliminar-btn
+"
+
+onclick="
+event.stopPropagation();
+eliminarImagen(${index});
+"
+
+>
+
+<i class="
+fa-solid
+fa-xmark
+"></i>
+
+</button>
 
 `
 
@@ -813,6 +999,77 @@ input.click();
 }
 
 /* =====================================
+   ELIMINAR IMAGEN
+===================================== */
+
+async function eliminarImagen(index){
+
+const imagen =
+imagenes[index];
+
+/* MYSQL */
+if(
+imagen
+&&
+imagen.id
+){
+
+try{
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-imagen-emprendimiento/' + imagen.id,
+
+{
+method:'DELETE'
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(!resultado.ok){
+
+alert(
+'Error eliminando imagen'
+);
+
+return;
+
+}
+
+}catch(error){
+
+console.log(error);
+
+alert(
+'Error servidor'
+);
+
+return;
+
+}
+
+}
+
+/* BORRAR VISUAL */
+imagenes[index] = null;
+
+nuevasImagenes[index] = null;
+
+/* RECARGAR */
+mostrarMiniaturas();
+
+/* LIMPIAR */
+document.getElementById(
+'imagenPrincipal'
+).src =
+'https://via.placeholder.com/1200x500?text=Sin+Imagen';
+
+}
+/* =====================================
    CAMBIAR FOTO PRINCIPAL
 ===================================== */
 
@@ -877,6 +1134,12 @@ try{
 
 const datos =
 new FormData();
+
+/* ID */
+datos.append(
+'id',
+id
+);
 
 /* CAMPOS */
 datos.append(
@@ -980,9 +1243,7 @@ console.log(resultado);
 /* MENSAJE */
 if(resultado.ok){
 
-alert(
-'Cambios guardados correctamente'
-);
+mostrarToast();
 
 }else{
 

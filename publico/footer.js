@@ -1,3 +1,38 @@
+/* =====================================
+   ESTILOS FOOTER
+===================================== */
+
+const estilosFooter =
+document.createElement('style');
+
+estilosFooter.innerHTML = `
+
+footer{
+
+margin-top:auto;
+
+}
+
+body{
+
+min-height:100vh;
+
+display:flex;
+
+flex-direction:column;
+
+}
+
+`;
+
+document.head.appendChild(
+estilosFooter
+);
+
+document.head.appendChild(
+estilosFooter
+);
+
 document.getElementById(
 'footer'
 ).innerHTML = `

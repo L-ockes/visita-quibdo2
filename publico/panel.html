@@ -227,20 +227,75 @@ return;
 
 }
 
-/* EMPRENDIMIENTO */
-const e =
-datos.emprendimiento;
+/* EMPRENDIMIENTOS */
+const emprendimientos =
+datos.emprendimientos;
 
-/* MOSTRAR */
-contenedor.innerHTML = `
+/* HTML */
+let html = `
 
 <div class="
-col-md-4
+d-flex
+justify-content-between
+align-items-center
+mb-4
+">
+
+<h1 class="
+fw-bold
+text-primary
+">
+
+Mis Emprendimientos
+
+</h1>
+
+<a
+
+href="
+crear_emprendimiento.html
+"
+
+class="
+btn
+btn-primary
+rounded-pill
+px-4
+py-2
+"
+
+>
+
+<i class="
+fa-solid
+fa-plus
+me-2
+"></i>
+
+Nuevo
+
+</a>
+
+</div>
+
+`;
+
+/* RECORRER */
+emprendimientos.forEach(e=>{
+
+html += `
+
+<div class="
+col-md-6
+col-lg-4
 ">
 
 <div class="
 card
-shadow-sm
+shadow-lg
+border-0
+rounded-4
+overflow-hidden
 h-100
 ">
 
@@ -252,7 +307,12 @@ e.foto
 
 ?
 
-'http://localhost:3000/' + e.foto
+'http://localhost:3000/fotos/' +
+
+e.foto.replace(
+'fotos/',
+''
+)
 
 :
 
@@ -268,137 +328,106 @@ foto-panel
 
 <div class="
 card-body
-text-center
+d-flex
+flex-column
 ">
 
-<a
-
-href="
-emprendimientos.html?id=${e.id}
-"
-
-class="
-btn
-btn-outline-primary
-w-100
-"
-
->
-
-Ver Público
-
-</a>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="
-col-md-8
-">
-
-<div class="
-card
-shadow-sm
-border-0
-h-100
-">
-
-<div class="
-card-body
-">
-
-<h2 class="
-text-primary
+<h4 class="
 fw-bold
-mb-4
+text-primary
+mb-3
 ">
-
-Información
-
-</h2>
-
-<p>
-
-<strong>
-Nombre:
-</strong>
 
 ${e.nombre_emprendimiento || ''}
 
-</p>
+</h4>
 
-<p>
-
-<strong>
-Categoría:
-</strong>
+<p class="
+text-muted
+mb-2
+">
 
 ${e.categoria || ''}
 
 </p>
 
-<p>
-
-<strong>
-Ubicación:
-</strong>
+<p class="
+small
+text-muted
+mb-4
+">
 
 ${e.ubicacion || ''}
 
 </p>
 
-<p>
-
-<strong>
-Horarios:
-</strong>
-
-${e.horarios || ''}
-
-</p>
-
-<p>
-
-<strong>
-Servicios:
-</strong>
-
-${e.servicios || ''}
-
-</p>
-
-<p>
-
-<strong>
-Descripción:
-</strong>
-
-<br>
-
-${e.descripcion || ''}
-
-</p>
+<div class="
+mt-auto
+d-flex
+gap-2
+flex-wrap
+">
 
 <a
 
 href="
-editar_emprendimiento.html
+ver_mas.html?id=${e.id}
+"
+
+class="
+btn
+btn-outline-primary
+rounded-pill
+flex-fill
+"
+
+>
+
+Ver
+
+</a>
+
+<a
+
+href="
+editar_emprendimiento.html?id=${e.id}
 "
 
 class="
 btn
 btn-primary
-mt-3
+rounded-pill
+flex-fill
 "
 
 >
 
-Editar emprendimiento
+Editar
 
 </a>
+
+<button
+
+class="
+btn
+btn-danger
+rounded-pill
+flex-fill
+"
+
+onclick="
+eliminarEmprendimiento(${e.id})
+"
+
+>
+
+Eliminar
+
+</button>
+
+</div>
+
+</div>
 
 </div>
 
@@ -407,6 +436,16 @@ Editar emprendimiento
 </div>
 
 `;
+
+});
+
+/* CERRAR */
+html += `
+
+`;
+
+contenedor.innerHTML =
+html;
 
 }catch(error){
 
@@ -437,6 +476,71 @@ Ocurrió un error al cargar el panel
 }
 
 cargarPanel();
+
+/* =====================================
+   ELIMINAR
+===================================== */
+
+async function eliminarEmprendimiento(id){
+
+const confirmar =
+confirm(
+
+'¿Eliminar este emprendimiento?'
+
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+try{
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-emprendimiento/' + id,
+
+{
+
+method:'DELETE'
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+alert(
+'Emprendimiento eliminado'
+);
+
+cargarPanel();
+
+}else{
+
+alert(
+resultado.mensaje
+);
+
+}
+
+}catch(error){
+
+console.log(error);
+
+alert(
+'Error servidor'
+);
+
+}
+
+}
 
 </script>
 

@@ -284,6 +284,21 @@ Lugares Turísticos
 
 </button>
 
+<button
+class="menu-btn"
+onclick="mostrarResenas()"
+>
+
+<i class="
+fa-solid
+fa-star
+me-2
+"></i>
+
+Gestionar Reseñas
+
+</button>
+
 <a
 
 href="http://localhost:3000/logout"
@@ -306,9 +321,52 @@ Cerrar sesión
 <!-- CONTENIDO -->
 <div class="main-content">
 
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-4
+bg-white
+shadow-sm
+rounded-4
+p-3
+">
+
+<h4 class="
+fw-bold
+text-primary
+mb-0
+">
+
+Panel SuperAdmin
+
+</h4>
+
+<a
+
+href="index.html"
+
+class="
+btn
+btn-outline-primary
+btn-sm
+"
+
+>
+
+Ir al sitio
+
+</a>
+
+</div>
+
 <div id="contenidoAdmin"></div>
 
 </div>
+
+<div id="footer"></div>
+
+<script src="footer.js"></script>
 
 <script>
 
@@ -5215,7 +5273,479 @@ toast.show();
 
 }
 
+/* =====================================
+   MOSTRAR RESEÑAS
+===================================== */
+
+async function mostrarResenas(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-4
+flex-wrap
+gap-3
+">
+
+<h2 class="
+titulo-panel
+mb-0
+">
+
+Gestión de Reseñas
+
+</h2>
+
+<div class="
+d-flex
+gap-2
+flex-wrap
+">
+
+<span class="
+badge
+rounded-pill
+bg-primary
+px-3
+py-2
+fs-6
+"
+id="totalResenasBadge"
+>
+
+⭐ Total: 0
+
+</span>
+
+</div>
+
+</div>
+
+<div class="
+row
+g-3
+mb-4
+">
+
+<div class="col-md-6">
+
+<input
+
+type="text"
+
+id="buscadorResenas"
+
+class="form-control"
+
+placeholder="
+Buscar comentario o usuario...
+"
+
+onkeyup="
+filtrarResenas()
+"
+
+>
+
+</div>
+
+<div class="col-md-3">
+
+<select
+
+id="filtroTipo"
+
+class="form-select"
+
+onchange="
+filtrarResenas()
+"
+
+>
+
+<option value="">
+
+Todos los tipos
+
+</option>
+
+<option value="hotel">
+
+Hoteles
+
+</option>
+
+<option value="restaurante">
+
+Restaurantes
+
+</option>
+
+<option value="evento">
+
+Eventos
+
+</option>
+
+<option value="lugar">
+
+Lugares
+
+</option>
+
+<option value="emprendimiento">
+
+Emprendimientos
+
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>ID</th>
+<th>Usuario</th>
+<th>Tipo</th>
+<th>Calificación</th>
+<th>Comentario</th>
+<th>Fecha</th>
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaResenas">
+
+<tr>
+
+<td colspan="7" class="text-center">
+
+Cargando reseñas...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+`;
+
+/* FETCH */
+const respuesta =
+await fetch(
+
+'http://localhost:3000/resenas-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar reseñas
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.resenas.forEach(r=>{
+
+html += `
+
+<tr class="fila-resena">
+
+<td>
+${r.id}
+</td>
+
+<td>
+${r.nombre}
+</td>
+
+<td>
+
+<span class="
+badge
+rounded-pill
+text-bg-light
+border
+">
+
+${r.tipo}
+
+</span>
+
+</td>
+
+<td>
+
+<span style="
+color:#3483FA;
+font-weight:700;
+">
+
+★ ${r.calificacion}
+
+</span>
+
+</td>
+
+<td style="
+max-width:300px;
+">
+
+${
+r.comentario.length > 120
+
+?
+
+r.comentario.substring(0,120)
++ '...'
+
+:
+
+r.comentario
+}
+
+</td>
+
+<td>
+
+${
+r.creado_en
+
+?
+
+new Date(
+r.creado_en
+).toLocaleDateString('es-CO')
+
+:
+
+'Sin fecha'
+}
+
+</td>
+
+<td>
+
+<button
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+onclick="
+eliminarResenaAdmin(
+${r.id}
+)
+"
+
+>
+
+Eliminar
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaResenas'
+).innerHTML = html;
+
+document.getElementById(
+'totalResenasBadge'
+).innerHTML =
+
+'⭐ Total: ' +
+
+datos.resenas.length;
+
+}
+
+/* =====================================
+   ELIMINAR RESEÑA ADMIN
+===================================== */
+
+async function eliminarResenaAdmin(id){
+
+const confirmar =
+confirm(
+'¿Eliminar reseña?'
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-resena-admin',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+mostrarNotificacion(
+'Reseña eliminada correctamente'
+);
+
+mostrarResenas();
+
+}
+
+else{
+
+alert(
+'Error al eliminar reseña'
+);
+
+}
+
+}
+
+/* =====================================
+   FILTRAR RESEÑAS
+===================================== */
+
+function filtrarResenas(){
+
+const texto =
+document.getElementById(
+'buscadorResenas'
+).value.toLowerCase();
+
+const tipo =
+document.getElementById(
+'filtroTipo'
+).value.toLowerCase();
+
+const filas =
+document.querySelectorAll(
+'.fila-resena'
+);
+
+filas.forEach(fila=>{
+
+const contenido =
+fila.innerText.toLowerCase();
+
+const coincideTexto =
+contenido.includes(texto);
+
+const coincideTipo =
+
+tipo === ''
+
+?
+
+true
+
+:
+
+contenido.includes(tipo);
+
+fila.style.display =
+
+coincideTexto && coincideTipo
+
+?
+
+''
+
+:
+
+'none';
+
+});
+
+}
+
 </script>
+
+<div id="footer"></div>
+
+<script src="footer.js"></script>
 
 <script src="
 https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js

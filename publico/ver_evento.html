@@ -189,7 +189,6 @@ Calificaciones y comentarios
 </h4>
 
 <div
-id="mensajeLogin"
 class="
 alert
 alert-warning
@@ -198,7 +197,7 @@ mb-3
 "
 >
 
-Debes iniciar sesión para escribir una reseña.
+
 
 </div>
 
@@ -310,10 +309,200 @@ Enviar reseña
 
 </form>
 
+<div class="
+row
+g-4
+align-items-start
+">
+
+<!-- RESUMEN -->
+<div class="
+col-lg-4
+">
+
+<div
+id="calificacionBox"
+></div>
+
+</div>
+
+<!-- COMENTARIOS -->
+<div class="
+col-lg-8
+">
+
 <div
 id="resenas"
 class="list-group"
 ></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- =====================================
+     MODAL EDITAR RESEÑA
+===================================== -->
+
+<div
+class="
+modal
+fade
+"
+id="modalEditarResena"
+tabindex="-1"
+>
+
+<div class="
+modal-dialog
+modal-dialog-centered
+">
+
+<div class="
+modal-content
+border-0
+shadow
+rounded-4
+">
+
+<div class="
+modal-header
+border-0
+">
+
+<h5 class="
+modal-title
+fw-bold
+text-primary
+">
+
+Editar reseña
+
+</h5>
+
+<button
+
+type="button"
+
+class="btn-close"
+
+data-bs-dismiss="modal"
+
+></button>
+
+</div>
+
+<div class="
+modal-body
+">
+
+<input
+type="hidden"
+id="editarResenaId"
+>
+
+<div class="mb-3">
+
+<label class="form-label">
+Calificación
+</label>
+
+<select
+
+id="editarCalificacion"
+
+class="form-select"
+
+>
+
+<option value="5">
+5 estrellas
+</option>
+
+<option value="4">
+4 estrellas
+</option>
+
+<option value="3">
+3 estrellas
+</option>
+
+<option value="2">
+2 estrellas
+</option>
+
+<option value="1">
+1 estrella
+</option>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Comentario
+</label>
+
+<textarea
+
+id="editarComentario"
+
+class="form-control"
+
+rows="4"
+
+></textarea>
+
+</div>
+
+</div>
+
+<div class="
+modal-footer
+border-0
+">
+
+<button
+
+class="
+btn
+btn-secondary
+"
+
+data-bs-dismiss="modal"
+
+>
+
+Cancelar
+
+</button>
+
+<button
+
+class="
+btn
+btn-primary
+"
+
+onclick="
+guardarEditarResena()
+"
+
+>
+
+Guardar cambios
+
+</button>
+
+</div>
 
 </div>
 
@@ -340,6 +529,7 @@ window.location.search
 
 const id =
 parametros.get('id');
+let usuarioActual = null;
 
 /* SESION */
 async function verificarSesion(){
@@ -353,6 +543,14 @@ await fetch(
 
 const datos =
 await respuesta.json();
+
+/* USUARIO */
+if(datos.logueado){
+
+usuarioActual =
+datos.usuario;
+
+}
 
 /* NO LOGIN */
 if(!datos.logueado){
@@ -435,6 +633,32 @@ document.getElementById(
 'info'
 ).innerHTML = `
 
+${
+e.descripcion
+
+?
+
+`
+
+<p>
+
+<strong>
+Descripción:
+</strong>
+
+<br>
+
+${e.descripcion}
+
+</p>
+
+`
+
+:
+
+''
+}
+
 <p>
 
 <strong>
@@ -464,32 +688,6 @@ Lugar:
 ${e.lugar || 'No disponible'}
 
 </p>
-
-${
-e.descripcion
-
-?
-
-`
-
-<p>
-
-<strong>
-Descripción:
-</strong>
-
-<br>
-
-${e.descripcion}
-
-</p>
-
-`
-
-:
-
-''
-}
 
 `;
 
@@ -572,6 +770,8 @@ await fetch(
 
 const resenas =
 await respuesta.json();
+window.listaResenas =
+resenas;
 
 const contenedor =
 document.getElementById(
@@ -602,20 +802,187 @@ resenas.length
 
 document.getElementById(
 'titulo'
+).innerHTML =
+
+window.nombreEvento;
+
+}
+
+/* CONTADORES */
+let cinco = 0;
+let cuatro = 0;
+let tres = 0;
+let dos = 0;
+let uno = 0;
+
+/* CONTAR */
+resenas.forEach(r=>{
+
+if(r.calificacion == 5) cinco++;
+if(r.calificacion == 4) cuatro++;
+if(r.calificacion == 3) tres++;
+if(r.calificacion == 2) dos++;
+if(r.calificacion == 1) uno++;
+
+});
+
+/* PORCENTAJE */
+function porcentaje(valor){
+
+return (
+valor / resenas.length
+) * 100;
+
+}
+
+/* ESTRELLAS */
+function estrellasAzules(){
+
+let html = '';
+
+for(let i=1; i<=5; i++){
+
+html += `
+<i
+class="fa-solid fa-star"
+style="
+color:#3483FA;
+font-size:20px;
+"
+></i>
+`;
+
+}
+
+return html;
+
+}
+
+/* CAJA */
+document.getElementById(
+'calificacionBox'
 ).innerHTML = `
 
-${window.nombreEvento}
+<div
+class="mx-auto text-start"
+style="
+max-width:420px;
+"
+>
 
-<span class="
-badge
-bg-warning
-text-dark
+<h4 class="
+fw-bold
+mb-4
 ">
 
-${promedio} ★
-(${resenas.length})
+Reseñas del evento
 
-</span>
+</h4>
+
+<div class="
+d-flex
+align-items-center
+gap-3
+mb-4
+">
+
+<div style="
+font-size:60px;
+font-weight:300;
+color:#3483FA;
+line-height:1;
+">
+
+${promedio}
+
+</div>
+
+<div>
+
+<div class="mb-1">
+
+${estrellasAzules()}
+
+</div>
+
+<div style="
+color:#777;
+font-size:14px;
+">
+
+${resenas.length}
+calificaciones
+
+</div>
+
+</div>
+
+</div>
+
+${crearBarra(5, cinco)}
+${crearBarra(4, cuatro)}
+${crearBarra(3, tres)}
+${crearBarra(2, dos)}
+${crearBarra(1, uno)}
+
+</div>
+
+`;
+
+/* BARRAS */
+function crearBarra(
+numero,
+cantidad
+){
+
+return `
+
+<div class="
+d-flex
+align-items-center
+gap-2
+mb-2
+">
+
+<div style="
+width:15px;
+font-size:14px;
+color:#555;
+">
+
+${numero}
+
+</div>
+
+<div style="
+flex:1;
+height:8px;
+background:#E5E5E5;
+border-radius:20px;
+overflow:hidden;
+">
+
+<div style="
+width:${porcentaje(cantidad)}%;
+height:100%;
+background:#3483FA;
+border-radius:20px;
+">
+
+</div>
+
+</div>
+
+<div style="
+color:#999;
+font-size:14px;
+">
+
+★
+
+</div>
+
+</div>
 
 `;
 
@@ -667,11 +1034,14 @@ ${r.nombre || 'Anónimo'}
 
 </strong>
 
-<span class="
-badge
-bg-warning
-text-dark
-">
+<span
+
+style="
+color:#3483FA;
+font-weight:700;
+font-size:15px;
+"
+>
 
 ${r.calificacion} ★
 
@@ -687,6 +1057,13 @@ ${r.comentario}
 
 </p>
 
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mt-2
+">
+
 <small class="
 text-muted
 ">
@@ -697,6 +1074,104 @@ r.creado_en
 
 </small>
 
+${
+usuarioActual
+&&
+Number(usuarioActual.id)
+===
+Number(r.usuario_id)
+
+?
+
+`
+
+<div class="dropdown">
+
+<button
+
+class="
+btn
+btn-sm
+border-0
+shadow-none
+text-muted
+"
+
+data-bs-toggle="dropdown"
+
+>
+
+<i class="
+fa-solid
+fa-ellipsis-vertical
+"></i>
+
+</button>
+
+<ul class="
+dropdown-menu
+dropdown-menu-end
+shadow
+border-0
+">
+
+<li>
+
+<a
+
+class="
+dropdown-item
+"
+
+href="javascript:void(0)"
+
+onclick="
+abrirEditarResena(${r.id})
+"
+
+>
+
+Editar
+
+</a>
+
+</li>
+
+<li>
+
+<a
+
+class="
+dropdown-item
+text-danger
+"
+
+href="javascript:void(0)"
+
+onclick="
+eliminarResena(${r.id})
+"
+
+>
+
+Eliminar
+
+</a>
+
+</li>
+
+</ul>
+
+</div>
+
+`
+
+:
+
+''
+}
+
+</div>
 </div>
 
 `;
@@ -784,6 +1259,194 @@ cargarResenas();
 }
 
 );
+
+/* =====================================
+   ELIMINAR RESEÑA
+===================================== */
+
+async function eliminarResena(id){
+
+try{
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-resena',
+
+{
+
+method:'POST',
+
+credentials:'include',
+
+headers:{
+'Content-Type':
+'application/json'
+},
+
+body:JSON.stringify({
+id:id,
+tipo:'evento'
+})
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+console.log(resultado);
+
+/* OK */
+if(resultado.ok){
+
+cargarResenas();
+
+}
+
+/* ERROR */
+else{
+
+alert(
+'No se pudo eliminar'
+);
+
+}
+
+}catch(error){
+
+console.log(error);
+
+}
+
+}
+
+/* =====================================
+   ABRIR EDITAR
+===================================== */
+
+function abrirEditarResena(
+id
+){
+
+const resena =
+window.listaResenas.find(
+r=>r.id == id
+);
+
+if(!resena){
+return;
+}
+
+/* ID */
+document.getElementById(
+'editarResenaId'
+).value =
+resena.id;
+
+/* CALIFICACION */
+document.getElementById(
+'editarCalificacion'
+).value =
+resena.calificacion;
+
+/* COMENTARIO */
+document.getElementById(
+'editarComentario'
+).value =
+resena.comentario;
+
+/* MODAL */
+const modal =
+new bootstrap.Modal(
+
+document.getElementById(
+'modalEditarResena'
+)
+
+);
+
+modal.show();
+
+}
+
+/* =====================================
+   GUARDAR EDICION
+===================================== */
+
+async function guardarEditarResena(){
+
+try{
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/editar-resena',
+
+{
+
+method:'POST',
+
+credentials:'include',
+
+headers:{
+'Content-Type':
+'application/json'
+},
+
+body:JSON.stringify({
+
+id:
+document.getElementById(
+'editarResenaId'
+).value,
+
+tipo:'evento',
+
+calificacion:
+document.getElementById(
+'editarCalificacion'
+).value,
+
+comentario:
+document.getElementById(
+'editarComentario'
+).value
+
+})
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+/* CERRAR */
+bootstrap.Modal
+.getInstance(
+
+document.getElementById(
+'modalEditarResena'
+)
+
+).hide();
+
+/* RECARGAR */
+cargarResenas();
+
+}
+
+}catch(error){
+
+console.log(error);
+
+}
+
+}
 
 </script>
 

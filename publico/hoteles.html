@@ -356,6 +356,29 @@ termino
 
 );
 
+/* LIMPIAR BUSQUEDA */
+document.getElementById(
+'busqueda'
+)
+
+.addEventListener(
+
+'input',
+
+function(){
+
+if(
+this.value.trim() === ''
+){
+
+cargarHoteles();
+
+}
+
+}
+
+);
+
 </script>
 
 <script src="

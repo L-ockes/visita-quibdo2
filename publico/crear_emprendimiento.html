@@ -5,422 +5,909 @@
 
 <meta charset="UTF-8">
 
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+
 <title>
-Registrar Emprendimiento
+Crear Emprendimiento
 </title>
 
+<!-- BOOTSTRAP -->
 <link
 href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 rel="stylesheet"
 >
 
+<!-- FONT AWESOME -->
 <link
 rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 >
 
+<link
+rel="stylesheet"
+href="styles.css"
+>
+
+<style>
+
+/* =====================================
+   CONTENEDOR IMAGEN
+===================================== */
+
+.imagen-container{
+
+width:100%;
+height:500px;
+
+overflow:hidden;
+
+border-radius:20px;
+
+background:#fff;
+
+position:relative;
+
+cursor:zoom-in;
+
+}
+
+/* =====================================
+   IMAGEN PRINCIPAL
+===================================== */
+
+#imagenPrincipal{
+
+width:100%;
+height:100%;
+
+object-fit:contain;
+
+transition:
+transform 0.2s ease;
+
+}
+
+/* =====================================
+   MINIATURAS
+===================================== */
+
+.miniatura{
+
+min-width:120px;
+height:120px;
+
+cursor:pointer;
+
+overflow:hidden;
+
+border-radius:20px;
+
+border:2px solid #dee2e6;
+
+background:#f8f9fa;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+position:relative;
+
+transition:0.3s;
+
+}
+
+.miniatura:hover{
+
+transform:scale(1.03);
+
+border-color:#0d6efd;
+
+}
+
+.miniatura img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+
+}
+
+/* =====================================
+   BOTON ELIMINAR
+===================================== */
+
+.eliminar-btn{
+
+width:24px;
+height:24px;
+
+border:none;
+
+border-radius:50%;
+
+background:
+rgba(0,0,0,0.6);
+
+color:white;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:12px;
+
+cursor:pointer;
+
+top:6px;
+right:6px;
+
+z-index:20;
+
+transition:0.2s;
+
+}
+
+.eliminar-btn:hover{
+
+background:
+rgba(220,53,69,0.9);
+
+transform:scale(1.1);
+
+}
+
+</style>
+
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <div id="navbar"></div>
 
-<div class="container mt-5">
+<!-- CONTENIDO -->
+<div class="container mt-5 mb-5">
 
 <h2 class="
 text-primary
 fw-bold
-mb-4
 text-center
+mb-4
 ">
 
-Registrar mi Emprendimiento
+Crear Emprendimiento
 
 </h2>
 
-<form
+<div id="crearEmprendimiento"></div>
 
-id="formulario"
+</div>
 
-enctype="multipart/form-data"
+<!-- FOOTER -->
+<div id="footer"></div>
 
-class="
-p-4
-shadow
-rounded
+<script src="navbar.js"></script>
+<script src="footer.js"></script>
+
+<script>
+
+/* =====================================
+   VARIABLES
+===================================== */
+
+let imagenes = [];
+
+let nuevasImagenes = [];
+
+/* =====================================
+   MOSTRAR FORMULARIO
+===================================== */
+
+function mostrarFormulario(){
+
+while(imagenes.length < 5){
+
+imagenes.push(null);
+
+}
+
+document.getElementById(
+'crearEmprendimiento'
+).innerHTML = `
+
+<div class="
+card
+border-0
+shadow-lg
+rounded-4
+overflow-hidden
+">
+
+<!-- IMAGEN -->
+<div class="
+position-relative
 bg-white
-"
+">
 
+<div
+class="imagen-container"
+id="contenedorZoom"
 >
 
-<div class="mb-3">
+<img
 
-<label>
-Nombre
-</label>
+id="imagenPrincipal"
 
-<input
+src="
+https://via.placeholder.com/1200x500?text=Sin+Imagen
+"
 
-type="text"
-
-name="nombre_emprendimiento"
-
-class="form-control"
-
-required
 >
 
 </div>
 
-<div class="mb-3">
+<!-- FOTO -->
+<label
 
-<label>
-Categoría
-</label>
-
-<select
-
-name="categoria"
-
-id="categoriaSelect"
-
-class="form-control"
-
-required
-
-></select>
-
-<input
-
-type="text"
-
-name="categoria_nueva"
-
-id="categoriaNueva"
+for="fotoPrincipal"
 
 class="
-form-control
-mt-2
-"
-
-placeholder="
-Nueva categoría
+btn
+btn-light
+position-absolute
+top-0
+end-0
+m-3
+rounded-circle
+shadow
 "
 
 style="
-display:none;
+width:60px;
+height:60px;
+
+display:flex;
+align-items:center;
+justify-content:center;
 "
 
 >
 
-</div>
+<i class="
+fa-solid
+fa-camera
+fs-4
+"></i>
 
-<div class="mb-3">
-
-<label>
-Descripción
-</label>
-
-<textarea
-
-name="descripcion"
-
-class="form-control"
-
-required
-
-></textarea>
-
-</div>
-
-<div class="mb-3">
-
-<label>
-Ubicación
-</label>
-
-<input
-
-type="text"
-
-name="ubicacion"
-
-class="form-control"
-
-required
->
-
-</div>
-
-<div class="mb-3">
-
-<label>
-Horarios
-</label>
-
-<input
-
-type="text"
-
-name="horarios"
-
-class="form-control"
->
-
-</div>
-
-<div class="mb-3">
-
-<label>
-Servicios
-</label>
-
-<select
-
-name="servicios"
-
-id="serviciosSelect"
-
-class="form-control"
-
-required
-
-></select>
-
-<input
-
-type="text"
-
-name="servicio_nuevo"
-
-id="servicioNuevo"
-
-class="
-form-control
-mt-2
-"
-
-placeholder="
-Nuevo servicio
-"
-
-style="
-display:none;
-"
-
->
-
-</div>
-
-<div class="mb-3">
-
-<label>
-Servicios extra
-</label>
-
-<textarea
-
-name="servicios_extra"
-
-class="form-control"
-
-></textarea>
-
-</div>
-
-<div class="mb-3">
-
-<label>
-Foto
 </label>
 
 <input
 
 type="file"
 
-name="foto"
+id="fotoPrincipal"
 
-class="form-control"
+accept="image/*"
+
+hidden
 
 >
 
 </div>
 
-<button class="
-btn
-btn-primary
-w-100
-">
-
-Guardar
-
-</button>
-
+<!-- MINIATURAS -->
 <div
-id="mensaje"
-class="mt-3"
-></div>
 
-</form>
+id="miniaturas"
+
+class="
+d-flex
+gap-3
+p-4
+overflow-auto
+"
+
+>
 
 </div>
 
-<script src="navbar.js"></script>
+<!-- FORM -->
+<div class="p-4">
 
-<script>
+<div class="
+row
+g-4
+">
 
-/* CATEGORIAS */
-async function cargarCategorias(){
+<!-- NOMBRE -->
+<div class="mb-4">
 
-const respuesta =
-await fetch(
-'http://localhost:3000/categorias'
-);
+<label class="
+fw-bold
+mb-2
+">
 
-const categorias =
-await respuesta.json();
+Nombre del emprendimiento
 
-const select =
-document.getElementById(
-'categoriaSelect'
-);
+</label>
 
-categorias.forEach(cat=>{
+<input
 
-select.innerHTML += `
+type="text"
 
-<option>
+id="nombre"
 
-${cat.nombre_categoria}
+class="
+form-control
+"
 
-</option>
+>
+
+</div>
+
+<!-- CATEGORIA -->
+<div class="col-md-6">
+
+<label class="
+fw-bold
+mb-2
+">
+
+Categoría
+
+</label>
+
+<input
+
+type="text"
+
+id="categoria"
+
+class="
+form-control
+rounded-4
+"
+
+>
+
+</div>
+
+<!-- UBICACION -->
+<div class="col-md-6">
+
+<label class="
+fw-bold
+mb-2
+">
+
+Ubicación
+
+</label>
+
+<input
+
+type="text"
+
+id="ubicacion"
+
+class="
+form-control
+rounded-4
+"
+
+>
+
+</div>
+
+<!-- HORARIOS -->
+<div class="col-md-6">
+
+<label class="
+fw-bold
+mb-2
+">
+
+Horarios
+
+</label>
+
+<input
+
+type="text"
+
+id="horarios"
+
+class="
+form-control
+rounded-4
+"
+
+>
+
+</div>
+
+<!-- SERVICIOS -->
+<div class="col-md-6">
+
+<label class="
+fw-bold
+mb-2
+">
+
+Servicios
+
+</label>
+
+<input
+
+type="text"
+
+id="servicios"
+
+class="
+form-control
+rounded-4
+"
+
+>
+
+</div>
+
+<!-- TELEFONO -->
+<div class="col-md-6">
+
+<label class="
+fw-bold
+mb-2
+">
+
+Teléfono
+
+</label>
+
+<input
+
+type="text"
+
+id="telefono"
+
+class="
+form-control
+rounded-4
+"
+
+>
+
+</div>
+
+<!-- DESCRIPCION -->
+<div class="col-12">
+
+<label class="
+fw-bold
+mb-2
+">
+
+Descripción
+
+</label>
+
+<textarea
+
+id="descripcion"
+
+class="
+form-control
+rounded-4
+"
+
+rows="6"
+
+></textarea>
+
+</div>
+
+<!-- BOTON -->
+<div class="col-12">
+
+<button
+
+id="crearBtn"
+
+class="
+btn
+btn-primary
+w-100
+py-3
+rounded-4
+fw-bold
+"
+
+>
+
+Crear Emprendimiento
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 `;
 
-});
-
-select.innerHTML += `
-<option>
-Otro
-</option>
-`;
+mostrarMiniaturas();
 
 }
 
-/* SERVICIOS */
-async function cargarServicios(){
+/* =====================================
+   MINIATURAS
+===================================== */
 
-const respuesta =
-await fetch(
-'http://localhost:3000/servicios'
+function mostrarMiniaturas(){
+
+const contenedor =
+document.getElementById(
+'miniaturas'
 );
 
-const servicios =
-await respuesta.json();
+contenedor.innerHTML = '';
 
-const select =
-document.getElementById(
-'serviciosSelect'
-);
+imagenes.forEach(
 
-servicios.forEach(servicio=>{
+(imagen,index)=>{
 
-select.innerHTML += `
+contenedor.innerHTML += `
 
-<option>
+<div
 
-${servicio.nombre_servicio}
+class="
+miniatura
+position-relative
+"
 
-</option>
+onclick="
+seleccionarImagen(${index})
+"
 
-`;
+>
 
-});
-
-select.innerHTML += `
-<option>
-Otro
-</option>
-`;
-
-}
-
-cargarCategorias();
-cargarServicios();
-
-/* OTRO */
-document.getElementById(
-'categoriaSelect'
-)
-
-.addEventListener(
-'change',
-()=>{
-
-document.getElementById(
-'categoriaNueva'
-).style.display =
-
-document.getElementById(
-'categoriaSelect'
-).value === 'Otro'
+${
+imagen
 
 ?
 
-'block'
+`
+
+<img src="${imagen.src}">
+
+<button
+
+type="button"
+
+class="
+position-absolute
+top-0
+end-0
+eliminar-btn
+"
+
+onclick="
+event.stopPropagation();
+eliminarImagen(${index});
+"
+
+>
+
+<i class="
+fa-solid
+fa-xmark
+"></i>
+
+</button>
+
+`
 
 :
 
-'none';
+`
+
+<div class="
+text-center
+">
+
+<i class="
+fa-solid
+fa-image
+text-secondary
+fs-1
+mb-2
+"></i>
+
+<p class="
+small
+text-muted
+mb-0
+">
+
+Agregar
+
+</p>
+
+</div>
+
+`
+}
+
+</div>
+
+`;
 
 }
+
 );
 
-document.getElementById(
-'serviciosSelect'
-)
+}
 
-.addEventListener(
+/* =====================================
+   SELECCIONAR IMAGEN
+===================================== */
+
+function seleccionarImagen(index){
+
+const imagen =
+imagenes[index];
+
+if(imagen){
+
+document.getElementById(
+'imagenPrincipal'
+).src = imagen.src;
+
+}else{
+
+const input =
+document.createElement(
+'input'
+);
+
+input.type = 'file';
+
+input.accept = 'image/*';
+
+input.onchange =
+function(evento){
+
+const archivo =
+evento.target.files[0];
+
+/* FOTO PRINCIPAL */
+document.getElementById(
+'fotoPrincipal'
+).files =
+evento.target.files;
+
+if(!archivo){
+
+return;
+
+}
+
+const lector =
+new FileReader();
+
+lector.onload =
+function(e){
+
+imagenes[index] = {
+
+tipo:'nueva',
+
+src:e.target.result
+
+};
+
+nuevasImagenes[index] =
+archivo;
+
+mostrarMiniaturas();
+
+document.getElementById(
+'imagenPrincipal'
+).src =
+e.target.result;
+
+};
+
+lector.readAsDataURL(
+archivo
+);
+
+};
+
+input.click();
+
+}
+
+}
+
+/* =====================================
+   ELIMINAR IMAGEN
+===================================== */
+
+function eliminarImagen(index){
+
+/* BORRAR */
+imagenes[index] = null;
+
+nuevasImagenes[index] = null;
+
+/* RECARGAR */
+mostrarMiniaturas();
+
+/* LIMPIAR PRINCIPAL */
+document.getElementById(
+'imagenPrincipal'
+).src =
+'https://via.placeholder.com/1200x500?text=Sin+Imagen';
+
+}
+
+/* =====================================
+   FOTO PRINCIPAL
+===================================== */
+
+document.addEventListener(
+
 'change',
-()=>{
+
+function(evento){
+
+if(
+evento.target.id ===
+'fotoPrincipal'
+){
+
+const archivo =
+evento.target.files[0];
+
+if(!archivo){
+
+return;
+
+}
+
+const lector =
+new FileReader();
+
+lector.onload =
+function(e){
 
 document.getElementById(
-'servicioNuevo'
-).style.display =
+'imagenPrincipal'
+).src =
+e.target.result;
 
-document.getElementById(
-'serviciosSelect'
-).value === 'Otro'
+};
 
-?
+lector.readAsDataURL(
+archivo
+);
 
-'block'
-
-:
-
-'none';
+}
 
 }
 );
 
-/* FORM */
-document.getElementById(
-'formulario'
-)
+/* =====================================
+   CREAR
+===================================== */
 
-.addEventListener(
+document.addEventListener(
 
-'submit',
+'click',
 
-async (e)=>{
+async function(evento){
 
-e.preventDefault();
+if(
+evento.target.id ===
+'crearBtn'
+){
+
+try{
 
 const datos =
-new FormData(
-e.target
+new FormData();
+
+datos.append(
+'nombre_emprendimiento',
+document.getElementById(
+'nombre'
+).value
 );
 
+datos.append(
+'categoria',
+document.getElementById(
+'categoria'
+).value
+);
+
+datos.append(
+'ubicacion',
+document.getElementById(
+'ubicacion'
+).value
+);
+
+datos.append(
+'horarios',
+document.getElementById(
+'horarios'
+).value
+);
+
+datos.append(
+'servicios',
+document.getElementById(
+'servicios'
+).value
+);
+
+datos.append(
+'telefono',
+document.getElementById(
+'telefono'
+).value
+);
+
+datos.append(
+'descripcion',
+document.getElementById(
+'descripcion'
+).value
+);
+
+/* FOTO */
+const fotoPrincipal =
+document.getElementById(
+'fotoPrincipal'
+).files[0];
+
+if(fotoPrincipal){
+
+datos.append(
+'foto',
+fotoPrincipal
+);
+
+}
+
+/* EXTRA */
+nuevasImagenes.forEach(img=>{
+
+if(img){
+
+datos.append(
+'imagenes_extra',
+img
+);
+
+}
+
+});
+
+/* FETCH */
 const respuesta =
 await fetch(
 
@@ -439,59 +926,120 @@ body:datos
 const resultado =
 await respuesta.json();
 
-document.getElementById(
-'mensaje'
-).innerHTML =
+if(resultado.ok){
 
-resultado.ok
+alert(
+'Emprendimiento creado correctamente'
+);
 
-?
+window.location.href =
+'panel.html';
 
-`
+}else{
 
-<div class="
-alert
-alert-success
-">
-
-${resultado.mensaje}
-
-</div>
-
-`
-
-:
-
-`
-
-<div class="
-alert
-alert-danger
-">
-
-${resultado.mensaje}
-
-</div>
-
-`;
+alert(
+resultado.mensaje
+);
 
 }
 
+}catch(error){
+
+console.log(error);
+
+alert(error);
+
+}
+
+}
+
+}
 );
 
+/* =====================================
+   ZOOM
+===================================== */
+
+document.addEventListener(
+
+'mousemove',
+
+function(e){
+
+const contenedor =
+document.getElementById(
+'contenedorZoom'
+);
+
+const imagen =
+document.getElementById(
+'imagenPrincipal'
+);
+
+if(
+!contenedor
+||
+!imagen
+){
+
+return;
+
+}
+
+const rect =
+contenedor.getBoundingClientRect();
+
+const x =
+e.clientX - rect.left;
+
+const y =
+e.clientY - rect.top;
+
+const dentro =
+
+x >= 0
+&&
+y >= 0
+&&
+x <= rect.width
+&&
+y <= rect.height;
+
+if(dentro){
+
+const posX =
+(x / rect.width) * 100;
+
+const posY =
+(y / rect.height) * 100;
+
+imagen.style.transform =
+'scale(2)';
+
+imagen.style.transformOrigin =
+`${posX}% ${posY}%`;
+
+}else{
+
+imagen.style.transform =
+'scale(1)';
+
+}
+
+});
+
+/* =====================================
+   INICIAR
+===================================== */
+
+mostrarFormulario();
 
 </script>
-<script src="navbar.js"></script>
 
+<!-- BOOTSTRAP -->
 <script src="
 https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
 "></script>
 
-
-</div>
-
-<div id="footer"></div>
-
-<script src="footer.js"></script>
 </body>
 </html>

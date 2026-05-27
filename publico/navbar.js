@@ -1,3 +1,164 @@
+/* =====================================
+   FAVICON
+===================================== */
+
+const favicon =
+document.createElement('link');
+
+favicon.rel = 'icon';
+
+favicon.type = 'image/png';
+
+favicon.href =
+'/fotos/Mascota visita quibdó.png';
+
+document.head.appendChild(
+favicon
+);
+
+/* =====================================
+   ESTILOS LOGO
+===================================== */
+
+const estilos =
+document.createElement('style');
+
+estilos.innerHTML = `
+
+/* =====================================
+   NAVBAR
+===================================== */
+
+.navbar-custom{
+
+background:
+linear-gradient(
+
+90deg,
+
+#2563eb,
+
+#1d4ed8
+
+);
+
+}
+
+/* =====================================
+   LOGO
+===================================== */
+
+.logo-navbar{
+
+object-fit:cover;
+
+border-radius:50%;
+
+border:2px solid white;
+
+background:white;
+
+padding:2px;
+
+}
+
+/* =====================================
+   LINKS NAVBAR
+===================================== */
+
+
+/* =====================================
+   MENU
+===================================== */
+
+.navbar-nav{
+
+display:flex;
+
+align-items:center;
+
+gap:4px;
+
+margin-left:18px;
+
+}
+
+/* LINKS */
+
+.nav-link{
+
+font-size:1.05rem !important;
+
+font-weight:700;
+
+padding:8px 14px !important;
+
+border-radius:10px;
+
+transition:all 0.22s ease;
+
+white-space:nowrap;
+
+position:relative;
+
+}
+
+/* LINEAS */
+
+.nav-item{
+
+position:relative;
+
+}
+
+.nav-item:not(:last-child)::after{
+
+content:'';
+
+position:absolute;
+
+right:-2px;
+
+top:50%;
+
+transform:translateY(-50%);
+
+width:1px;
+
+height:22px;
+
+background:rgba(
+255,
+255,
+255,
+0.35
+);
+
+}
+
+/* HOVER */
+
+.nav-link:hover{
+
+background:rgba(
+255,
+255,
+255,
+0.14
+);
+
+transform:translateY(-2px);
+
+}
+
+}
+
+`;
+
+document.head.appendChild(
+estilos
+);
+
 document.getElementById(
 'navbar'
 ).innerHTML = `
@@ -6,9 +167,9 @@ document.getElementById(
 navbar
 navbar-expand-lg
 navbar-dark
-bg-primary
 shadow-sm
 py-2
+navbar-custom
 ">
 
 <div class="container">
@@ -25,37 +186,15 @@ href="index.html">
 
 <img
 
-src="http://localhost:3000/fotos/logo.png"
+src="/fotos/Mascota visita quibdó.png"
 
-width="45"
+width="50"
 
-height="45"
+height="50"
 
-class="rounded-circle"
-
-style="
-object-fit:cover;
-border:2px solid white;
-background:white;
-padding:2px;
-"
-
-onerror="
-this.src='https://cdn-icons-png.flaticon.com/512/25/25694.png'
-"
+class="logo-navbar"
 
 >
-
-<span style="
-font-size:2rem;
-font-weight:700;
-letter-spacing:.5px;
-color:white;
-">
-
-Visita Quibdó
-
-</span>
 
 </a>
 
@@ -108,10 +247,6 @@ text-white
 
 href="emprendimientos.html"
 
-style="
-font-size:1rem;
-"
-
 >
 
 Emprendimientos
@@ -130,9 +265,7 @@ text-white
 
 href="lugares_turisticos.html"
 
-style="
-font-size:1rem;
-"
+
 
 >
 
@@ -152,9 +285,6 @@ text-white
 
 href="hoteles.html"
 
-style="
-font-size:1rem;
-"
 
 >
 
@@ -174,9 +304,7 @@ text-white
 
 href="restaurantes.html"
 
-style="
-font-size:1rem;
-"
+
 
 >
 
@@ -196,9 +324,6 @@ text-white
 
 href="eventos.html"
 
-style="
-font-size:1rem;
-"
 
 >
 
@@ -358,6 +483,34 @@ Editar perfil
 </a>
 
 </li>
+
+${
+datos.usuario.rol === 'superadmin'
+
+?
+
+`
+
+<li>
+
+<a class="
+dropdown-item
+"
+
+href="Panel_Superadmin.html">
+
+Panel SuperAdmin
+
+</a>
+
+</li>
+
+`
+
+:
+
+''
+}
 
 <li><hr class="dropdown-divider"></li>
 

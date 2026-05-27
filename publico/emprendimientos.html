@@ -26,11 +26,19 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 </head>
 
-<body>
+<body class="
+d-flex
+flex-column
+min-vh-100
+">
 
 <div id="navbar"></div>
 
-<div class="container mt-5 mb-5">
+<div class="
+container
+mt-5
+flex-grow-1
+">
 
 <h2 class="
 text-primary
@@ -259,16 +267,32 @@ e.total_resenas > 0
 
 `
 
-<span class="
-badge
-bg-warning
-text-dark
+<div class="
+d-flex
+align-items-center
+gap-2
+small
+mb-1
 ">
 
-${e.promedio_resenas} ★
-(${e.total_resenas})
+<span style="
+color:#3483FA;
+font-weight:600;
+">
+
+★ ${e.promedio_resenas}
 
 </span>
+
+<span style="
+color:#777;
+">
+
+| ${e.total_resenas}
+
+</span>
+
+</div>
 
 `
 
