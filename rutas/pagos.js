@@ -206,10 +206,10 @@ intent:'CAPTURE',
 application_context:{
 
 return_url:
-'http://localhost:3000/pago-exitoso.html',
+'https://visita-quibdo2.onrender.com/pago-exitoso.html',
 
 cancel_url:
-'http://localhost:3000/pago-cancelado.html'
+'https://visita-quibdo2.onrender.com/pago-cancelado.html'
 
 },
 
