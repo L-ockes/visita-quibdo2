@@ -281,6 +281,8 @@ let imagenes = [];
 
 let nuevasImagenes = [];
 
+let limiteImagenes = 5;
+
 /* PARAMETROS */
 const parametros =
 
@@ -791,8 +793,8 @@ img.imagen
 
 });
 
-/* MAXIMO 5 */
-while(imagenes.length < 5){
+/* MAXIMO */
+while(imagenes.length < limiteImagenes){
 
 imagenes.push(null);
 
@@ -1344,11 +1346,51 @@ imagen.style.transform =
 
 });
 
+async function cargarPlan(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+
+            'https://visita-quibdo2.onrender.com/perfil',
+
+            {
+                credentials:'include'
+            }
+
+        );
+
+        const usuario =
+        await respuesta.json();
+
+        if(
+            usuario.plan === 'premium'
+            &&
+            usuario.estado_pago === 'activo'
+        ){
+
+            limiteImagenes = 15;
+
+        }
+
+        cargarDatos();
+
+    }catch(error){
+
+        console.log(error);
+
+        cargarDatos();
+
+    }
+
+}
+
 /* =====================================
    INICIAR
 ===================================== */
 
-cargarDatos();
+cargarPlan();
 
 </script>
 

@@ -159,7 +159,7 @@ maxCount:1
 
 {
 name:'imagenes_extra',
-maxCount:5
+maxCount:15
 }
 
 ]),

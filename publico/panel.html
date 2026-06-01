@@ -188,7 +188,7 @@ justify-content-center
 <a
 
 href="
-crear_emprendimiento.html
+planes.html
 "
 
 class="
@@ -231,8 +231,90 @@ return;
 const emprendimientos =
 datos.emprendimientos;
 
+const plan =
+datos.plan || 'gratis';
+
+const estadoPago =
+datos.estado_pago || 'activo';
+
+const fechaVencimiento =
+datos.fecha_vencimiento || '';
+
+let fechaVencimientoFormateada = '';
+
+if(fechaVencimiento){
+
+const fecha =
+new Date(fechaVencimiento);
+
+fechaVencimientoFormateada =
+fecha.toLocaleString(
+
+'es-CO',
+
+{
+
+year:'numeric',
+month:'long',
+day:'numeric',
+hour:'numeric',
+minute:'2-digit',
+hour12:true
+
+}
+
+);
+
+}
+
 /* HTML */
 let html = `
+
+<div class="
+alert
+${plan === 'premium'
+? 'alert-primary'
+: 'alert-secondary'}
+mb-4
+">
+
+<h5 class="mb-2">
+
+${plan === 'premium'
+
+? '⭐ Plan Premium'
+
+: 'Plan Gratuito'}
+
+</h5>
+
+<p class="mb-1">
+
+Estado:
+<strong>${estadoPago}</strong>
+
+</p>
+
+${
+fechaVencimiento
+
+?
+
+`<p class="mb-0">
+
+Vence:
+
+<strong>${fechaVencimientoFormateada}</strong>
+
+</p>`
+
+:
+
+''
+
+}
+
+</div>
 
 <div class="
 d-flex

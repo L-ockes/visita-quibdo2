@@ -84,16 +84,62 @@ emprendimientos:[]
 }
 
 /* RESPUESTA */
-res.json({
+conexion.query(
 
-ok:true,
+`
+SELECT
+plan,
+estado_pago,
+fecha_vencimiento
+FROM usuarios
+WHERE id=?
+LIMIT 1
+`,
 
-tieneDatos:true,
+[idUsuario],
 
-emprendimientos:
-resultados
+(errorPlan,usuario)=>{
 
-});
+    if(errorPlan){
+
+        console.log(errorPlan);
+
+        return res.json({
+
+            ok:true,
+
+            tieneDatos:true,
+
+            emprendimientos:
+            resultados
+
+        });
+
+    }
+
+    res.json({
+
+        ok:true,
+
+        tieneDatos:true,
+
+        emprendimientos:
+        resultados,
+
+        plan:
+        usuario[0]?.plan || 'gratis',
+
+        estado_pago:
+        usuario[0]?.estado_pago || 'activo',
+
+        fecha_vencimiento:
+        usuario[0]?.fecha_vencimiento || null
+
+    });
+
+}
+
+);
 
 }
 

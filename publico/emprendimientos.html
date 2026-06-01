@@ -260,6 +260,14 @@ flex-wrap
 
 ${e.nombre_emprendimiento}
 
+${e.plan === 'premium'
+
+? '<span class="badge bg-primary">⭐ Premium</span>'
+
+: ''}
+
+</h5>
+
 ${
 e.total_resenas > 0
 

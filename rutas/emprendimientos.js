@@ -96,7 +96,18 @@ parametros.push(
 
 /* ORDEN */
 sql += `
-ORDER BY id DESC
+ORDER BY
+
+CASE
+
+WHEN plan='premium'
+THEN 1
+
+ELSE 2
+
+END,
+
+id DESC
 `;
 
 /* CONSULTA */

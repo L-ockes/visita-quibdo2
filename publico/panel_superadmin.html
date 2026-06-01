@@ -299,6 +299,23 @@ Gestionar Reseñas
 
 </button>
 
+<button
+class="menu-btn"
+onclick="mostrarPagos()"
+>
+
+<i class="
+fa-solid
+fa-file-invoice-dollar
+me-2
+"></i>
+
+Pagos y Recibos
+
+</button>
+
+
+
 <a
 
 href="https://visita-quibdo2.onrender.com/logout"
@@ -904,6 +921,218 @@ Aquí aparecerá la gestión de roles.
 `;
 
 }
+//pagos//
+async function mostrarPagos(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Pagos y Recibos
+
+</h2>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>Recibo</th>
+<th>Usuario</th>
+<th>Correo</th>
+<th>Plan</th>
+<th>Valor</th>
+<th>Fecha</th>
+<th>Estado</th>
+<th>PDF</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaPagos">
+
+<tr>
+
+<td colspan="8" class="text-center">
+
+Cargando pagos...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+`;
+
+const respuesta =
+await fetch(
+
+'https://visita-quibdo2.onrender.com/pagos-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar pagos
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.pagos.forEach(pago=>{
+
+const fecha =
+new Date(
+pago.fecha_pago
+);
+
+const fechaFormateada =
+fecha.toLocaleString(
+'es-CO'
+);
+
+html += `
+
+<tr>
+
+<td>
+${pago.id}
+</td>
+
+<td>
+${pago.nombre}
+</td>
+
+<td>
+${pago.correo}
+</td>
+
+<td>
+
+<span class="
+badge
+bg-primary
+">
+
+${pago.plan}
+
+</span>
+
+</td>
+
+<td>
+
+$${Number(
+pago.monto
+).toLocaleString(
+'es-CO'
+)} ${pago.moneda}
+
+</td>
+
+<td>
+
+${fechaFormateada}
+
+</td>
+
+<td>
+
+<span class="
+badge
+bg-success
+">
+
+${pago.estado}
+
+</span>
+
+</td>
+
+<td>
+
+<a
+
+href="
+https://visita-quibdo2.onrender.com/recibo-pdf/${pago.id}
+"
+
+target="_blank"
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+>
+
+PDF
+
+</a>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaPagos'
+).innerHTML = html;
+
+}
 
 /* =====================================
    MOSTRAR EMPRENDIMIENTOS
@@ -954,6 +1183,7 @@ table-primary
 <th>Categoría</th>
 <th>Propietario</th>
 <th>Correo</th>
+<th>Plan</th>
 <th>Estado</th>
 <th>Acciones</th>
 
@@ -1074,6 +1304,16 @@ ${em.propietario}
 <td>
 
 ${em.correo}
+
+</td>
+
+<td>
+
+${em.plan === 'premium'
+
+? '<span class="badge bg-primary">⭐ Premium</span>'
+
+: '<span class="badge bg-secondary">Gratis</span>'}
 
 </td>
 

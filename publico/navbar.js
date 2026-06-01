@@ -73,11 +73,7 @@ padding:2px;
 
 .navbar-nav{
 
-display:flex;
-
-align-items:center;
-
-gap:4px;
+gap:10px;
 
 margin-left:18px;
 
@@ -99,7 +95,18 @@ transition:all 0.22s ease;
 
 white-space:nowrap;
 
-position:relative;
+line-height:1 !important;
+
+display:inline-flex;
+
+align-items:center;
+
+}
+
+.nav-item{
+
+display:flex;
+align-items:center;
 
 }
 
@@ -148,8 +155,6 @@ background:rgba(
 );
 
 transform:translateY(-2px);
-
-}
 
 }
 
@@ -372,6 +377,36 @@ credentials:'include'
 const datos =
 await respuesta.json();
 
+let tieneEmprendimiento = false;
+
+try{
+
+const respuestaPanel =
+await fetch(
+
+'https://visita-quibdo2.onrender.com/panel-datos',
+
+{
+
+credentials:'include'
+
+}
+
+);
+
+const datosPanel =
+await respuestaPanel.json();
+
+tieneEmprendimiento =
+datosPanel.tieneDatos === true;
+
+}
+catch(error){
+
+console.log(error);
+
+}
+
 /* LOGIN */
 if(datos.ok){
 
@@ -456,19 +491,34 @@ Mi emprendimiento
 
 </li>
 
+${
+!tieneEmprendimiento
+
+?
+
+`
+
 <li>
 
 <a class="
 dropdown-item
 "
 
-href="crear_emprendimiento.html">
+href="planes.html">
 
 Registrar emprendimiento
 
 </a>
 
 </li>
+
+`
+
+:
+
+''
+
+}
 
 <li>
 

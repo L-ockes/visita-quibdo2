@@ -150,7 +150,7 @@ maxCount:1
 
 {
 name:'imagenes_extra',
-maxCount:5
+maxCount:15
 }
 
 ]),
@@ -160,16 +160,60 @@ maxCount:5
 /* LOGIN */
 if(!req.session.usuario){
 
-return res.status(401).json({
-
-ok:false,
-
-mensaje:
-'No autorizado'
-
-});
+    return res.status(401).json({
+        ok:false,
+        mensaje:'No autorizado'
+    });
 
 }
+
+conexion.query(
+
+    `
+    SELECT
+    plan,
+    estado_pago
+    FROM usuarios
+    WHERE id=?
+    LIMIT 1
+    `,
+
+    [req.session.usuario.id],
+
+    (errorUsuario,usuarios)=>{
+
+        if(errorUsuario){
+
+            console.log(errorUsuario);
+
+            return res.json({
+                ok:false,
+                mensaje:'Error verificando plan'
+            });
+
+        }
+
+        const usuario = usuarios[0];
+
+if(usuario){
+
+    if(
+        usuario.plan === 'premium'
+        &&
+        usuario.estado_pago !== 'activo'
+    ){
+
+        return res.json({
+            ok:false,
+            mensaje:'Debes completar el pago del plan Premium antes de registrar tu emprendimiento'
+        });
+
+    }
+
+}
+
+
+
 
 const {
 
@@ -214,13 +258,15 @@ servicios,
 telefono,
 foto,
 rol,
-estado
+estado,
+plan,
+estado_pago
 
 )
 
 VALUES(
 
-?,?,?,?,?,?,?,?,?,?,?
+?,?,?,?,?,?,?,?,?,?,?,?,?
 
 )
 
@@ -241,7 +287,9 @@ servicios,
 telefono,
 foto,
 'emprendedor',
-'pendiente'
+'pendiente',
+usuario.plan,
+usuario.estado_pago
 ],
 
 (error,resultado)=>{
@@ -259,6 +307,8 @@ mensaje:error.sqlMessage
 });
 
 }
+
+
 
 /* =====================================
    IMAGENES EXTRA
@@ -353,6 +403,7 @@ mensaje:
 }
 
 );
+});
 
 /* =====================================
    ELIMINAR IMAGEN

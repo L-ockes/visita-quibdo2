@@ -206,13 +206,15 @@ let imagenes = [];
 
 let nuevasImagenes = [];
 
+let limiteImagenes = 5;
+
 /* =====================================
    MOSTRAR FORMULARIO
 ===================================== */
 
 function mostrarFormulario(){
 
-while(imagenes.length < 5){
+while(imagenes.length < limiteImagenes){
 
 imagenes.push(null);
 
@@ -1028,11 +1030,51 @@ imagen.style.transform =
 
 });
 
+async function cargarPlan(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+
+            'https://visita-quibdo2.onrender.com/perfil',
+
+            {
+                credentials:'include'
+            }
+
+        );
+
+        const usuario =
+        await respuesta.json();
+
+        if(
+            usuario.plan === 'premium'
+            &&
+            usuario.estado_pago === 'activo'
+        ){
+
+            limiteImagenes = 15;
+
+        }
+
+        mostrarFormulario();
+
+    }catch(error){
+
+        console.log(error);
+
+        mostrarFormulario();
+
+    }
+
+}
+
 /* =====================================
    INICIAR
 ===================================== */
 
-mostrarFormulario();
+cargarPlan();
 
 </script>
 
