@@ -10,7 +10,7 @@ favicon.rel = 'icon';
 favicon.type = 'image/png';
 
 favicon.href =
-'/fotos/mascota.png';
+'/fotos/Mascota visita quibdó.png';
 
 document.head.appendChild(
 favicon
@@ -311,7 +311,7 @@ gap-3
 href="index.html">
 
 <img
-src="/fotos/mascota.png"
+src="/fotos/Mascota visita quibdó.png"
 width="50"
 height="50"
 class="logo-navbar"
