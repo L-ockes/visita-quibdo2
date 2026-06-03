@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Pago cancelado</title>
+
+<style>
+
+body{
+
+font-family:Arial,sans-serif;
+background:#f4f6f9;
+
+}
+
+.contenedor{
+
+max-width:700px;
+margin:50px auto;
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 0 20px rgba(0,0,0,.1);
+text-align:center;
+
+}
+
+button{
+
+padding:12px 20px;
+margin:10px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+
+}
+
+.reintentar{
+
+background:#007bff;
+color:white;
+
+}
+
+.volver{
+
+background:#6c757d;
+color:white;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+<h1>
+❌ Pago cancelado
+</h1>
+
+<p>
+
+Tu pago fue cancelado o no pudo completarse.
+
+</p>
+
+<p>
+
+No se realizó ningún cobro y tu cuenta
+permanece sin cambios.
+
+</p>
+
+<br>
+
+<button
+class="reintentar"
+onclick="reintentarPago()">
+
+Intentar nuevamente
+
+</button>
+
+<button
+class="volver"
+onclick="volverPlanes()">
+
+Volver a planes
+
+</button>
+
+</div>
+
+<script>
+
+function reintentarPago(){
+
+window.location.href =
+'pago.html';
+
+}
+
+function volverPlanes(){
+
+window.location.href =
+'planes.html';
+
+}
+
+</script>
+
+</body>
+
+</html>

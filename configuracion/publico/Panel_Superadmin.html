@@ -1,0 +1,6265 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+Dashboard Superadmin
+</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet"
+>
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+>
+
+<link
+rel="stylesheet"
+href="styles.css"
+>
+
+<style>
+
+body{
+
+overflow-x:hidden;
+
+background:#f4f6f9;
+
+}
+
+/* SIDEBAR */
+.sidebar{
+
+width:280px;
+
+height:100vh;
+
+background:#111827;
+
+position:fixed;
+
+left:0;
+
+top:0;
+
+padding-top:20px;
+
+color:white;
+
+overflow-y:auto;
+
+}
+
+/* LOGO */
+.logo-admin{
+
+font-size:1.8rem;
+
+font-weight:700;
+
+text-align:center;
+
+margin-bottom:30px;
+
+}
+
+/* BOTONES */
+.menu-btn{
+
+width:100%;
+
+border:none;
+
+background:none;
+
+color:white;
+
+padding:15px 20px;
+
+text-align:left;
+
+font-size:1rem;
+
+font-weight:600;
+
+transition:.2s;
+
+border-radius:10px;
+
+margin-bottom:5px;
+
+}
+
+.menu-btn:hover{
+
+background:rgba(255,255,255,.15);
+
+}
+
+/* CONTENIDO */
+.main-content{
+
+margin-left:280px;
+
+padding:30px;
+
+min-height:100vh;
+
+}
+
+/* CARD */
+.card-admin{
+
+border:none;
+
+border-radius:20px;
+
+box-shadow:0 0 15px rgba(0,0,0,.08);
+
+}
+
+/* TITULO */
+.titulo-panel{
+
+font-weight:700;
+
+color:#0d6efd;
+
+}
+
+/* FOTO */
+.foto-admin{
+
+width:120px;
+
+height:120px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:4px solid #0d6efd;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div
+class="
+toast-container
+position-fixed
+top-0
+end-0
+p-3
+"
+id="toastContainer"
+style="
+z-index:9999;
+"
+>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+<div class="logo-admin">
+
+⚙️ SuperAdmin
+
+</div>
+
+<button
+class="menu-btn"
+onclick="mostrarDashboard()"
+>
+
+<i class="
+fa-solid
+fa-chart-line
+me-2
+"></i>
+
+Dashboard
+
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarUsuarios()"
+>
+
+<i class="
+fa-solid
+fa-users
+me-2
+"></i>
+
+Gestionar Usuarios
+
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarEmprendimientos()"
+>
+
+<i class="
+fa-solid
+fa-store
+me-2
+"></i>
+
+Gestionar Emprendimientos
+
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarHoteles()"
+>
+
+<i class="
+fa-solid
+fa-hotel
+me-2
+"></i>
+
+Hoteles
+
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarRestaurantes()"
+>
+
+<i class="
+fa-solid
+fa-utensils
+me-2
+"></i>
+
+Restaurantes
+
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarEventos()"
+>
+
+<i class="
+fa-solid
+fa-calendar
+me-2
+"></i>
+
+Eventos
+
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarLugares()"
+>
+<i class="fa-solid fa-map-location-dot me-2"></i>
+Lugares Turísticos
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarBanners()"
+>
+<i class="fa-solid fa-image me-2"></i>
+Banners del Sitio
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarResenas()"
+>
+
+<i class="
+fa-solid
+fa-star
+me-2
+"></i>
+
+Gestionar Reseñas
+
+</button>
+
+<button
+class="menu-btn"
+onclick="mostrarPagos()"
+>
+
+<i class="
+fa-solid
+fa-file-invoice-dollar
+me-2
+"></i>
+
+Pagos y Recibos
+
+</button>
+
+
+
+<a
+
+href="http://localhost:3000/logout"
+
+class="
+btn
+btn-success
+mt-4
+mx-3
+d-block
+"
+>
+
+Cerrar sesión
+
+</a>
+
+</div>
+
+<!-- CONTENIDO -->
+<div class="main-content">
+
+<div id="contenidoAdmin"></div>
+
+</div>
+
+<div id="footer"></div>
+
+<script>
+
+/* INICIO */
+window.onload = ()=>{
+
+verificarSuperadmin();
+
+mostrarDashboard();
+
+cargarTotales();
+
+cargarNotificaciones();
+
+};
+
+/* VERIFICAR */
+async function verificarSuperadmin(){
+
+const respuesta =
+await fetch(
+'http://localhost:3000/usuario'
+);
+
+const datos =
+await respuesta.json();
+
+if(
+!datos.ok
+){
+
+window.location.href =
+'login.html';
+
+return;
+
+}
+
+if(
+datos.usuario.rol !==
+'superadmin'
+){
+
+window.location.href =
+'index.html';
+
+}
+
+}
+
+/* DASHBOARD */
+function mostrarDashboard(){
+
+document.getElementById(
+'contenidoAdmin'
+).innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Dashboard Superadmin
+
+</h2>
+
+<div class="
+row
+g-4
+">
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>👥</h1>
+
+<h3 id="totalUsuarios">
+0
+</h3>
+
+<p>
+Usuarios
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>🏨</h1>
+
+<h3 id="totalHoteles">
+0
+</h3>
+
+<p>
+Hoteles
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>🍽️</h1>
+
+<h3 id="totalRestaurantes">
+0
+</h3>
+
+<p>
+Restaurantes
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>🎉</h1>
+
+<h3 id="totalEventos">
+0
+</h3>
+
+<p>
+Eventos
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>📍</h1>
+
+<h3 id="totalLugares">
+0
+</h3>
+
+<p>
+Lugares
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>🏪</h1>
+
+<h3 id="totalEmprendimientos">
+0
+</h3>
+
+<p>
+Emprendimientos
+</p>
+
+</div>
+
+</div>
+
+
+
+</div>
+
+<!-- ACTIVIDAD RECIENTE -->
+<div class="
+card
+card-admin
+p-4
+mt-4
+">
+
+<h4 class="
+fw-bold
+mb-4
+">
+
+🕒 Actividad Reciente
+
+</h4>
+
+<ul
+class="
+list-group
+list-group-flush
+"
+id="actividadReciente"
+>
+
+<li class="list-group-item">
+
+Cargando actividad...
+
+</li>
+
+</ul>
+
+</div>
+
+`;
+  cargarTotales();
+
+  cargarActividad();
+
+  cargarNotificaciones();
+}
+
+/* =====================================
+   MOSTRAR USUARIOS
+===================================== */
+
+async function mostrarUsuarios(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h2 class="fw-bold mb-1">
+            Gestión de Usuarios
+        </h2>
+
+        <p class="text-muted mb-0">
+            Administra usuarios y roles del sistema
+        </p>
+
+    </div>
+
+</div>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>ID</th>
+<th>Nombre</th>
+<th>Correo</th>
+<th>Rol</th>
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaUsuarios">
+
+<tr>
+
+<td colspan="5" class="text-center">
+
+Cargando usuarios...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+`;
+
+/* FETCH */
+const respuesta =
+await fetch(
+
+'http://localhost:3000/usuarios-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar usuarios
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.usuarios.forEach(usuario=>{
+
+html += `
+
+<tr>
+
+<td>
+${usuario.id}
+</td>
+
+<td>
+${usuario.nombre}
+</td>
+
+<td>
+${usuario.correo}
+</td>
+
+<td>
+
+<span class="
+badge
+${
+usuario.rol === 'superadmin'
+? 'bg-success'
+
+: usuario.rol === 'admin'
+? 'bg-primary'
+
+: usuario.rol === 'emprendedor'
+? 'bg-warning text-dark'
+
+: 'bg-secondary'
+}
+">
+
+${usuario.rol}
+
+</span>
+
+</td>
+
+<td>
+
+<select
+
+class="
+form-select
+form-select-sm
+mb-2
+"
+
+onchange="
+cambiarRol(
+${usuario.id},
+this.value
+)
+"
+
+>
+
+<option
+value="usuario"
+
+${usuario.rol === 'usuario'
+? 'selected'
+: ''
+}
+
+>
+
+Usuario
+
+</option>
+
+<option
+value="emprendedor"
+
+${usuario.rol === 'emprendedor'
+? 'selected'
+: ''
+}
+
+>
+
+Emprendedor
+
+</option>
+
+<option
+value="admin"
+
+${usuario.rol === 'admin'
+? 'selected'
+: ''
+}
+
+>
+
+Admin
+
+</option>
+
+<option
+value="superadmin"
+
+${usuario.rol === 'superadmin'
+? 'selected'
+: ''
+}
+
+>
+
+SuperAdmin
+
+</option>
+
+</select>
+
+<button
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+onclick="
+eliminarUsuario(
+${usuario.id}
+)
+"
+
+>
+
+Eliminar
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaUsuarios'
+).innerHTML = html;
+
+}
+
+/* ROLES */
+function mostrarRoles(){
+
+document.getElementById(
+'contenidoAdmin'
+).innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Gestión de Roles
+
+</h2>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<p>
+Aquí aparecerá la gestión de roles.
+</p>
+
+</div>
+
+`;
+
+}
+//pagos//
+async function mostrarPagos(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Pagos y Recibos
+
+</h2>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>Recibo</th>
+<th>Usuario</th>
+<th>Correo</th>
+<th>Plan</th>
+<th>Valor</th>
+<th>Fecha</th>
+<th>Estado</th>
+<th>PDF</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaPagos">
+
+<tr>
+
+<td colspan="8" class="text-center">
+
+Cargando pagos...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+`;
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/pagos-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar pagos
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.pagos.forEach(pago=>{
+
+const fecha =
+new Date(
+pago.fecha_pago
+);
+
+const fechaFormateada =
+fecha.toLocaleString(
+'es-CO'
+);
+
+html += `
+
+<tr>
+
+<td>
+${pago.id}
+</td>
+
+<td>
+${pago.nombre}
+</td>
+
+<td>
+${pago.correo}
+</td>
+
+<td>
+
+<span class="
+badge
+bg-primary
+">
+
+${pago.plan}
+
+</span>
+
+</td>
+
+<td>
+
+$${Number(
+pago.monto
+).toLocaleString(
+'es-CO'
+)} ${pago.moneda}
+
+</td>
+
+<td>
+
+${fechaFormateada}
+
+</td>
+
+<td>
+
+<span class="
+badge
+bg-success
+">
+
+${pago.estado}
+
+</span>
+
+</td>
+
+<td>
+
+<a
+
+href="
+http://localhost:3000/recibo-pdf/${pago.id}
+"
+
+target="_blank"
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+>
+
+PDF
+
+</a>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaPagos'
+).innerHTML = html;
+
+}
+
+/* =====================================
+   MOSTRAR EMPRENDIMIENTOS
+===================================== */
+
+async function mostrarEmprendimientos(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Gestión de Emprendimientos
+
+</h2>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>Foto</th>
+<th>Emprendimiento</th>
+<th>Categoría</th>
+<th>Propietario</th>
+<th>Correo</th>
+<th>Plan</th>
+<th>Estado</th>
+<th>Acciones</th>
+
+
+</tr>
+
+</thead>
+
+<tbody id="tablaEmprendimientos">
+
+<tr>
+
+<td colspan="6" class="text-center">
+
+Cargando...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+`;
+
+/* FETCH */
+const respuesta =
+await fetch(
+
+'http://localhost:3000/emprendimientos-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar emprendimientos
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.emprendimientos.forEach(em=>{
+
+html += `
+
+<tr>
+
+<td>
+
+<img
+
+src="
+
+${
+em.foto
+
+?
+
+'http://localhost:3000/' + em.foto
+
+:
+
+'https://via.placeholder.com/80'
+}
+
+"
+
+style="
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:10px;
+"
+
+>
+
+</td>
+
+<td>
+
+${em.nombre_emprendimiento}
+
+</td>
+
+<td>
+
+${em.categoria}
+
+</td>
+
+<td>
+
+${em.propietario}
+
+</td>
+
+<td>
+
+${em.correo}
+
+</td>
+
+<td>
+
+${em.plan === 'premium'
+
+? '<span class="badge bg-primary">⭐ Premium</span>'
+
+: '<span class="badge bg-secondary">Gratis</span>'}
+
+</td>
+
+<td>
+
+<span class="
+badge
+${
+em.estado === 'aprobado'
+
+?
+
+'bg-success'
+
+:
+
+em.estado === 'pendiente'
+
+?
+
+'bg-warning text-dark'
+
+:
+
+'bg-danger'
+}
+">
+
+${em.estado}
+
+</span>
+
+</td>
+
+<td>
+
+<button
+
+class="
+btn
+btn-success
+btn-sm
+me-2
+"
+
+onclick="
+aprobarEmprendimiento(
+${em.id}
+)
+"
+
+>
+
+Aprobar
+
+</button>
+
+<button
+
+class="
+btn
+btn-warning
+btn-sm
+me-2
+"
+
+onclick="
+rechazarEmprendimiento(
+${em.id}
+)
+"
+
+>
+
+Rechazar
+
+</button>
+
+<button
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+onclick="
+eliminarEmprendimiento(
+${em.id}
+)
+"
+
+>
+
+Eliminar
+
+</button>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaEmprendimientos'
+).innerHTML = html;
+
+}
+
+/* =====================================
+   MOSTRAR HOTELES
+===================================== */
+
+async function mostrarHoteles(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Gestión de Hoteles
+
+</h2>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-3
+">
+
+<h5 class="mb-0">
+
+Lista de hoteles
+
+</h5>
+
+<button
+
+class="
+btn
+btn-primary
+"
+
+data-bs-toggle="modal"
+
+data-bs-target="#modalHotel"
+
+>
+
+Agregar Hotel
+
+</button>
+
+</div>
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>Imagen</th>
+<th>Nombre</th>
+<th>Dirección</th>
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaHoteles">
+
+<tr>
+
+<td colspan="4" class="text-center">
+
+Cargando hoteles...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<!-- MODAL HOTEL -->
+<div
+class="modal fade"
+id="modalHotel"
+tabindex="-1"
+>
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h5 class="modal-title">
+
+Agregar Hotel
+
+</h5>
+
+<button
+type="button"
+class="btn-close"
+data-bs-dismiss="modal"
+></button>
+
+</div>
+
+<div class="modal-body">
+
+<form id="formHotel">
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Nombre
+
+</label>
+
+<input
+type="text"
+name="nombre"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Descripción
+
+</label>
+
+<textarea
+name="descripcion"
+class="form-control"
+required
+></textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Dirección
+
+</label>
+
+<input
+type="text"
+name="direccion"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Latitud
+
+</label>
+
+<input
+type="text"
+name="latitud"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Longitud
+
+</label>
+
+<input
+type="text"
+name="longitud"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Teléfono
+
+</label>
+
+<input
+type="text"
+name="telefono"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Sitio Web
+
+</label>
+
+<input
+type="text"
+name="sitio_web"
+class="form-control"
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Indicaciones
+
+</label>
+
+<input
+type="text"
+name="indicaciones"
+class="form-control"
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Estrellas
+
+</label>
+
+<input
+type="number"
+step="0.1"
+min="0"
+max="5"
+name="estrellas"
+class="form-control"
+required
+>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Imagen
+
+</label>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+required
+>
+
+</div>
+
+<button
+class="
+btn
+btn-primary
+w-100
+"
+>
+
+Guardar Hotel
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+/* FETCH */
+const respuesta =
+await fetch(
+
+'http://localhost:3000/hoteles-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar hoteles
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.hoteles.forEach(hotel=>{
+
+html += `
+
+<tr>
+
+<td>
+
+<img
+
+src="
+
+${
+hotel.imagen
+
+?
+
+'http://localhost:3000/' + hotel.imagen
+
+:
+
+'https://via.placeholder.com/70'
+}
+
+"
+
+style="
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:10px;
+"
+
+>
+
+</td>
+
+<td>
+
+${hotel.nombre}
+
+</td>
+
+<td>
+
+${hotel.direccion}
+
+</td>
+
+<td>
+
+<button
+
+class="
+btn
+btn-warning
+btn-sm
+me-2
+"
+
+onclick="
+editarHotel(
+${hotel.id}
+)
+"
+
+>
+
+Editar
+
+</button>
+
+<button
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+onclick="
+eliminarHotel(
+${hotel.id}
+)
+"
+
+>
+
+Eliminar
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaHoteles'
+).innerHTML = html;
+
+/* FORMULARIO */
+const formHotel =
+document.getElementById(
+'formHotel'
+);
+
+formHotel.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const formData =
+new FormData(
+formHotel
+);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/crear-hotel',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+mostrarNotificacion(
+'Hotel agregado correctamente'
+);
+
+/* CERRAR MODAL */
+bootstrap.Modal
+.getInstance(
+document.getElementById(
+'modalHotel'
+)
+)
+.hide();
+
+/* RECARGAR */
+mostrarHoteles();
+
+}
+
+else{
+
+alert(
+'Error al guardar hotel'
+);
+
+}
+
+}
+
+);
+
+}
+
+/* =====================================
+   MOSTRAR RESTAURANTES
+===================================== */
+
+async function mostrarRestaurantes(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Gestión de Restaurantes
+
+</h2>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-3
+">
+
+<h5 class="mb-0">
+
+Lista de restaurantes
+
+</h5>
+
+<button
+
+class="
+btn
+btn-primary
+"
+
+onclick="
+abrirModalRestaurante()
+"
+
+>
+
+Agregar Restaurante
+
+</button>
+
+</div>
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>Imagen</th>
+<th>Nombre</th>
+<th>Dirección</th>
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaRestaurantes">
+
+<tr>
+
+<td colspan="4" class="text-center">
+
+Cargando restaurantes...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+`;
+
+/* FETCH */
+const respuesta =
+await fetch(
+
+'http://localhost:3000/restaurantes-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar restaurantes
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.restaurantes.forEach(restaurante=>{
+
+html += `
+
+<tr>
+
+<td>
+
+<img
+
+src="
+
+${
+restaurante.imagen
+
+?
+
+'http://localhost:3000/' + restaurante.imagen
+
+:
+
+'https://via.placeholder.com/70'
+}
+
+"
+
+style="
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:10px;
+"
+
+>
+
+</td>
+
+<td>
+
+${restaurante.nombre}
+
+</td>
+
+<td>
+
+${restaurante.direccion}
+
+</td>
+
+<td>
+
+<button
+
+class="
+btn
+btn-warning
+btn-sm
+me-2
+"
+
+onclick="
+editarRestaurante(
+${restaurante.id}
+)
+"
+
+>
+
+Editar
+
+</button>
+
+<button
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+onclick="
+eliminarRestaurante(
+${restaurante.id}
+)
+"
+
+>
+
+Eliminar
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaRestaurantes'
+).innerHTML = html;
+
+}
+
+/* =====================================
+   MOSTRAR EVENTOS
+===================================== */
+
+async function mostrarEventos(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Gestión de Eventos
+
+</h2>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-3
+">
+
+<h5 class="mb-0">
+
+Lista de eventos
+
+</h5>
+
+<button
+
+class="
+btn
+btn-primary
+"
+
+data-bs-toggle="modal"
+
+data-bs-target="#modalEvento"
+
+>
+
+Agregar Evento
+
+</button>
+
+</div>
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>Imagen</th>
+<th>Título</th>
+<th>Fecha</th>
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaEventos">
+
+<tr>
+
+<td colspan="4" class="text-center">
+
+Cargando eventos...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<!-- MODAL EVENTO -->
+<div
+class="modal fade"
+id="modalEvento"
+tabindex="-1"
+>
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h5 class="modal-title">
+
+Agregar Evento
+
+</h5>
+
+<button
+type="button"
+class="btn-close"
+data-bs-dismiss="modal"
+></button>
+
+</div>
+
+<div class="modal-body">
+
+<form
+id="formEvento"
+enctype="
+multipart/form-data
+">
+
+<div class="mb-3">
+
+<label class="form-label">
+Título
+</label>
+
+<input
+type="text"
+name="titulo"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Descripción
+</label>
+
+<textarea
+name="descripcion"
+class="form-control"
+required
+></textarea>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+Fecha
+</label>
+
+<input
+type="date"
+name="fecha"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+Hora
+</label>
+
+<input
+type="time"
+name="hora"
+class="form-control"
+required
+>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Lugar
+</label>
+
+<input
+type="text"
+name="lugar"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Imagen
+</label>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+required
+>
+
+</div>
+
+<button
+class="
+btn
+btn-primary
+w-100
+"
+>
+
+Guardar Evento
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+/* FETCH */
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eventos-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar eventos
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.eventos.forEach(evento=>{
+
+html += `
+
+<tr>
+
+<td>
+
+<img
+
+src="
+
+${
+evento.imagen
+
+?
+
+evento.imagen
+
+:
+
+'https://via.placeholder.com/400x220?text=Sin+Imagen'
+}
+
+"
+
+style="
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:10px;
+"
+
+>
+
+</td>
+
+<td>
+
+${evento.titulo}
+
+</td>
+
+<td>
+
+${evento.fecha}
+
+</td>
+
+<td>
+
+<button
+
+class="
+btn
+btn-warning
+btn-sm
+me-2
+"
+
+onclick="
+editarEvento(
+${evento.id}
+)
+"
+
+>
+
+Editar
+
+</button>
+
+
+<button
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+onclick="
+eliminarEvento(
+${evento.id}
+)
+"
+
+>
+
+Eliminar
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaEventos'
+).innerHTML = html;
+
+
+/* FORMULARIO */
+const formEvento =
+document.getElementById(
+'formEvento'
+);
+
+formEvento.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const formData =
+new FormData(
+formEvento
+);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/agregar-evento',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+mostrarNotificacion(
+'Evento agregado correctamente'
+);
+
+bootstrap.Modal
+.getInstance(
+document.getElementById(
+'modalEvento'
+)
+)
+.hide();
+
+mostrarEventos();
+
+}
+
+else{
+
+alert(
+'Error al guardar evento'
+);
+
+}
+
+}
+
+);
+
+}
+
+/* =====================================
+   EDITAR EVENTO
+===================================== */
+
+async function editarEvento(id){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/evento/' + id
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+alert(
+'Evento no encontrado'
+);
+
+return;
+
+}
+
+const evento =
+datos.evento;
+
+document.getElementById(
+'contenidoAdmin'
+).innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Editar Evento
+
+</h2>
+
+<form
+id="formEditarEvento"
+class="
+card
+card-admin
+p-4
+"
+enctype="
+multipart/form-data
+">
+
+<input
+type="hidden"
+name="id"
+value="${evento.id}"
+>
+
+<div class="mb-3">
+
+<label>
+Título
+</label>
+
+<input
+type="text"
+name="titulo"
+class="form-control"
+value="${evento.titulo}"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Descripción
+</label>
+
+<textarea
+name="descripcion"
+class="form-control"
+rows="4"
+>${evento.descripcion || ''}</textarea>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label>
+Fecha
+</label>
+
+<input
+type="date"
+name="fecha"
+class="form-control"
+value="${evento.fecha}"
+required
+>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+Hora
+</label>
+
+<input
+type="time"
+name="hora"
+class="form-control"
+value="${evento.hora}"
+required
+>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Lugar
+</label>
+
+<input
+type="text"
+name="lugar"
+class="form-control"
+value="${evento.lugar}"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Nueva imagen
+</label>
+
+<hr>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+>
+<hr>
+<h5>Galería de eventos</h5>
+
+<div class="mb-3">
+    <label>Imagen adicional 1</label>
+    <input type="file" name="imagen1" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 2</label>
+    <input type="file" name="imagen2" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 3</label>
+    <input type="file" name="imagen3" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 4</label>
+    <input type="file" name="imagen4" class="form-control">
+</div>
+
+</div>
+
+<button class="
+btn
+btn-primary
+">
+
+Guardar Cambios
+
+</button>
+
+</form>
+
+`;
+
+document.getElementById(
+'formEditarEvento'
+)
+
+.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const formData =
+new FormData(e.target);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/editar-evento',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Evento actualizado correctamente'
+);
+
+mostrarEventos();
+
+}
+
+else{
+
+alert(
+'Error al editar evento'
+);
+
+}
+
+}
+
+);
+
+}
+
+/* =====================================
+   ELIMINAR EVENTO
+===================================== */
+
+async function eliminarEvento(id){
+
+const confirmar =
+confirm(
+'¿Eliminar evento?'
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-evento',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Evento eliminado correctamente'
+);
+
+mostrarEventos();
+
+cargarTotales();
+
+}
+
+else{
+
+alert(
+'Error al eliminar evento'
+);
+
+}
+
+}
+
+/* =====================================
+   MOSTRAR LUGARES
+===================================== */
+
+async function mostrarLugares(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Gestión de Lugares Turísticos
+
+</h2>
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-3
+">
+
+<h5 class="mb-0">
+
+Lista de lugares turísticos
+
+</h5>
+
+<button
+
+class="
+btn
+btn-primary
+"
+
+onclick="
+abrirModalLugar()
+"
+
+>
+
+Agregar Lugar
+
+</button>
+
+</div>
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>Imagen</th>
+<th>Nombre</th>
+<th>Dirección</th>
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaLugares">
+
+<tr>
+
+<td colspan="4" class="text-center">
+
+Cargando lugares...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+`;
+
+/* FETCH */
+const respuesta =
+await fetch(
+
+'http://localhost:3000/lugares-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar lugares
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.lugares.forEach(lugar=>{
+
+html += `
+
+<tr>
+
+<td>
+
+<img
+
+src="
+
+${
+lugar.imagen
+
+?
+
+lugar.imagen.startsWith('http')
+
+?
+
+lugar.imagen
+
+:
+
+'http://localhost:3000/' + lugar.imagen
+
+:
+
+'https://via.placeholder.com/70'
+}
+
+"
+
+style="
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:10px;
+"
+
+>
+
+</td>
+
+<td>
+
+${lugar.nombre}
+
+</td>
+
+<td>
+
+${lugar.direccion}
+
+</td>
+
+<td>
+
+<button
+
+class="
+btn
+btn-warning
+btn-sm
+me-2
+"
+
+onclick="
+editarLugar(
+${lugar.id}
+)
+"
+
+>
+
+Editar
+
+</button>
+
+<button
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+onclick="
+eliminarLugar(
+${lugar.id}
+)
+"
+
+>
+
+Eliminar
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaLugares'
+).innerHTML = html;
+
+}
+
+/* =====================================
+   MOSTRAR ESTADISTICAS
+===================================== */
+
+function mostrarEstadisticas(){
+
+document.getElementById(
+'contenidoAdmin'
+).innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+📊 Estadísticas del Sistema
+
+</h2>
+
+<!-- TARJETAS -->
+<div class="
+row
+g-4
+mb-4
+">
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>👥</h1>
+
+<h3>
+250
+</h3>
+
+<p>
+Usuarios registrados
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>🏪</h1>
+
+<h3>
+45
+</h3>
+
+<p>
+Emprendimientos
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>🏨</h1>
+
+<h3>
+12
+</h3>
+
+<p>
+Hoteles
+</p>
+
+</div>
+
+</div>
+
+<div class="col-md-3">
+
+<div class="
+card
+card-admin
+p-4
+text-center
+">
+
+<h1>🎉</h1>
+
+<h3>
+18
+</h3>
+
+<p>
+Eventos
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- GRAFICAS -->
+<div class="
+row
+g-4
+">
+
+<!-- GRAFICA 1 -->
+<div class="col-md-6">
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<h5 class="
+fw-bold
+mb-4
+">
+
+📈 Crecimiento de usuarios
+
+</h5>
+
+<div style="
+height:300px;
+background:#f1f3f5;
+border-radius:15px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:1.2rem;
+color:#6c757d;
+">
+
+Aquí irá la gráfica
+
+</div>
+
+</div>
+
+</div>
+
+<!-- GRAFICA 2 -->
+<div class="col-md-6">
+
+<div class="
+card
+card-admin
+p-4
+">
+
+<h5 class="
+fw-bold
+mb-4
+">
+
+🔥 Actividad del sistema
+
+</h5>
+
+<div style="
+height:300px;
+background:#f1f3f5;
+border-radius:15px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:1.2rem;
+color:#6c757d;
+">
+
+Aquí irá la gráfica
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ACTIVIDAD -->
+<div class="
+card
+card-admin
+p-4
+mt-4
+">
+
+<h5 class="
+fw-bold
+mb-4
+">
+
+🕒 Actividad reciente
+
+</h5>
+
+<ul
+class="
+list-group
+list-group-flush
+"
+id="actividadReciente"
+>
+
+<li class="list-group-item">
+
+Cargando actividad...
+
+</li>
+
+</ul>
+
+</div>
+
+`;
+   cargarActividad();
+}
+/* TOTALES */
+async function cargarTotales(){
+
+/* USUARIOS */
+const usuarios =
+await fetch(
+'http://localhost:3000/total-usuarios'
+);
+
+const totalUsuarios =
+await usuarios.json();
+
+const usuariosHTML =
+document.getElementById(
+'totalUsuarios'
+);
+
+if(usuariosHTML){
+
+usuariosHTML.innerHTML =
+totalUsuarios.total;
+
+}
+
+/* HOTELES */
+const hoteles =
+await fetch(
+'http://localhost:3000/total-hoteles'
+);
+
+const totalHoteles =
+await hoteles.json();
+
+const hotelesHTML =
+document.getElementById(
+'totalHoteles'
+);
+
+if(hotelesHTML){
+
+hotelesHTML.innerHTML =
+totalHoteles.total;
+
+}
+
+/* RESTAURANTES */
+const restaurantes =
+await fetch(
+'http://localhost:3000/total-restaurantes'
+);
+
+const totalRestaurantes =
+await restaurantes.json();
+
+const restaurantesHTML =
+document.getElementById(
+'totalRestaurantes'
+);
+
+if(restaurantesHTML){
+
+restaurantesHTML.innerHTML =
+totalRestaurantes.total;
+
+}
+
+/* EVENTOS */
+const eventos =
+await fetch(
+'http://localhost:3000/total-eventos'
+);
+
+const totalEventos =
+await eventos.json();
+
+const eventosHTML =
+document.getElementById(
+'totalEventos'
+);
+
+if(eventosHTML){
+
+eventosHTML.innerHTML =
+totalEventos.total;
+
+}
+
+/* LUGARES */
+const lugares =
+await fetch(
+'http://localhost:3000/total-lugares'
+);
+
+const totalLugares =
+await lugares.json();
+
+const lugaresHTML =
+document.getElementById(
+'totalLugares'
+);
+
+if(lugaresHTML){
+
+lugaresHTML.innerHTML =
+totalLugares.total;
+
+}
+
+/* EMPRENDIMIENTOS */
+const emprendimientos =
+await fetch(
+'http://localhost:3000/total-emprendimientos'
+);
+
+const totalEmprendimientos =
+await emprendimientos.json();
+
+const emprendimientosHTML =
+document.getElementById(
+'totalEmprendimientos'
+);
+
+if(emprendimientosHTML){
+
+emprendimientosHTML.innerHTML =
+totalEmprendimientos.total;
+
+}
+
+}
+
+/* =====================================
+   CAMBIAR ROL
+===================================== */
+
+async function cambiarRol(
+id,
+rol
+){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/cambiar-rol',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id,
+rol
+
+})
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+alert(
+'Rol actualizado'
+);
+
+}
+
+else{
+
+alert(
+'Error al actualizar rol'
+);
+
+}
+
+}
+
+/* =====================================
+   ELIMINAR USUARIO
+===================================== */
+
+async function eliminarUsuario(
+id
+){
+
+const confirmar =
+confirm(
+
+'¿Eliminar usuario?'
+
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-usuario',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+alert(
+'Usuario eliminado'
+);
+
+mostrarUsuarios();
+
+cargarTotales();
+
+}
+
+else{
+
+alert(
+
+datos.mensaje ||
+
+'Error al eliminar'
+
+);
+
+}
+
+}
+
+/* =====================================
+   ELIMINAR EMPRENDIMIENTO
+===================================== */
+
+async function eliminarEmprendimiento(
+id
+){
+
+const confirmar =
+confirm(
+
+'¿Eliminar emprendimiento?'
+
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-emprendimiento',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+alert(
+'Emprendimiento eliminado'
+);
+
+mostrarEmprendimientos();
+
+}
+
+else{
+
+alert(
+'Error al eliminar'
+);
+
+}
+
+}
+
+/* =====================================
+   ACTIVIDAD RECIENTE
+===================================== */
+
+async function cargarActividad(){
+
+try{
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/actividades-recientes'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+return;
+
+}
+
+let html = '';
+
+datos.actividades.forEach(act=>{
+
+html += `
+
+<li class="list-group-item">
+
+🟢 <strong>
+
+${act.titulo}
+
+</strong>
+
+<br>
+
+<small class="text-muted">
+
+${act.descripcion}
+
+</small>
+
+</li>
+
+`;
+
+});
+
+const actividadHTML =
+document.getElementById(
+'actividadReciente'
+);
+
+if(actividadHTML){
+
+actividadHTML.innerHTML =
+html;
+
+}
+
+}
+
+catch(error){
+
+console.log(error);
+
+}
+
+}
+
+/* =====================================
+   EDITAR HOTEL
+===================================== */
+
+async function editarHotel(id){
+
+const respuesta =
+await fetch(
+
+`http://localhost:3000/hotel/${id}`
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+alert(
+'Hotel no encontrado'
+);
+
+return;
+
+}
+
+const hotel =
+datos.hotel;
+
+document.getElementById(
+'contenidoAdmin'
+).innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Editar Hotel
+
+</h2>
+
+<form
+id="formEditarHotel"
+class="
+card
+card-admin
+p-4
+"
+enctype="
+multipart/form-data
+">
+
+<input
+type="hidden"
+name="id"
+value="${hotel.id}"
+>
+
+<div class="mb-3">
+
+<label class="form-label">
+Nombre
+</label>
+
+<input
+type="text"
+name="nombre"
+class="form-control"
+value="${hotel.nombre}"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Descripción
+</label>
+
+<textarea
+name="descripcion"
+class="form-control"
+rows="4"
+required
+>${hotel.descripcion}</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Dirección
+</label>
+
+<input
+type="text"
+name="direccion"
+class="form-control"
+value="${hotel.direccion}"
+required
+>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+Latitud
+</label>
+
+<input
+type="text"
+name="latitud"
+class="form-control"
+value="${hotel.latitud}"
+required
+>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+Longitud
+</label>
+
+<input
+type="text"
+name="longitud"
+class="form-control"
+value="${hotel.longitud}"
+required
+>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Teléfono
+</label>
+
+<input
+type="text"
+name="telefono"
+class="form-control"
+value="${hotel.telefono || ''}"
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Sitio Web
+</label>
+
+<input
+type="text"
+name="sitio_web"
+class="form-control"
+value="${hotel.sitio_web || ''}"
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Indicaciones
+</label>
+
+<input
+type="text"
+name="indicaciones"
+class="form-control"
+value="${hotel.indicaciones || ''}"
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Estrellas
+</label>
+
+<input
+type="number"
+step="0.1"
+min="0"
+max="5"
+name="estrellas"
+class="form-control"
+value="${hotel.estrellas || 0}"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Nueva Imagen
+</label>
+
+<hr>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+>
+<hr>
+<h5>Galería de hoteles</h5>
+
+<div class="mb-3">
+    <label>Imagen adicional 1</label>
+    <input type="file" name="imagen1" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 2</label>
+    <input type="file" name="imagen2" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 3</label>
+    <input type="file" name="imagen3" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 4</label>
+    <input type="file" name="imagen4" class="form-control">
+</div>
+
+<hr>
+
+</div>
+
+<button class="
+btn
+btn-primary
+">
+
+Guardar Cambios
+
+</button>
+
+</form>
+
+`;
+
+/* SUBMIT */
+document.getElementById(
+'formEditarHotel'
+)
+
+.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const formData =
+new FormData(e.target);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/editar-hotel',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Hotel actualizado correctamente'
+);
+
+mostrarHoteles();
+
+}
+
+else{
+
+alert(
+resultado.mensaje
+);
+
+}
+
+}
+
+);
+
+}
+
+/* =====================================
+   ELIMINAR HOTEL
+===================================== */
+
+async function eliminarHotel(id){
+
+const confirmar =
+confirm(
+
+'¿Eliminar este hotel?'
+
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-hotel',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Hotel eliminado correctamente'
+);
+
+mostrarHoteles();
+
+cargarTotales();
+
+}
+
+else{
+
+alert(
+resultado.mensaje
+);
+
+}
+
+}
+
+/* =====================================
+   APROBAR
+===================================== */
+
+async function aprobarEmprendimiento(id){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/aprobar-emprendimiento',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarEmprendimientos();
+
+}
+
+}
+
+/* =====================================
+   RECHAZAR
+===================================== */
+
+async function rechazarEmprendimiento(id){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/rechazar-emprendimiento',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarEmprendimientos();
+
+}
+
+}
+
+/* =====================================
+   MODAL RESTAURANTE
+===================================== */
+
+function abrirModalRestaurante(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML += `
+
+<div
+class="
+modal
+fade
+show
+"
+style="
+display:block;
+background:rgba(0,0,0,0.5);
+"
+>
+
+<div class="
+modal-dialog
+modal-lg
+">
+
+<div class="
+modal-content
+">
+
+<div class="
+modal-header
+">
+
+<h5 class="
+modal-title
+">
+
+Agregar Restaurante
+
+</h5>
+
+<button
+
+class="
+btn-close
+"
+
+onclick="
+this.closest('.modal').remove()
+"
+
+>
+
+</button>
+
+</div>
+
+<div class="
+modal-body
+">
+
+<form
+id="formAgregarRestaurante"
+>
+
+<div class="mb-3">
+
+<label>
+Nombre
+</label>
+
+<input
+
+type="text"
+
+name="nombre"
+
+class="form-control"
+
+required
+
+>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Descripción
+</label>
+
+<textarea
+
+name="descripcion"
+
+class="form-control"
+
+></textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Dirección
+</label>
+
+<input
+
+type="text"
+
+name="direccion"
+
+class="form-control"
+
+>
+
+</div>
+
+<div class="
+row
+">
+
+<div class="
+col-md-6
+mb-3
+">
+
+<label>
+Latitud
+</label>
+
+<input
+
+type="text"
+
+name="latitud"
+
+class="form-control"
+
+>
+
+</div>
+
+<div class="
+col-md-6
+mb-3
+">
+
+<label>
+Longitud
+</label>
+
+<input
+
+type="text"
+
+name="longitud"
+
+class="form-control"
+
+>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Imagen
+</label>
+
+<input
+
+type="file"
+
+name="imagen"
+
+class="form-control"
+
+>
+
+</div>
+
+<button class="
+btn
+btn-success
+w-100
+">
+
+Guardar Restaurante
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+/* FORM */
+document.getElementById(
+'formAgregarRestaurante'
+)
+
+.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const formData =
+new FormData(e.target);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/agregar-restaurante',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Restaurante agregado correctamente'
+);
+
+mostrarRestaurantes();
+
+}
+
+}
+
+);
+
+}
+
+/* =====================================
+   ELIMINAR RESTAURANTE
+===================================== */
+
+async function eliminarRestaurante(id){
+
+const confirmar =
+confirm(
+'¿Eliminar restaurante?'
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-restaurante',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+mostrarNotificacion(
+'Restaurante eliminado correctamente'
+);
+
+mostrarRestaurantes();
+
+cargarTotales();
+
+}
+
+else{
+
+alert(
+'Error al eliminar'
+);
+
+}
+
+}
+
+/* =====================================
+   EDITAR RESTAURANTE
+===================================== */
+
+async function editarRestaurante(id){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/restaurante/' + id
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+alert(
+'Restaurante no encontrado'
+);
+
+return;
+
+}
+
+const restaurante =
+datos.restaurante;
+
+document.getElementById(
+'contenidoAdmin'
+).innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Editar Restaurante
+
+</h2>
+
+<form
+id="formEditarRestaurante"
+class="
+card
+card-admin
+p-4
+"
+enctype="
+multipart/form-data
+">
+
+<input
+type="hidden"
+name="id"
+value="${restaurante.id}"
+>
+
+<div class="mb-3">
+
+<label>
+Nombre
+</label>
+
+<input
+type="text"
+name="nombre"
+class="form-control"
+value="${restaurante.nombre}"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Descripción
+</label>
+
+<textarea
+name="descripcion"
+class="form-control"
+rows="4"
+>${restaurante.descripcion || ''}</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Dirección
+</label>
+
+<input
+type="text"
+name="direccion"
+class="form-control"
+value="${restaurante.direccion || ''}"
+>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label>
+Latitud
+</label>
+
+<input
+type="text"
+name="latitud"
+class="form-control"
+value="${restaurante.latitud || ''}"
+>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label>
+Longitud
+</label>
+
+<input
+type="text"
+name="longitud"
+class="form-control"
+value="${restaurante.longitud || ''}"
+>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Nueva imagen
+</label>
+
+<hr>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+>
+<hr>
+<h5>Galería de restaurantes</h5>
+
+<div class="mb-3">
+    <label>Imagen adicional 1</label>
+    <input type="file" name="imagen1" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 2</label>
+    <input type="file" name="imagen2" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 3</label>
+    <input type="file" name="imagen3" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 4</label>
+    <input type="file" name="imagen4" class="form-control">
+</div>
+
+
+</div>
+
+<button class="
+btn
+btn-primary
+">
+
+Guardar Cambios
+
+</button>
+
+</form>
+
+`;
+
+document.getElementById(
+'formEditarRestaurante'
+)
+
+.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const formData =
+new FormData(e.target);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/editar-restaurante',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Restaurante actualizado correctamente'
+);
+
+mostrarRestaurantes();
+
+}
+
+else{
+
+alert(
+'Error al editar restaurante'
+);
+
+}
+
+}
+
+);
+
+}
+
+/* =====================================
+   MODAL LUGAR
+===================================== */
+
+function abrirModalLugar(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML += `
+
+<div
+class="
+modal
+fade
+show
+"
+style="
+display:block;
+background:rgba(0,0,0,0.5);
+"
+>
+
+<div class="
+modal-dialog
+modal-lg
+">
+
+<div class="
+modal-content
+">
+
+<div class="
+modal-header
+">
+
+<h5 class="
+modal-title
+">
+
+Agregar Lugar
+
+</h5>
+
+<button
+
+class="
+btn-close
+"
+
+onclick="
+this.closest('.modal').remove()
+"
+
+>
+
+</button>
+
+</div>
+
+<div class="
+modal-body
+">
+
+<form
+id="formAgregarLugar"
+enctype="
+multipart/form-data
+"
+>
+
+<div class="mb-3">
+
+<label>
+Nombre
+</label>
+
+<input
+type="text"
+name="nombre"
+class="form-control"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Descripción
+</label>
+
+<textarea
+name="descripcion"
+class="form-control"
+></textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Dirección
+</label>
+
+<input
+type="text"
+name="direccion"
+class="form-control"
+>
+
+</div>
+
+<div class="
+row
+">
+
+<div class="
+col-md-6
+mb-3
+">
+
+<label>
+Latitud
+</label>
+
+<input
+type="text"
+name="latitud"
+class="form-control"
+>
+
+</div>
+
+<div class="
+col-md-6
+mb-3
+">
+
+<label>
+Longitud
+</label>
+
+<input
+type="text"
+name="longitud"
+class="form-control"
+>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Imagen
+</label>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+>
+
+</div>
+
+<button class="
+btn
+btn-success
+w-100
+">
+
+Guardar Lugar
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+/* FORM */
+document.getElementById(
+'formAgregarLugar'
+)
+
+.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const formData =
+new FormData(e.target);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/agregar-lugar',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Lugar agregado correctamente'
+);
+
+mostrarLugares();
+
+}
+
+else{
+
+alert(
+'Error al agregar lugar'
+);
+
+}
+
+}
+
+);
+
+}
+
+/* =====================================
+   EDITAR LUGAR
+===================================== */
+
+async function editarLugar(id){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/lugar/' + id
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+alert(
+'Lugar no encontrado'
+);
+
+return;
+
+}
+
+const lugar =
+datos.lugar;
+
+document.getElementById(
+'contenidoAdmin'
+).innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+
+Editar Lugar
+
+</h2>
+
+<form
+id="formEditarLugar"
+class="
+card
+card-admin
+p-4
+"
+enctype="
+multipart/form-data
+">
+
+<input
+type="hidden"
+name="id"
+value="${lugar.id}"
+>
+
+<div class="mb-3">
+
+<label>
+Nombre
+</label>
+
+<input
+type="text"
+name="nombre"
+class="form-control"
+value="${lugar.nombre}"
+required
+>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Descripción
+</label>
+
+<textarea
+name="descripcion"
+class="form-control"
+rows="4"
+>${lugar.descripcion || ''}</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Dirección
+</label>
+
+<input
+type="text"
+name="direccion"
+class="form-control"
+value="${lugar.direccion || ''}"
+>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Datos principales
+</label>
+
+<textarea
+name="datos_principales"
+class="form-control"
+rows="4"
+>${lugar.datos_principales || ''}</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Importancia turística
+</label>
+
+<textarea
+name="importancia_turistica"
+class="form-control"
+rows="4"
+>${lugar.importancia_turistica || ''}</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Dato cultural
+</label>
+
+<textarea
+name="dato_cultural"
+class="form-control"
+rows="4"
+>${lugar.dato_cultural || ''}</textarea>
+
+</div>
+
+<div class="
+row
+">
+
+<div class="
+col-md-6
+mb-3
+">
+
+<label>
+Latitud
+</label>
+
+<input
+type="text"
+name="latitud"
+class="form-control"
+value="${lugar.latitud || ''}"
+>
+
+</div>
+
+<div class="
+col-md-6
+mb-3
+">
+
+<label>
+Longitud
+</label>
+
+<input
+type="text"
+name="longitud"
+class="form-control"
+value="${lugar.longitud || ''}"
+>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Nueva imagen
+</label>
+
+<hr>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+>
+<hr>
+<h5>Galería de Lugares</h5>
+
+<div class="mb-3">
+    <label>Imagen adicional 1</label>
+    <input type="file" name="imagen1" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 2</label>
+    <input type="file" name="imagen2" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 3</label>
+    <input type="file" name="imagen3" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 4</label>
+    <input type="file" name="imagen4" class="form-control">
+</div>
+
+
+</div>
+
+<button class="
+btn
+btn-primary
+">
+
+Guardar Cambios
+
+</button>
+
+</form>
+
+`;
+
+document.getElementById(
+'formEditarLugar'
+)
+
+.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const formData =
+new FormData(e.target);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/editar-lugar',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Lugar actualizado correctamente'
+);
+
+mostrarLugares();
+
+}
+
+else{
+
+alert(
+'Error al editar lugar'
+);
+
+}
+
+}
+
+);
+
+}
+
+/* =====================================
+   ELIMINAR LUGAR
+===================================== */
+
+async function eliminarLugar(id){
+
+const confirmar =
+confirm(
+'¿Eliminar lugar?'
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-lugar',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+if(resultado.ok){
+
+mostrarNotificacion(
+'Lugar eliminado correctamente'
+);
+
+mostrarLugares();
+
+cargarTotales();
+}
+
+else{
+
+alert(
+'Error al eliminar lugar'
+);
+
+}
+
+}
+
+/* =====================================
+   MOSTRAR NOTIFICACION
+===================================== */
+
+function mostrarNotificacion(
+mensaje
+){
+ 
+
+const contenedor =
+document.getElementById(
+'toastContainer'
+);
+
+const id =
+'toast_' + Date.now();
+
+const html = `
+
+<div
+id="${id}"
+class="
+toast
+align-items-center
+text-bg-primary
+border-0
+mb-2
+"
+role="alert"
+>
+
+<div class="d-flex">
+
+<div class="toast-body">
+
+🔔 ${mensaje}
+
+</div>
+
+<button
+type="button"
+class="
+btn-close
+btn-close-white
+me-2
+m-auto
+"
+data-bs-dismiss="toast"
+></button>
+
+</div>
+
+</div>
+
+`;
+
+contenedor.innerHTML += html;
+
+const toastHTML =
+document.getElementById(id);
+
+const toast =
+new bootstrap.Toast(
+toastHTML,
+{
+delay:5000
+}
+);
+
+toast.show();
+
+}
+
+/* =====================================
+   MOSTRAR RESEÑAS
+===================================== */
+
+async function mostrarResenas(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<div class="
+d-flex
+justify-content-between
+align-items-center
+mb-4
+flex-wrap
+gap-3
+">
+
+<h2 class="
+titulo-panel
+mb-0
+">
+
+Gestión de Reseñas
+
+</h2>
+
+<div class="
+d-flex
+gap-2
+flex-wrap
+">
+
+<span class="
+badge
+rounded-pill
+bg-primary
+px-3
+py-2
+fs-6
+"
+id="totalResenasBadge"
+>
+
+⭐ Total: 0
+
+</span>
+
+</div>
+
+</div>
+
+<div class="
+row
+g-3
+mb-4
+">
+
+<div class="col-md-6">
+
+<input
+
+type="text"
+
+id="buscadorResenas"
+
+class="form-control"
+
+placeholder="
+Buscar comentario o usuario...
+"
+
+onkeyup="
+filtrarResenas()
+"
+
+>
+
+</div>
+
+<div class="col-md-3">
+
+<select
+
+id="filtroTipo"
+
+class="form-select"
+
+onchange="
+filtrarResenas()
+"
+
+>
+
+<option value="">
+
+Todos los tipos
+
+</option>
+
+<option value="hotel">
+
+Hoteles
+
+</option>
+
+<option value="restaurante">
+
+Restaurantes
+
+</option>
+
+<option value="evento">
+
+Eventos
+
+</option>
+
+<option value="lugar">
+
+Lugares
+
+</option>
+
+<option value="emprendimiento">
+
+Emprendimientos
+
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="
+table-responsive
+">
+
+<table class="
+table
+table-hover
+align-middle
+">
+
+<thead class="
+table-primary
+">
+
+<tr>
+
+<th>ID</th>
+<th>Usuario</th>
+<th>Tipo</th>
+<th>Calificación</th>
+<th>Comentario</th>
+<th>Fecha</th>
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tablaResenas">
+
+<tr>
+
+<td colspan="7" class="text-center">
+
+Cargando reseñas...
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+`;
+
+/* FETCH */
+const respuesta =
+await fetch(
+
+'http://localhost:3000/resenas-admin'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML = `
+
+<div class="
+alert
+alert-danger
+">
+
+Error al cargar reseñas
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.resenas.forEach(r=>{
+
+html += `
+
+<tr class="fila-resena">
+
+<td>
+${r.id}
+</td>
+
+<td>
+${r.nombre}
+</td>
+
+<td>
+
+<span class="
+badge
+rounded-pill
+text-bg-light
+border
+">
+
+${r.tipo}
+
+</span>
+
+</td>
+
+<td>
+
+<span style="
+color:#3483FA;
+font-weight:700;
+">
+
+★ ${r.calificacion}
+
+</span>
+
+</td>
+
+<td style="
+max-width:300px;
+">
+
+${
+r.comentario.length > 120
+
+?
+
+r.comentario.substring(0,120)
++ '...'
+
+:
+
+r.comentario
+}
+
+</td>
+
+<td>
+
+${
+r.creado_en
+
+?
+
+new Date(
+r.creado_en
+).toLocaleDateString('es-CO')
+
+:
+
+'Sin fecha'
+}
+
+</td>
+
+<td>
+
+<button
+
+class="
+btn
+btn-danger
+btn-sm
+"
+
+onclick="
+eliminarResenaAdmin(
+${r.id}
+)
+"
+
+>
+
+Eliminar
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById(
+'tablaResenas'
+).innerHTML = html;
+
+document.getElementById(
+'totalResenasBadge'
+).innerHTML =
+
+'⭐ Total: ' +
+
+datos.resenas.length;
+
+}
+
+/* =====================================
+   ELIMINAR RESEÑA ADMIN
+===================================== */
+
+async function eliminarResenaAdmin(id){
+
+const confirmar =
+confirm(
+'¿Eliminar reseña?'
+);
+
+if(!confirmar){
+
+return;
+
+}
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/eliminar-resena-admin',
+
+{
+
+method:'POST',
+
+headers:{
+
+'Content-Type':
+'application/json'
+
+},
+
+body:JSON.stringify({
+
+id
+
+})
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+mostrarNotificacion(
+'Reseña eliminada correctamente'
+);
+
+mostrarResenas();
+
+}
+
+else{
+
+alert(
+'Error al eliminar reseña'
+);
+
+}
+
+}
+
+/* =====================================
+   FILTRAR RESEÑAS
+===================================== */
+
+function filtrarResenas(){
+
+const texto =
+document.getElementById(
+'buscadorResenas'
+).value.toLowerCase();
+
+const tipo =
+document.getElementById(
+'filtroTipo'
+).value.toLowerCase();
+
+const filas =
+document.querySelectorAll(
+'.fila-resena'
+);
+
+filas.forEach(fila=>{
+
+const contenido =
+fila.innerText.toLowerCase();
+
+const coincideTexto =
+contenido.includes(texto);
+
+const coincideTipo =
+
+tipo === ''
+
+?
+
+true
+
+:
+
+contenido.includes(tipo);
+
+fila.style.display =
+
+coincideTexto && coincideTipo
+
+?
+
+''
+
+:
+
+'none';
+
+});
+
+}
+
+async function mostrarBanners(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+Banners del Sitio
+</h2>
+
+<div id="listaBanners">
+
+Cargando...
+
+</div>
+
+`;
+
+const respuesta =
+await fetch(
+'http://localhost:3000/banners-admin'
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML += `
+<div class="alert alert-danger">
+Error al cargar banners
+</div>
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.banners.forEach(b=>{
+
+html += `
+
+<div class="
+card
+card-admin
+p-4
+mb-4
+">
+
+<h5>
+
+${b.pagina}
+
+</h5>
+
+<br>
+
+<img
+
+src="${
+b.imagen
+?
+'http://localhost:3000/' + b.imagen
+:
+'https://via.placeholder.com/900x250?text=Sin+Banner'
+}"
+
+style="
+width:100%;
+max-height:250px;
+object-fit:cover;
+border-radius:15px;
+"
+
+>
+
+<br><br>
+
+<form
+onsubmit="
+subirBanner(
+event,
+${b.id}
+)
+"
+>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+required
+>
+
+<br>
+
+<button class="
+btn
+btn-primary
+">
+
+Guardar Banner
+
+</button>
+
+</form>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+'listaBanners'
+).innerHTML = html;
+
+}
+
+async function subirBanner(
+e,
+id
+){
+
+e.preventDefault();
+
+const formData =
+new FormData(
+e.target
+);
+
+formData.append(
+'id',
+id
+);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/editar-banner',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+mostrarNotificacion(
+'Banner actualizado'
+);
+
+mostrarBanners();
+
+}else{
+
+alert(
+'Error al guardar banner'
+);
+
+}
+
+}
+
+</script>
+
+<script src="
+https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+"></script>
+
+</body>
+
+</html>

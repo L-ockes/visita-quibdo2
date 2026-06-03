@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+
+<title>Pago Exitoso</title>
+
+</head>
+
+<body>
+    <style>
+
+body{
+
+font-family:Arial,sans-serif;
+background:#f4f6f9;
+
+}
+
+.contenedor{
+
+max-width:700px;
+
+margin:50px auto;
+
+background:white;
+
+padding:30px;
+
+border-radius:15px;
+
+box-shadow:0 0 20px rgba(0,0,0,.1);
+
+}
+
+button{
+
+padding:12px 20px;
+
+margin-right:10px;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-size:15px;
+
+font-weight:bold;
+
+transition:all .3s ease;
+
+box-shadow:0 4px 8px rgba(0,0,0,.15);
+
+}
+
+.btn-pdf{
+
+background:#dc3545;
+
+color:white;
+
+}
+
+.btn-pdf:hover{
+
+background:#bb2d3b;
+
+transform:translateY(-2px);
+
+}
+
+.btn-continuar{
+
+background:#198754;
+
+color:white;
+
+}
+
+.btn-continuar:hover{
+
+background:#157347;
+
+transform:translateY(-2px);
+
+}
+
+</style>
+
+<div class="contenedor">
+
+<h1>
+🎉 ¡Pago realizado correctamente!
+</h1>
+
+<p>
+
+Gracias por adquirir el
+Plan Premium de Visita Quibdó.
+
+</p>
+<p>
+Tu pago fue procesado correctamente
+y tu suscripción Premium ya se encuentra activa.
+</p>
+
+<hr>
+
+<h3>
+Resumen del pago
+</h3>
+
+<p>
+<strong>Plan:</strong>
+Premium
+</p>
+
+<p>
+<strong>Valor:</strong>
+$25.000 COP
+</p>
+
+<p>
+<strong>Estado:</strong>
+Completado
+</p>
+
+<div id="infoPago"></div>
+
+<div
+style="
+background:#f8f9fa;
+padding:15px;
+border-radius:10px;
+margin-top:15px;
+">
+
+<p>
+
+<strong>
+Número de recibo:
+</strong>
+
+<span id="numeroRecibo">
+Cargando...
+</span>
+
+</p>
+
+<p>
+
+<strong>
+Estado:
+</strong>
+
+COMPLETADO
+
+</p>
+
+<p>
+
+<strong>
+Plan:
+</strong>
+
+Premium
+
+</p>
+
+<p>
+
+<strong>
+Valor pagado:
+</strong>
+
+$25.000 COP
+
+</p>
+
+</div>
+
+<br>
+
+<button
+
+class="btn-pdf"
+
+onclick="descargarRecibo()">
+
+📄 Descargar comprobante PDF
+
+</button>
+
+<button
+
+class="btn-continuar"
+
+onclick="continuar()">
+
+🚀 Crear emprendimiento
+
+</button>
+
+</div>
+
+<script>
+
+async function activarPremium(){
+
+try{
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/activar-premium',
+
+{
+
+method:'POST',
+
+credentials:'include'
+
+}
+
+);
+
+const data =
+await respuesta.json();
+
+if(data.ok){
+
+localStorage.setItem(
+
+'idPago',
+
+data.idPago
+
+);
+
+document.getElementById(
+'numeroRecibo'
+).textContent =
+data.idPago;
+
+}else{
+
+alert(
+data.mensaje
+);
+
+}
+
+}
+catch(error){
+
+console.log(error);
+
+alert(
+'Error activando Premium'
+);
+
+}
+
+}
+
+activarPremium();
+
+function descargarRecibo(){
+
+const idPago =
+localStorage.getItem(
+'idPago'
+);
+
+window.open(
+
+`http://localhost:3000/recibo-pdf/${idPago}`,
+
+'_blank'
+
+);
+
+}
+
+function continuar(){
+
+window.location.href =
+'crear_emprendimiento.html';
+
+}
+
+</script>
+
+</body>
+</html>

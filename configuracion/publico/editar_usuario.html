@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+Editar Perfil
+</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet"
+>
+
+<link
+rel="stylesheet"
+href="styles.css"
+>
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+>
+
+<style>
+
+.perfil-foto{
+
+width:140px;
+
+height:140px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+border:3px solid #0d6efd;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="navbar"></div>
+
+<div class="container mt-5 mb-5">
+
+<h2 class="
+text-center
+text-primary
+fw-bold
+mb-4
+">
+
+Editar Perfil
+
+</h2>
+
+<div class="
+row
+justify-content-center
+">
+
+<div class="
+col-md-6
+bg-white
+shadow
+rounded
+p-4
+">
+
+<!-- FOTO -->
+<div class="
+text-center
+mb-3
+">
+
+<img
+
+id="fotoPerfil"
+
+src="
+https://cdn-icons-png.flaticon.com/512/149/149071.png
+"
+
+class="perfil-foto"
+
+>
+
+</div>
+
+<form
+
+id="formulario"
+
+enctype="multipart/form-data"
+
+>
+
+<!-- NOMBRE -->
+<div class="mb-3">
+
+<label class="form-label">
+Nombre
+</label>
+
+<input
+
+type="text"
+
+name="nombre"
+
+id="nombre"
+
+class="form-control"
+
+required
+
+>
+
+</div>
+
+<!-- TELEFONO -->
+<div class="mb-3">
+
+<label class="form-label">
+Teléfono
+</label>
+
+<input
+
+type="text"
+
+name="telefono"
+
+id="telefono"
+
+autocomplete="tel"
+
+class="form-control"
+
+required
+
+>
+
+</div>
+
+<!-- FOTO -->
+<div class="mb-3">
+
+<label class="form-label">
+Cambiar foto
+(opcional)
+</label>
+
+<input
+
+type="file"
+
+name="foto"
+
+class="form-control"
+
+>
+
+</div>
+
+<hr>
+
+<!-- CONTRASEÑA -->
+<h5 class="
+fw-bold
+text-primary
+">
+
+Cambiar Contraseña
+
+</h5>
+
+<div class="mb-3">
+
+<label class="form-label">
+Nueva contraseña
+</label>
+
+<input
+
+type="password"
+
+name="pass1"
+
+class="form-control"
+
+autocomplete="new-password"
+
+>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+Repetir contraseña
+</label>
+
+<input
+
+type="password"
+
+name="pass2"
+
+class="form-control"
+
+autocomplete="new-password"
+
+>
+
+</div>
+
+<!-- BOTON -->
+<button class="
+btn
+btn-success
+w-100
+">
+
+Guardar Cambios
+
+</button>
+
+<div
+id="mensaje"
+class="mt-3"
+></div>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="footer"></div>
+
+<script src="navbar.js"></script>
+<script src="footer.js"></script>
+
+<script>
+
+/* DATOS */
+async function cargarUsuario(){
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/datos-usuario'
+
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+window.location.href =
+'login.html';
+
+return;
+
+}
+
+const usuario =
+datos.usuario;
+
+/* FOTO */
+document.getElementById(
+'fotoPerfil'
+).src =
+
+usuario.foto
+
+?
+
+'http://localhost:3000/' + usuario.foto
+
+:
+
+'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+
+/* CAMPOS */
+document.getElementById(
+'nombre'
+).value =
+
+usuario.nombre || '';
+
+document.getElementById(
+'telefono'
+).value =
+
+usuario.telefono || '';
+
+}
+
+cargarUsuario();
+
+/* GUARDAR */
+document.getElementById(
+'formulario'
+)
+
+.addEventListener(
+
+'submit',
+
+async (e)=>{
+
+e.preventDefault();
+
+const datos =
+new FormData(
+e.target
+);
+
+const respuesta =
+await fetch(
+
+'http://localhost:3000/editar-usuario',
+
+{
+
+method:'POST',
+
+body:datos
+
+}
+
+);
+
+const resultado =
+await respuesta.json();
+
+document.getElementById(
+'mensaje'
+).innerHTML =
+
+resultado.ok
+
+?
+
+`
+
+<div class="
+alert
+alert-success
+">
+
+${resultado.mensaje}
+
+</div>
+
+`
+
+:
+
+`
+
+<div class="
+alert
+alert-danger
+">
+
+${resultado.mensaje}
+
+</div>
+
+`;
+
+}
+
+);
+
+</script>
+
+<script src="
+https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+"></script>
+
+</body>
+</html>

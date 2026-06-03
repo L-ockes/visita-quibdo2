@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+Restaurantes
+</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet"
+>
+
+<link
+rel="stylesheet"
+href="styles.css"
+>
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+>
+
+</head>
+
+<body class="
+d-flex
+flex-column
+min-vh-100
+">
+
+<div id="navbar"></div>
+
+<section class="hero-restaurantes">
+
+    <div class="hero-overlay">
+
+        <h1>
+            Restaurantes
+        </h1>
+
+        <p>
+            Descubre los mejores sabores de Quibdó
+        </p>
+
+        <div class="hero-search">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="search"
+                id="busqueda"
+                placeholder="Buscar restaurante..."
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
+<div class="
+container
+py-5
+flex-grow-1
+">
+
+<div
+id="contenedor"
+class="
+row
+g-4
+"
+></div>
+
+</div>
+
+<div id="footer"></div>
+
+<script src="navbar.js"></script>
+<script src="footer.js"></script>
+
+<script>
+
+/* RESTAURANTES */
+async function cargarRestaurantes(){
+
+const busqueda =
+document.getElementById(
+'busqueda'
+).value;
+
+const respuesta =
+await fetch(
+
+`http://localhost:3000/restaurantes?q=${busqueda}`
+
+);
+
+const restaurantes =
+await respuesta.json();
+
+const contenedor =
+document.getElementById(
+'contenedor'
+);
+
+/* VACIO */
+if(restaurantes.length === 0){
+
+contenedor.innerHTML = `
+
+<div class="
+alert
+alert-info
+">
+
+No se encontraron restaurantes
+
+</div>
+
+`;
+
+return;
+
+}
+
+/* LIMPIAR */
+contenedor.innerHTML = '';
+
+/* MOSTRAR */
+restaurantes.forEach(r=>{
+
+contenedor.innerHTML += `
+
+<div class="
+col-12
+col-md-6
+col-lg-4
+">
+
+<div class="
+card
+h-100
+shadow-sm
+">
+
+<img
+
+src="
+${
+
+r.imagen
+
+?
+
+'http://localhost:3000/' + r.imagen
+
+:
+
+'https://via.placeholder.com/600x400?text=Restaurante'
+
+}
+"
+
+class="card-img-top"
+
+style="
+height:220px;
+object-fit:cover;
+"
+
+>
+
+<div class="
+card-body
+d-flex
+flex-column
+">
+
+<h5 class="
+card-title
+fw-bold
+d-flex
+align-items-center
+gap-2
+flex-wrap
+">
+
+${r.nombre}
+
+${
+r.total_resenas > 0
+
+?
+
+`
+
+<span style="
+color:#3483FA;
+font-size:15px;
+font-weight:700;
+">
+
+★ ${r.promedio_resenas}
+
+</span>
+
+<span style="
+color:#777;
+font-size:14px;
+font-weight:400;
+">
+
+(${r.total_resenas})
+
+</span>
+
+`
+
+:
+
+''
+
+}
+
+</h5>
+
+<p class="
+mb-1
+text-muted
+">
+
+${
+
+r.descripcion
+
+?
+
+r.descripcion.substring(0,110)
+
+:
+
+''
+
+}...
+
+</p>
+
+<p class="mb-3">
+
+<strong>
+Dirección:
+</strong>
+
+${r.direccion || 'No disponible'}
+
+</p>
+
+<div class="mt-auto">
+
+<a
+
+href="
+ver_restaurante.html?id=${r.id}
+"
+
+class="
+btn
+btn-detalle
+w-100
+"
+
+>
+
+Ver más
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+cargarRestaurantes();
+
+/* BUSQUEDA ENTER */
+document.getElementById(
+'busqueda'
+)
+
+.addEventListener(
+
+'input',
+
+function(){
+
+cargarRestaurantes();
+
+}
+
+);
+
+async function cargarBanner(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+        'http://localhost:3000/banner/restaurantes'
+        );
+
+        const datos =
+        await respuesta.json();
+
+        if(
+        datos.ok &&
+        datos.imagen
+        ){
+
+            document
+            .querySelector(
+            '.hero-restaurantes'
+            )
+            .style.background =
+
+            `linear-gradient(
+                rgba(0,0,0,.55),
+                rgba(0,0,0,.55)
+            ),
+            url('http://localhost:3000/${datos.imagen}') center/cover`;
+
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+cargarBanner();
+
+</script>
+
+<script src="
+https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
+"></script>
+
+</body>
+</html>

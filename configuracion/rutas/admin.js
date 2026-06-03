@@ -3428,8 +3428,6 @@ imagenes:resultados
 
 );
 
-
-
 return router;
 
 };
