@@ -3383,7 +3383,50 @@ imagenes:resultados
 
 );
 
+router.get(
 
+'/imagenes-evento/:id',
+
+(req,res)=>{
+
+conexion.query(
+
+`
+SELECT *
+FROM imagenes_eventos
+WHERE evento_id=?
+ORDER BY id ASC
+`,
+
+[
+req.params.id
+],
+
+(error,resultados)=>{
+
+if(error){
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+
+ok:true,
+
+imagenes:resultados
+
+});
+
+}
+
+);
+
+}
+
+);
 
 return router;
 
