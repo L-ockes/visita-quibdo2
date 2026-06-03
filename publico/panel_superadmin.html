@@ -41,7 +41,7 @@ width:280px;
 
 height:100vh;
 
-background:#0d6efd;
+background:#111827;
 
 position:fixed;
 
@@ -273,15 +273,16 @@ Eventos
 class="menu-btn"
 onclick="mostrarLugares()"
 >
-
-<i class="
-fa-solid
-fa-map-location-dot
-me-2
-"></i>
-
+<i class="fa-solid fa-map-location-dot me-2"></i>
 Lugares Turísticos
+</button>
 
+<button
+class="menu-btn"
+onclick="mostrarBanners()"
+>
+<i class="fa-solid fa-image me-2"></i>
+Banners del Sitio
 </button>
 
 <button
@@ -322,11 +323,11 @@ href="https://visita-quibdo2.onrender.com/logout"
 
 class="
 btn
-btn-danger
-w-100
+btn-success
 mt-4
+mx-3
+d-block
 "
-
 >
 
 Cerrar sesión
@@ -338,52 +339,11 @@ Cerrar sesión
 <!-- CONTENIDO -->
 <div class="main-content">
 
-<div class="
-d-flex
-justify-content-between
-align-items-center
-mb-4
-bg-white
-shadow-sm
-rounded-4
-p-3
-">
-
-<h4 class="
-fw-bold
-text-primary
-mb-0
-">
-
-Panel SuperAdmin
-
-</h4>
-
-<a
-
-href="index.html"
-
-class="
-btn
-btn-outline-primary
-btn-sm
-"
-
->
-
-Ir al sitio
-
-</a>
-
-</div>
-
 <div id="contenidoAdmin"></div>
 
 </div>
 
 <div id="footer"></div>
-
-<script src="footer.js"></script>
 
 <script>
 
@@ -653,14 +613,21 @@ document.getElementById(
 
 contenido.innerHTML = `
 
-<h2 class="
-titulo-panel
-mb-4
-">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
-Gestión de Usuarios
+    <div>
 
-</h2>
+        <h2 class="fw-bold mb-1">
+            Gestión de Usuarios
+        </h2>
+
+        <p class="text-muted mb-0">
+            Administra usuarios y roles del sistema
+        </p>
+
+    </div>
+
+</div>
 
 <div class="
 card
@@ -770,7 +737,18 @@ ${usuario.correo}
 
 <span class="
 badge
-bg-primary
+${
+usuario.rol === 'superadmin'
+? 'bg-success'
+
+: usuario.rol === 'admin'
+? 'bg-primary'
+
+: usuario.rol === 'emprendedor'
+? 'bg-warning text-dark'
+
+: 'bg-secondary'
+}
 ">
 
 ${usuario.rol}
@@ -1340,23 +1318,6 @@ em.estado === 'pendiente'
 
 'bg-danger'
 }
-
-?
-
-'bg-success'
-
-:
-
-emprendimiento.estado === 'pendiente'
-
-?
-
-'bg-warning text-dark'
-
-:
-
-'bg-danger'
-}
 ">
 
 ${em.estado}
@@ -1428,16 +1389,6 @@ ${em.id}
 Eliminar
 
 </button>
-
-</td>
-
->
-
-Rechazar
-
-</button>
-
-</td>
 
 </tr>
 
@@ -2848,11 +2799,35 @@ required
 Nueva imagen
 </label>
 
+<hr>
+
 <input
 type="file"
 name="imagen"
 class="form-control"
 >
+<hr>
+<h5>Galería de eventos</h5>
+
+<div class="mb-3">
+    <label>Imagen adicional 1</label>
+    <input type="file" name="imagen1" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 2</label>
+    <input type="file" name="imagen2" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 3</label>
+    <input type="file" name="imagen3" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 4</label>
+    <input type="file" name="imagen4" class="form-control">
+</div>
 
 </div>
 
@@ -4107,11 +4082,37 @@ required
 Nueva Imagen
 </label>
 
+<hr>
+
 <input
 type="file"
 name="imagen"
 class="form-control"
 >
+<hr>
+<h5>Galería de hoteles</h5>
+
+<div class="mb-3">
+    <label>Imagen adicional 1</label>
+    <input type="file" name="imagen1" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 2</label>
+    <input type="file" name="imagen2" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 3</label>
+    <input type="file" name="imagen3" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 4</label>
+    <input type="file" name="imagen4" class="form-control">
+</div>
+
+<hr>
 
 </div>
 
@@ -4816,11 +4817,36 @@ value="${restaurante.longitud || ''}"
 Nueva imagen
 </label>
 
+<hr>
+
 <input
 type="file"
 name="imagen"
 class="form-control"
 >
+<hr>
+<h5>Galería de restaurantes</h5>
+
+<div class="mb-3">
+    <label>Imagen adicional 1</label>
+    <input type="file" name="imagen1" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 2</label>
+    <input type="file" name="imagen2" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 3</label>
+    <input type="file" name="imagen3" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 4</label>
+    <input type="file" name="imagen4" class="form-control">
+</div>
+
 
 </div>
 
@@ -5247,6 +5273,48 @@ value="${lugar.direccion || ''}"
 
 </div>
 
+<div class="mb-3">
+
+<label>
+Datos principales
+</label>
+
+<textarea
+name="datos_principales"
+class="form-control"
+rows="4"
+>${lugar.datos_principales || ''}</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Importancia turística
+</label>
+
+<textarea
+name="importancia_turistica"
+class="form-control"
+rows="4"
+>${lugar.importancia_turistica || ''}</textarea>
+
+</div>
+
+<div class="mb-3">
+
+<label>
+Dato cultural
+</label>
+
+<textarea
+name="dato_cultural"
+class="form-control"
+rows="4"
+>${lugar.dato_cultural || ''}</textarea>
+
+</div>
+
 <div class="
 row
 ">
@@ -5295,11 +5363,36 @@ value="${lugar.longitud || ''}"
 Nueva imagen
 </label>
 
+<hr>
+
 <input
 type="file"
 name="imagen"
 class="form-control"
 >
+<hr>
+<h5>Galería de Lugares</h5>
+
+<div class="mb-3">
+    <label>Imagen adicional 1</label>
+    <input type="file" name="imagen1" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 2</label>
+    <input type="file" name="imagen2" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 3</label>
+    <input type="file" name="imagen3" class="form-control">
+</div>
+
+<div class="mb-3">
+    <label>Imagen adicional 4</label>
+    <input type="file" name="imagen4" class="form-control">
+</div>
+
 
 </div>
 
@@ -5981,11 +6074,187 @@ coincideTexto && coincideTipo
 
 }
 
+async function mostrarBanners(){
+
+const contenido =
+document.getElementById(
+'contenidoAdmin'
+);
+
+contenido.innerHTML = `
+
+<h2 class="
+titulo-panel
+mb-4
+">
+Banners del Sitio
+</h2>
+
+<div id="listaBanners">
+
+Cargando...
+
+</div>
+
+`;
+
+const respuesta =
+await fetch(
+'https://visita-quibdo2.onrender.com/banners-admin'
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+
+contenido.innerHTML += `
+<div class="alert alert-danger">
+Error al cargar banners
+</div>
+`;
+
+return;
+
+}
+
+let html = '';
+
+datos.banners.forEach(b=>{
+
+html += `
+
+<div class="
+card
+card-admin
+p-4
+mb-4
+">
+
+<h5>
+
+${b.pagina}
+
+</h5>
+
+<br>
+
+<img
+
+src="${
+b.imagen
+?
+'https://visita-quibdo2.onrender.com/' + b.imagen
+:
+'https://via.placeholder.com/900x250?text=Sin+Banner'
+}"
+
+style="
+width:100%;
+max-height:250px;
+object-fit:cover;
+border-radius:15px;
+"
+
+>
+
+<br><br>
+
+<form
+onsubmit="
+subirBanner(
+event,
+${b.id}
+)
+"
+>
+
+<input
+type="file"
+name="imagen"
+class="form-control"
+required
+>
+
+<br>
+
+<button class="
+btn
+btn-primary
+">
+
+Guardar Banner
+
+</button>
+
+</form>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+'listaBanners'
+).innerHTML = html;
+
+}
+
+async function subirBanner(
+e,
+id
+){
+
+e.preventDefault();
+
+const formData =
+new FormData(
+e.target
+);
+
+formData.append(
+'id',
+id
+);
+
+const respuesta =
+await fetch(
+
+'https://visita-quibdo2.onrender.com/editar-banner',
+
+{
+
+method:'POST',
+
+body:formData
+
+}
+
+);
+
+const datos =
+await respuesta.json();
+
+if(datos.ok){
+
+mostrarNotificacion(
+'Banner actualizado'
+);
+
+mostrarBanners();
+
+}else{
+
+alert(
+'Error al guardar banner'
+);
+
+}
+
+}
+
 </script>
-
-<div id="footer"></div>
-
-<script src="footer.js"></script>
 
 <script src="
 https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js

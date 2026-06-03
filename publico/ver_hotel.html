@@ -72,10 +72,65 @@ mt-5
 mb-5
 ">
 
-<!-- HOTEL -->
-<div id="hotel"></div>
+<h2
+id="titulo"
+class="
+fw-bold
+mb-4
+"
+style="
+color:#111827;
+"
+>
+</h2>
 
-<!-- MAPA -->
+<div class="galeria-lugar">
+
+    <div class="foto-principal">
+
+        <img
+        id="imagenPrincipal"
+        src="https://via.placeholder.com/800x500"
+        >
+
+    </div>
+
+    <div
+    id="miniaturas"
+    class="miniaturas-grid"
+    ></div>
+
+</div>
+
+<div class="menu-lugar">
+
+    <a href="#descripcion">
+        Descripción
+    </a>
+
+    <a href="#direccion">
+        Dirección
+    </a>
+
+    <a href="#sitioWeb">
+        Sitio web
+    </a>
+
+    <a href="#mapa">
+        Mapa
+    </a>
+
+    <a href="#resenas">
+        Reseñas
+    </a>
+
+</div>
+
+<div
+id="info"
+class="mt-4"
+></div>
+
 <div id="mapa"></div>
 
 <!-- VOLVER -->
@@ -108,21 +163,23 @@ mt-5
 mb-4
 ">
 
-<div class="
-col-lg-8
-mx-auto
-">
+<div class="col-12">
+
+<div id="resenas">
 
 <h4 class="
 fw-bold
-text-primary
 mb-3
-">
+"
+style="
+color:#111827;
+"
+>
 
 Calificaciones y comentarios
 
 </h4>
-
+</div>
 <div id="contenedorFormulario"></div>
 
 <div class="
@@ -133,7 +190,7 @@ align-items-start
 
 <!-- RESUMEN -->
 <div class="
-col-lg-4
+col-lg-3
 ">
 
 <div
@@ -144,11 +201,11 @@ id="calificacionBox"
 
 <!-- COMENTARIOS -->
 <div class="
-col-lg-8
+col-lg-9
 ">
 
 <div
-id="resenas"
+id="listaResenas"
 class="list-group"
 ></div>
 
@@ -371,22 +428,13 @@ await fetch(
 const datos =
 await respuesta.json();
 
+
 if(!datos.ok){
 
 document.getElementById(
-'hotel'
-).innerHTML = `
-
-<div class="
-alert
-alert-danger
-">
-
-Hotel no encontrado
-
-</div>
-
-`;
+'titulo'
+).innerHTML =
+'Hotel no encontrado';
 
 return;
 
@@ -398,26 +446,20 @@ datos.hotel;
 window.nombreHotel =
 hotel.nombre;
 
-/* HTML */
 document.getElementById(
-'hotel'
-).innerHTML = `
+'titulo'
+).innerHTML =
+hotel.nombre;
 
-<div class="
-card
-shadow-lg
-border-0
-overflow-hidden
-">
+document.getElementById(
+'imagenPrincipal'
+).src =
 
-<img
-
-src="
-${
 hotel.imagen
 
 ?
 
+(
 hotel.imagen.startsWith('http')
 
 ?
@@ -426,78 +468,115 @@ hotel.imagen
 
 :
 
-'https://visita-quibdo2.onrender.com/' + hotel.imagen
+'https://visita-quibdo2.onrender.com/' +
+hotel.imagen
+
+)
 
 :
 
-'https://via.placeholder.com/1200x500'
-}
-"
+'https://via.placeholder.com/700x450';
 
+document.getElementById(
+'info'
+).innerHTML = `
+
+<div
+id="descripcion"
 class="
-foto-hotel
+card
+shadow-sm
+border-0
+rounded-4
+p-4
+mb-4
 "
-
 >
 
-<div class="card-body p-4">
+<h4
+class="fw-bold mb-3"
+style="color:#111827;"
+>
 
-<h1 class="
-fw-bold
-text-primary
-mb-3
-">
+Descripción
 
-${hotel.nombre}
+</h4>
 
-</h1>
-
-<p class="
-fs-5
-text-warning
-fw-bold
-">
-
-⭐ ${hotel.estrellas || '0'}
-
-</p>
-
-<p class="
-fs-5
-">
+<p>
 
 ${hotel.descripcion || ''}
 
 </p>
 
-<hr>
+<p class="
+text-warning
+fw-bold
+mb-0
+">
 
-<p>
-
-📞
-<strong>Teléfono:</strong>
-
-${hotel.telefono || 'No disponible'}
+⭐ ${hotel.estrellas || '0'} estrellas
 
 </p>
 
-<p>
+</div>
 
-🌐
-<strong>Sitio web:</strong>
+<div
+id="direccion"
+class="
+card
+shadow-sm
+border-0
+rounded-4
+p-4
+mb-4
+"
+>
+
+<h4
+class="fw-bold mb-3"
+style="color:#111827;"
+>
+
+Dirección
+
+</h4>
+
+<p>📍 ${hotel.direccion || ''}</p>
+
+<p>📞 ${hotel.telefono || 'No disponible'}</p>
+
+<p>🧭 ${hotel.indicaciones || 'No disponible'}</p>
+
+</div>
+
+<div
+id="sitioWeb"
+class="
+card
+shadow-sm
+border-0
+rounded-4
+p-4
+mb-4
+"
+>
+
+<h4
+class="fw-bold mb-3"
+style="color:#111827;"
+>
+
+Sitio web
+
+</h4>
 
 ${
 hotel.sitio_web
 
 ?
 
-`<a
-href="${hotel.sitio_web}"
-target="_blank"
->
-
+`<a href="${hotel.sitio_web}" target="_blank">
 ${hotel.sitio_web}
-
 </a>`
 
 :
@@ -505,32 +584,9 @@ ${hotel.sitio_web}
 'No disponible'
 }
 
-</p>
-
-<p>
-
-📍
-<strong>Dirección:</strong>
-
-${hotel.direccion || ''}
-
-</p>
-
-<p>
-
-🧭
-<strong>Indicaciones:</strong>
-
-${hotel.indicaciones || ''}
-
-</p>
-
-</div>
-
 </div>
 
 `;
-
 /* =====================================
    MAPA
 ===================================== */
@@ -649,6 +705,77 @@ console.log(
 
 }
 
+async function cargarGaleria(){
+
+const respuesta =
+await fetch(
+'https://visita-quibdo2.onrender.com/imagenes-hotel/' + id
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+return;
+}
+
+const miniaturas =
+document.getElementById(
+'miniaturas'
+);
+
+miniaturas.innerHTML = '';
+
+datos.imagenes.forEach(img=>{
+
+const imagen =
+document.createElement('img');
+
+imagen.src =
+'https://visita-quibdo2.onrender.com/' +
+img.imagen;
+
+imagen.className = 'miniatura-hotel';
+
+imagen.onclick = () => {
+
+const principal =
+document.getElementById(
+'imagenPrincipal'
+);
+
+const prueba =
+new Image();
+
+prueba.onload = () => {
+
+principal.src =
+imagen.src;
+
+};
+
+prueba.onerror = () => {
+
+console.log(
+'Imagen no encontrada:',
+imagen.src
+);
+
+};
+
+prueba.src =
+imagen.src;
+
+};
+
+miniaturas.appendChild(
+imagen
+);
+
+});
+
+}
+
 /* =====================================
    RESEÑAS
 ===================================== */
@@ -669,7 +796,7 @@ resenas;
 
 const contenedor =
 document.getElementById(
-'resenas'
+'listaResenas'
 );
 
 contenedor.innerHTML = '';
@@ -693,8 +820,8 @@ promedio /
 resenas.length
 ).toFixed(1);
 
-document.querySelector(
-'#hotel h1'
+document.getElementById(
+'titulo'
 ).innerHTML =
 
 window.nombreHotel;
@@ -1502,11 +1629,17 @@ console.log(error);
    INICIAR
 ===================================== */
 
-cargarHotel();
+(async()=>{
+
+await cargarHotel();
+
+await cargarGaleria();
 
 cargarResenas();
 
 verificarSesion();
+
+})();
 
 </script>
 

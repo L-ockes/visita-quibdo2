@@ -29,6 +29,11 @@ rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 >
 
+<link
+rel="stylesheet"
+href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
+/>
+
 <style>
 
 .foto-restaurante{
@@ -88,61 +93,60 @@ text-align:center;
 <div class="container mt-5 mb-5">
 
 <h2
-
 id="titulo"
-
 class="
-text-primary
 fw-bold
 mb-4
-text-center
-d-flex
-justify-content-center
-align-items-center
-gap-2
-flex-wrap
 "
-
-></h2>
-
-<div class="
-row
-g-4
-ver-align
-">
-
-<!-- FOTO -->
-<div class="
-col-md-6
-text-center
-">
-
-<img
-
-id="foto"
-
-class="foto-restaurante"
-
-src="
-https://via.placeholder.com/700x450?text=Restaurante
+style="
+color:#111827;
 "
-
 >
+</h2>
+
+<div class="galeria-lugar">
+
+    <div class="foto-principal">
+
+        <img
+        id="imagenPrincipal"
+        src="https://via.placeholder.com/800x500"
+        >
+
+    </div>
+
+    <div
+    id="miniaturas"
+    class="miniaturas-grid"
+    ></div>
 
 </div>
 
-<!-- INFORMACION -->
-<div class="
-col-md-6
-">
+<div class="menu-lugar">
 
-<div id="info"></div>
+    <a href="#descripcion">
+        Descripción
+    </a>
+
+    <a href="#direccion">
+        Dirección
+    </a>
+
+    <a href="#mapa">
+        Mapa
+    </a>
+
+    <a href="#seccionResenas">
+    Reseñas
+</a>
 
 </div>
 
-</div>
+<div
+id="info"
+class="mt-4"
+></div>
 
-<!-- MAPA -->
 <div id="mapa"></div>
 
 <div class="
@@ -173,21 +177,24 @@ row
 mt-5
 ">
 
-<div class="
-col-lg-8
-mx-auto
-">
+<div class="col-12">
+
+<div id="seccionResenas">
 
 <h4 class="
 fw-bold
-text-primary
 mb-3
-">
+"
+style="
+color:#111827;
+"
+>
 
 Calificaciones y comentarios
 
 </h4>
 
+</div>
 <div
 id="mensajeLogin"
 class="
@@ -506,6 +513,10 @@ Guardar cambios
 https://unpkg.com/leaflet/dist/leaflet.js
 "></script>
 
+<script src="
+https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js
+"></script>
+
 <script>
 
 /* URL */
@@ -595,12 +606,11 @@ datos.restaurante;
 document.getElementById(
 'titulo'
 ).innerHTML =
+r.nombre;
 
-`${r.nombre}`;
-
-/* FOTO */
+/* IMAGEN */
 document.getElementById(
-'foto'
+'imagenPrincipal'
 ).src =
 
 r.imagen
@@ -613,46 +623,68 @@ r.imagen
 
 'https://via.placeholder.com/700x450?text=Restaurante';
 
-/* INFO */
+/* INFORMACION */
 document.getElementById(
 'info'
 ).innerHTML = `
 
-${
-r.descripcion
+<div
+id="descripcion"
+class="
+card
+shadow-sm
+border-0
+rounded-4
+p-4
+mb-4
+"
+>
 
-?
+<h4
+class="fw-bold mb-3"
+style="color:#111827;"
+>
 
-`
+Descripción
 
-<p>
+</h4>
 
-<strong>
-Descripción:
-</strong>
+<p class="mb-0">
 
-<br>
-
-${r.descripcion}
+${r.descripcion || 'No disponible'}
 
 </p>
 
-`
+</div>
 
-:
+<div
+id="direccion"
+class="
+card
+shadow-sm
+border-0
+rounded-4
+p-4
+mb-4
+"
+>
 
-''
-}
+<h4
+class="fw-bold mb-3"
+style="color:#111827;"
+>
 
-<p>
+Dirección
 
-<strong>
-Dirección:
-</strong>
+</h4>
+
+<p class="mb-0">
 
 ${r.direccion || 'No disponible'}
 
 </p>
+
+</div>
 
 `;
 
@@ -678,20 +710,26 @@ L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 
 {
-
 attribution:'© OpenStreetMap'
-
 }
 
 ).addTo(mapa);
 
-L.marker(
+navigator.geolocation.getCurrentPosition(
 
+(posicion)=>{
+
+const latUsuario =
+posicion.coords.latitude;
+
+const lngUsuario =
+posicion.coords.longitude;
+
+L.marker(
 [
 r.latitud,
 r.longitud
 ]
-
 )
 
 .addTo(mapa)
@@ -701,6 +739,61 @@ r.nombre
 )
 
 .openPopup();
+
+L.marker(
+[
+latUsuario,
+lngUsuario
+]
+)
+
+.addTo(mapa)
+
+.bindPopup(
+'Tu ubicación'
+);
+
+L.Routing.control({
+
+waypoints:[
+
+L.latLng(
+latUsuario,
+lngUsuario
+),
+
+L.latLng(
+r.latitud,
+r.longitud
+)
+
+],
+
+routeWhileDragging:false,
+
+show:true,
+
+addWaypoints:false,
+
+draggableWaypoints:false,
+
+fitSelectedRoutes:true
+
+})
+
+.addTo(mapa);
+
+},
+
+()=>{
+
+console.log(
+'No se pudo obtener ubicación'
+);
+
+}
+
+);
 
 }
 
@@ -712,7 +805,62 @@ console.log(error);
 
 }
 
-cargarRestaurante();
+(async()=>{
+
+await cargarRestaurante();
+
+await cargarGaleriaRestaurante();
+
+cargarResenas();
+
+})();
+
+async function cargarGaleriaRestaurante(){
+
+const respuesta =
+await fetch(
+'https://visita-quibdo2.onrender.com/imagenes-restaurante/' + id
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+return;
+}
+
+const miniaturas =
+document.getElementById(
+'miniaturas'
+);
+
+miniaturas.innerHTML = '';
+
+datos.imagenes.forEach(img=>{
+
+const imagen =
+document.createElement('img');
+
+imagen.src =
+'https://visita-quibdo2.onrender.com/' +
+img.imagen;
+
+imagen.onclick = ()=>{
+
+document.getElementById(
+'imagenPrincipal'
+).src =
+imagen.src;
+
+};
+
+miniaturas.appendChild(
+imagen
+);
+
+});
+
+}
 
 /* RESEÑAS */
 async function cargarResenas(){

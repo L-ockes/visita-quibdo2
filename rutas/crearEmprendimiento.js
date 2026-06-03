@@ -308,6 +308,60 @@ mensaje:error.sqlMessage
 
 }
 
+conexion.query(
+
+`
+SELECT id
+
+FROM categorias
+
+WHERE LOWER(nombre_categoria)
+=
+LOWER(?)
+
+LIMIT 1
+`,
+
+[categoria],
+
+(errorCategoria, categorias)=>{
+
+    if(errorCategoria){
+
+        console.log(errorCategoria);
+        return;
+
+    }
+
+    if(categorias.length === 0){
+
+        conexion.query(
+
+            `
+            INSERT INTO categorias(
+                nombre_categoria
+            )
+            VALUES(?)
+            `,
+
+            [categoria],
+
+            (errorInsertar)=>{
+
+                if(errorInsertar){
+
+                    console.log(errorInsertar);
+
+                }
+
+            }
+
+        );
+
+    }
+
+}
+);
 
 
 /* =====================================
@@ -427,6 +481,11 @@ ok:false
 
 const id =
 req.params.id;
+
+console.log(
+'Categoria recibida:',
+categoria
+);
 
 /* BUSCAR IMAGEN */
 conexion.query(

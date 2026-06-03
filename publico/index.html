@@ -47,7 +47,7 @@ sans-serif;
 .hero{
 
 background-image:url(
-'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80'
+'https://www.elpais.com.co/resizer/v2/D3DK5L4PUJAY3DOIUF5NIQYOV4.jpg?auth=34aedcb40721eb4ee0a4130062447379fa3d9cb5548b3c6c043a5d084ee37413&smart=true&quality=75&width=1280&height=720'
 );
 
 background-size:cover;
@@ -56,13 +56,13 @@ background-position:center;
 
 background-repeat:no-repeat;
 
-border-radius:15px;
+border-radius:0;
 
-padding:120px 40px;
+padding:160px 80px;
 
-margin-top:30px;
+margin-top:0;
 
-box-shadow:0 5px 20px rgba(0,0,0,.25);
+box-shadow:0 10px 35px rgba(0,0,0,.25);
 
 position:relative;
 
@@ -79,7 +79,7 @@ position:absolute;
 
 inset:0;
 
-background:rgba(0,0,0,.25);
+background:rgba(0,0,0,.45);
 
 }
 
@@ -112,6 +112,232 @@ line-height:1.6;
 
 }
 
+/* DESTACADOS */
+
+.destacados{
+
+padding:45px 40px;
+
+background:#ffffff;
+
+}
+
+.destacados + .destacados{
+
+padding-top:15px;
+
+}
+
+.titulo-seccion{
+
+text-align:center;
+
+font-size:2.2rem;
+
+font-weight:700;
+
+margin-bottom:25px;
+
+color:#0f172a;
+
+}
+
+.contenedor-destinos{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(320px,1fr));
+
+gap:30px;
+
+}
+
+.card-destino{
+
+text-decoration:none;
+
+color:inherit;   
+
+position:relative;
+
+border-radius:24px;
+
+overflow:hidden;
+
+height:320px;
+
+cursor:pointer;
+
+box-shadow:
+0 12px 30px rgba(0,0,0,.12);
+
+transition:.3s;
+
+}
+
+.card-destino:hover{
+
+transform:translateY(-8px);
+
+}
+
+.card-destino img{
+
+width:100%;
+
+height:100%;
+
+object-fit:cover;
+
+transition:.5s;
+
+}
+
+.card-destino:hover img{
+
+transform:scale(1.08);
+
+}
+
+.overlay-destino{
+
+position:absolute;
+
+left:0;
+
+right:0;
+
+bottom:0;
+
+padding:25px;
+
+background:
+linear-gradient(
+transparent,
+rgba(0,0,0,.85)
+);
+
+}
+
+.overlay-destino h3{
+
+color:white;
+
+font-size:1.5rem;
+
+font-weight:700;
+
+margin:0;
+
+}
+
+.contenido-destino{
+
+padding:20px;
+
+}
+
+.contenido-destino h3{
+
+font-size:1.3rem;
+
+margin-bottom:10px;
+
+}
+
+.contenido-destino p{
+
+color:#64748b;
+
+margin:0;
+
+}
+
+.galeria-choco{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(300px,1fr));
+
+gap:20px;
+
+}
+
+.galeria-choco img{
+
+width:100%;
+
+height:260px;
+
+object-fit:cover;
+
+border-radius:20px;
+
+cursor:pointer;
+
+transition:.4s;
+
+box-shadow:
+0 8px 20px rgba(0,0,0,.12);
+
+}
+
+.galeria-choco img:hover{
+
+transform:scale(1.03);
+
+}
+
+.estadisticas{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(220px,1fr));
+
+gap:25px;
+
+}
+
+.estadistica{
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+text-align:center;
+
+box-shadow:
+0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.estadistica h3{
+
+font-size:2.5rem;
+
+font-weight:800;
+
+color:#0f172a;
+
+margin-bottom:10px;
+
+}
+
+.estadistica p{
+
+margin:0;
+
+font-size:1rem;
+
+color:#64748b;
+
+}
+
 </style>
 
 </head>
@@ -124,10 +350,7 @@ min-vh-100
 
 <div id="navbar"></div>
 
-<div class="
-container
-flex-grow-1
-">
+<div class="container-fluid px-0">
 
 <!-- HERO -->
 <div class="hero">
@@ -136,18 +359,37 @@ flex-grow-1
 
 <h1 class="hero-title">
 
-Bienvenido a
-Visita Quibdó
+Descubre la magia
+de Quibdó
+
 
 </h1>
 
 <p class="hero-text">
 
-Descubre los mejores
-lugares turísticos,
-apoya los emprendimientos
-locales y explora lo más
-hermoso de nuestro municipio.
+Explora hoteles,
+restaurantes,
+eventos,
+emprendimientos y
+lugares turísticos únicos.
+
+<div class="mt-4">
+
+<a
+href="lugares_turisticos.html"
+class="btn btn-warning btn-lg me-3"
+>
+Explorar Lugares
+</a>
+
+<a
+href="emprendimientos.html"
+class="btn btn-light btn-lg"
+>
+Ver Emprendimientos
+</a>
+
+</div>
 
 </p>
 
@@ -155,85 +397,534 @@ hermoso de nuestro municipio.
 
 </div>
 
-<!-- INFO -->
-<div class="
-row
-text-center
-mb-5
-mt-5
-">
+<section class="destacados">
 
-<!-- ITEM -->
-<div class="
-col-md-4
-mb-4
-">
+<h2 class="titulo-seccion">
+Destinos destacados
+</h2>
 
-<h4 class="
-text-primary
-fw-bold
-">
+<div class="contenedor-destinos">
 
-🌿 Lugares Turísticos
+<a
+href="ver_lugar.html?id=4"
+class="card-destino"
+>
 
-</h4>
+<img
+src="/fotos/catedral.jpg"
+alt="Catedral San Francisco de Asís"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Catedral San Francisco de Asís
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_lugar.html?id=11"
+class="card-destino"
+>
+
+<img
+src="/fotos/rio_atrato.jpg"
+alt="Río Atrato"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Río Atrato
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_lugar.html?id=2"
+class="card-destino"
+>
+
+<img
+src="/fotos/malecon.jpg"
+alt="Malecón de Quibdó"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Malecón de Quibdó
+</h3>
+
+</div>
+
+</a>
+
+</div>
+
+</section>
+
+<section class="destacados">
+
+<h2 class="titulo-seccion">
+Emprendimientos destacados
+</h2>
+
+<div class="contenedor-destinos">
+
+<a
+href="ver_mas.html?id=23"
+class="card-destino"
+>
+
+<img
+src="/fotos/1780282637433_emp6.jpg"
+alt="Empanadas El Sabor Chocoano"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Empanadas El Sabor Chocoano
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_mas.html?id=17"
+class="card-destino"
+>
+
+<img
+src="/fotos/moto1.jpg"
+alt="MotoRuta Express"
+>
+
+<div class="overlay-destino">
+
+<h3>
+MotoRuta Express
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_mas.html?id=3"
+class="card-destino"
+>
+
+<img
+src="/fotos/bus1.jpg"
+alt="Empresa de buses"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Rutas Express Quibdó
+</h3>
+
+</div>
+
+</a>
+
+</div>
+
+</section>
+
+<section class="destacados">
+
+<h2 class="titulo-seccion">
+Eventos destacados
+</h2>
+
+<div class="contenedor-destinos">
+
+<a
+href="ver_evento.html?id=2"
+class="card-destino"
+>
+
+<img
+src="/fotos/even2.jpg"
+alt="Evento"
+>
+
+<div class="overlay-destino">
+
+<h3>
+FLECHO – Fiesta de la Lectura y la Escritura del Chocó
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_evento.html?id=6"
+class="card-destino"
+>
+
+<img
+src="/fotos/even3.jpg"
+alt="Evento"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Festival de la Chirimía Chocoana
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_evento.html?id=4"
+class="card-destino"
+>
+
+<img
+src="/fotos/even1.jpg"
+alt="Evento"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Fiestas de San Pacho
+</h3>
+
+</div>
+
+</a>
+
+</div>
+
+</section>
+
+<section class="destacados">
+
+<h2 class="titulo-seccion">
+Hoteles destacados
+</h2>
+
+<div class="contenedor-destinos">
+
+<a
+href="ver_hotel.html?id=4"
+class="card-destino"
+>
+
+<img
+src="/fotos/hotel1.jpg"
+alt="Hotel"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Hotel Interpacific
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_hotel.html?id=2"
+class="card-destino"
+>
+
+<img
+src="/fotos/hotel2.jpg"
+alt="Hotel"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Hotel Kamaleb Farallones
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_hotel.html?id=1"
+class="card-destino"
+>
+
+<img
+src="/fotos/hotel3.jpg"
+alt="Hotel"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Mia Hotel Chocó
+</h3>
+
+</div>
+
+</a>
+
+</div>
+
+</section>
+
+<section class="destacados">
+
+<h2 class="titulo-seccion">
+Restaurantes destacados
+</h2>
+
+<div class="contenedor-destinos">
+
+<a
+href="ver_restaurante.html?id=3"
+class="card-destino"
+>
+
+<img
+src="/fotos/res1.jpg"
+alt="Restaurante"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Brisas del Atrato Restaurante Bar
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_restaurante.html?id=2"
+class="card-destino"
+>
+
+<img
+src="/fotos/res1.1.jpg"
+alt="Restaurante"
+>
+
+<div class="overlay-destino">
+
+<h3>
+La Paila de Mi Abuela
+</h3>
+
+</div>
+
+</a>
+
+<a
+href="ver_restaurante.html?id=3"
+class="card-destino"
+>
+
+<img
+src="/fotos/res3.jpg"
+alt="Restaurante"
+>
+
+<div class="overlay-destino">
+
+<h3>
+Restaurante Maria Mulata
+</h3>
+
+</div>
+
+</a>
+
+</div>
+
+</section>
+
+<section class="destacados">
+
+<h2 class="titulo-seccion">
+Galería del Chocó
+</h2>
+
+<div class="galeria-choco">
+
+<img
+src="/fotos/galeria1.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria2.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria3.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria4.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria5.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria6.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria7.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria8.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria9.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+<img
+src="/fotos/galeria10.jpg"
+alt="Galería"
+class="img-galeria"
+>
+
+</div>
+
+</section>
+
+<section class="destacados">
+
+<h2 class="titulo-seccion">
+Quibdó en cifras
+</h2>
+
+<div class="estadisticas">
+
+<div class="estadistica">
+
+<h3>3</h3>
 
 <p>
-
-Explora cascadas,
-ríos, cultura afro,
-selva y naturaleza única.
-
+Restaurantes
 </p>
 
 </div>
 
-<!-- ITEM -->
-<div class="
-col-md-4
-mb-4
-">
+<div class="estadistica">
 
-<h4 class="
-text-primary
-fw-bold
-">
-
-🛍️ Emprendimientos Locales
-
-</h4>
+<h3>4</h3>
 
 <p>
-
-Apoya negocios locales
-en gastronomía,
-artesanías y más.
-
+Lugares turísticos
 </p>
 
 </div>
 
-<!-- ITEM -->
-<div class="
-col-md-4
-mb-4
-">
+<div class="estadistica">
 
-<h4 class="
-text-primary
-fw-bold
-">
-
-📞 Conexión Fácil
-
-</h4>
+<h3>4</h3>
 
 <p>
-
-Contacta directamente
-a emprendedores y servicios.
-
+Emprendimientos
 </p>
+
+</div>
+
+<div class="estadistica">
+
+<h3>3</h3>
+
+<p>
+Hoteles
+</p>
+
+</div>
+
+<div class="estadistica">
+
+<h3>3</h3>
+
+<p>
+Eventos registrados
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<div
+class="modal fade"
+id="modalGaleria"
+tabindex="-1"
+>
+
+<div class="modal-dialog modal-dialog-centered modal-xl">
+
+<div
+class="modal-content"
+style="
+background:transparent;
+border:none;
+"
+>
+
+<button
+type="button"
+class="btn-close btn-close-white ms-auto mb-2"
+data-bs-dismiss="modal"
+></button>
+
+<img
+id="imagenModal"
+src=""
+style="
+width:100%;
+border-radius:15px;
+"
+>
+
+</div>
+
+</div>
 
 </div>
 
@@ -243,6 +934,40 @@ a emprendedores y servicios.
 
 <div id="footer"></div>
 
+<script>
+
+const imagenes =
+document.querySelectorAll(
+'.img-galeria'
+);
+
+const imagenModal =
+document.getElementById(
+'imagenModal'
+);
+
+imagenes.forEach(imagen=>{
+
+imagen.addEventListener(
+'click',
+()=>{
+
+imagenModal.src =
+imagen.src;
+
+new bootstrap.Modal(
+document.getElementById(
+'modalGaleria'
+)
+).show();
+
+}
+);
+
+});
+
+</script>
+
 <script src="navbar.js"></script>
 
 <script src="footer.js"></script>
@@ -250,6 +975,8 @@ a emprendedores y servicios.
 <script src="
 https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js
 "></script>
+
+
 
 </body>
 

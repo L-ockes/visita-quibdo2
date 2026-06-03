@@ -354,29 +354,38 @@ form-control
 
 </div>
 
-<!-- CATEGORIA -->
+<!-- CATEGORIA EXISTENTE -->
 <div class="col-md-6">
 
-<label class="
-fw-bold
-mb-2
-">
+<label class="fw-bold mb-2">
+Categoría existente
+</label>
 
-Categoría
+<select
+id="categoria"
+class="form-select rounded-4"
+>
 
+<option value="">
+Seleccione una categoría
+</option>
+
+</select>
+
+</div>
+
+<!-- NUEVA CATEGORIA -->
+<div class="col-md-6">
+
+<label class="fw-bold mb-2">
+Nueva categoría
 </label>
 
 <input
-
 type="text"
-
-id="categoria"
-
-class="
-form-control
-rounded-4
-"
-
+id="nuevaCategoria"
+class="form-control rounded-4"
+placeholder="Escribe una nueva categoría"
 >
 
 </div>
@@ -838,11 +847,31 @@ document.getElementById(
 ).value
 );
 
-datos.append(
-'categoria',
+const categoriaSeleccionada =
 document.getElementById(
 'categoria'
-).value
+).value;
+
+const nuevaCategoria =
+document.getElementById(
+'nuevaCategoria'
+).value.trim();
+
+const categoriaFinal =
+
+nuevaCategoria !== ''
+
+?
+
+nuevaCategoria
+
+:
+
+categoriaSeleccionada;
+
+datos.append(
+'categoria',
+categoriaFinal
 );
 
 datos.append(
@@ -1060,11 +1089,52 @@ async function cargarPlan(){
 
         mostrarFormulario();
 
+        setTimeout(
+    cargarCategorias,
+    100
+);
+
     }catch(error){
 
         console.log(error);
 
         mostrarFormulario();
+
+    }
+
+}
+
+async function cargarCategorias(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+            'https://visita-quibdo2.onrender.com/categorias'
+        );
+
+        const categorias =
+        await respuesta.json();
+
+        const select =
+        document.getElementById(
+            'categoria'
+        );
+
+        categorias.forEach(c=>{
+
+            select.innerHTML +=
+            `
+            <option value="${c.nombre_categoria}">
+                ${c.nombre_categoria}
+            </option>
+            `;
+
+        });
+
+    }catch(error){
+
+        console.log(error);
 
     }
 

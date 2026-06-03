@@ -34,71 +34,39 @@ min-vh-100
 
 <div id="navbar"></div>
 
+<section class="hero-restaurantes">
+
+    <div class="hero-overlay">
+
+        <h1>
+            Restaurantes
+        </h1>
+
+        <p>
+            Descubre los mejores sabores de Quibdó
+        </p>
+
+        <div class="hero-search">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="search"
+                id="busqueda"
+                placeholder="Buscar restaurante..."
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
 <div class="
 container
-mt-5
+py-5
 flex-grow-1
 ">
-
-    <h2 class="
-text-primary
-fw-bold
-mb-4
-text-center
-">
-
-Restaurantes
-
-</h2>
-
-<div class="
-d-flex
-justify-content-between
-align-items-center
-mb-4
-flex-column
-flex-md-row
-">
-
-<div class="
-d-flex
-gap-2
-w-100
-w-md-auto
-">
-
-<input
-
-type="search"
-
-id="busqueda"
-
-class="form-control"
-
-placeholder="
-Buscar por nombre, descripción o dirección
-"
-
->
-
-<button
-
-onclick="cargarRestaurantes()"
-
-class="
-btn
-btn-primary
-"
-
->
-
-Buscar
-
-</button>
-
-</div>
-
-</div>
 
 <div
 id="contenedor"
@@ -216,7 +184,6 @@ flex-column
 <h5 class="
 card-title
 fw-bold
-text-primary
 d-flex
 align-items-center
 gap-2
@@ -303,7 +270,7 @@ ver_restaurante.html?id=${r.id}
 
 class="
 btn
-btn-outline-primary
+btn-detalle
 w-100
 "
 
@@ -336,19 +303,56 @@ document.getElementById(
 
 .addEventListener(
 
-'keypress',
+'input',
 
-function(e){
-
-if(e.key === 'Enter'){
+function(){
 
 cargarRestaurantes();
 
 }
 
+);
+
+async function cargarBanner(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+        'https://visita-quibdo2.onrender.com/banner/restaurantes'
+        );
+
+        const datos =
+        await respuesta.json();
+
+        if(
+        datos.ok &&
+        datos.imagen
+        ){
+
+            document
+            .querySelector(
+            '.hero-restaurantes'
+            )
+            .style.background =
+
+            `linear-gradient(
+                rgba(0,0,0,.55),
+                rgba(0,0,0,.55)
+            ),
+            url('https://visita-quibdo2.onrender.com/${datos.imagen}') center/cover`;
+
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
 }
 
-);
+cargarBanner();
 
 </script>
 

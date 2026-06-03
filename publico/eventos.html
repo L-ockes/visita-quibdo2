@@ -34,145 +34,39 @@ min-vh-100
 
 <div id="navbar"></div>
 
+<section class="hero-eventos">
+
+    <div class="hero-overlay">
+
+        <h1>
+            Eventos
+        </h1>
+
+        <p>
+            Descubre los eventos culturales y turísticos de Quibdó
+        </p>
+
+        <div class="hero-search">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="search"
+                id="busqueda"
+                placeholder="Buscar evento..."
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
 <div class="
 container
-mt-5
+py-5
 flex-grow-1
 ">
-
-<h2 class="
-text-primary
-fw-bold
-mb-4
-text-center
-">
-
-Eventos culturales
-
-</h2>
-
-<div class="
-row
-g-3
-mb-4
-">
-
-<!-- BUSQUEDA -->
-<div class="col-md-6">
-
-<label class="
-form-label
-fw-semibold
-">
-
-Buscar
-
-</label>
-
-<input
-
-type="search"
-
-id="busqueda"
-
-class="form-control"
-
-placeholder="
-Título, descripción o lugar
-"
-
->
-
-</div>
-
-<!-- DESDE -->
-<div class="col-md-3">
-
-<label class="
-form-label
-fw-semibold
-">
-
-Desde
-
-</label>
-
-<input
-
-type="date"
-
-id="desde"
-
-class="form-control"
-
->
-
-</div>
-
-<!-- HASTA -->
-<div class="col-md-3">
-
-<label class="
-form-label
-fw-semibold
-">
-
-Hasta
-
-</label>
-
-<input
-
-type="date"
-
-id="hasta"
-
-class="form-control"
-
->
-
-</div>
-
-<div class="
-col-12
-d-flex
-justify-content-end
-gap-2
-">
-
-<button
-
-onclick="limpiarFiltros()"
-
-class="
-btn
-btn-outline-secondary
-"
-
->
-
-Limpiar
-
-</button>
-
-<button
-
-onclick="cargarEventos()"
-
-class="
-btn
-btn-primary
-"
-
->
-
-Aplicar
-
-</button>
-
-</div>
-
-</div>
 
 <div
 id="contenedor"
@@ -196,20 +90,10 @@ document.getElementById(
 'busqueda'
 ).value;
 
-const desde =
-document.getElementById(
-'desde'
-).value;
-
-const hasta =
-document.getElementById(
-'hasta'
-).value;
-
 const respuesta =
 await fetch(
 
-`https://visita-quibdo2.onrender.com/eventos?q=${q}&desde=${desde}&hasta=${hasta}`
+`https://visita-quibdo2.onrender.com/eventos?q=${q}`
 
 );
 
@@ -296,7 +180,6 @@ flex-column
 <h5 class="
 card-title
 fw-bold
-text-primary
 d-flex
 align-items-center
 gap-2
@@ -407,7 +290,7 @@ ver_evento.html?id=${e.id}
 
 class="
 btn
-btn-outline-primary
+btn-detalle
 w-100
 "
 
@@ -432,26 +315,62 @@ Ver detalles
 }
 
 cargarEventos();
-
-/* LIMPIAR */
-function limpiarFiltros(){
-
 document.getElementById(
 'busqueda'
-).value = '';
+)
 
-document.getElementById(
-'desde'
-).value = '';
+.addEventListener(
 
-document.getElementById(
-'hasta'
-).value = '';
+'input',
+
+function(){
 
 cargarEventos();
 
 }
 
+);
+
+async function cargarBanner(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+        'https://visita-quibdo2.onrender.com/banner/eventos'
+        );
+
+        const datos =
+        await respuesta.json();
+
+        if(
+        datos.ok &&
+        datos.imagen
+        ){
+
+            document
+            .querySelector(
+            '.hero-eventos'
+            )
+            .style.background =
+
+            `linear-gradient(
+                rgba(0,0,0,.55),
+                rgba(0,0,0,.55)
+            ),
+            url('https://visita-quibdo2.onrender.com/${datos.imagen}') center/cover`;
+
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+cargarBanner();
 </script>
 
 <script src="

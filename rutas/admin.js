@@ -735,7 +735,13 @@ router.post(
 
 '/editar-hotel',
 
-subirFoto.single('imagen'),
+subirFoto.fields([
+{ name:'imagen', maxCount:1 },
+{ name:'imagen1', maxCount:1 },
+{ name:'imagen2', maxCount:1 },
+{ name:'imagen3', maxCount:1 },
+{ name:'imagen4', maxCount:1 }
+]),
 
 (req,res)=>{
 
@@ -818,14 +824,18 @@ estrellas
 ];
 
 /* NUEVA FOTO */
-if(req.file){
+if(
+req.files &&
+req.files.imagen
+){
 
 sql += `,
 imagen=?
 `;
 
 valores.push(
-'fotos/' + req.file.filename
+'fotos/' +
+req.files.imagen[0].filename
 );
 
 }
@@ -856,6 +866,40 @@ return res.json({
 ok:false,
 
 mensaje:error.sqlMessage
+
+});
+
+}
+
+if(req.files){
+
+const imagenes = [
+
+req.files.imagen1?.[0],
+req.files.imagen2?.[0],
+req.files.imagen3?.[0],
+req.files.imagen4?.[0]
+
+].filter(Boolean);
+
+imagenes.forEach(img=>{
+
+conexion.query(
+
+`
+INSERT INTO imagenes_hoteles(
+hotel_id,
+imagen
+)
+VALUES(?,?)
+`,
+
+[
+id,
+'fotos/' + img.filename
+]
+
+);
 
 });
 
@@ -1091,7 +1135,13 @@ router.post(
 
 '/editar-restaurante',
 
-subirFoto.single('imagen'),
+subirFoto.fields([
+{ name:'imagen', maxCount:1 },
+{ name:'imagen1', maxCount:1 },
+{ name:'imagen2', maxCount:1 },
+{ name:'imagen3', maxCount:1 },
+{ name:'imagen4', maxCount:1 }
+]),
 
 (req,res)=>{
 
@@ -1156,14 +1206,18 @@ longitud
 ];
 
 /* NUEVA FOTO */
-if(req.file){
+if(
+req.files &&
+req.files.imagen
+){
 
 sql += `,
 imagen=?
 `;
 
 valores.push(
-'fotos/' + req.file.filename
+'fotos/' +
+req.files.imagen[0].filename
 );
 
 }
@@ -1191,6 +1245,40 @@ console.log(error);
 return res.json({
 
 ok:false
+
+});
+
+}
+
+if(req.files){
+
+const imagenes = [
+
+req.files.imagen1?.[0],
+req.files.imagen2?.[0],
+req.files.imagen3?.[0],
+req.files.imagen4?.[0]
+
+].filter(Boolean);
+
+imagenes.forEach(img=>{
+
+conexion.query(
+
+`
+INSERT INTO imagenes_restaurantes(
+restaurante_id,
+imagen
+)
+VALUES(?,?)
+`,
+
+[
+id,
+'fotos/' + img.filename
+]
+
+);
 
 });
 
@@ -1964,7 +2052,13 @@ router.post(
 
 '/editar-evento',
 
-subirFoto.single('imagen'),
+subirFoto.fields([
+{ name:'imagen', maxCount:1 },
+{ name:'imagen1', maxCount:1 },
+{ name:'imagen2', maxCount:1 },
+{ name:'imagen3', maxCount:1 },
+{ name:'imagen4', maxCount:1 }
+]),
 
 (req,res)=>{
 
@@ -1999,14 +2093,18 @@ lugar
 
 ];
 
-if(req.file){
+if(
+req.files &&
+req.files.imagen
+){
 
 sql += `,
 imagen=?
 `;
 
 valores.push(
-'fotos/' + req.file.filename
+'fotos/' +
+req.files.imagen[0].filename
 );
 
 }
@@ -2031,6 +2129,40 @@ console.log(error);
 
 return res.json({
 ok:false
+});
+
+}
+
+if(req.files){
+
+const imagenes = [
+
+req.files.imagen1?.[0],
+req.files.imagen2?.[0],
+req.files.imagen3?.[0],
+req.files.imagen4?.[0]
+
+].filter(Boolean);
+
+imagenes.forEach(img=>{
+
+conexion.query(
+
+`
+INSERT INTO imagenes_eventos(
+evento_id,
+imagen
+)
+VALUES(?,?)
+`,
+
+[
+id,
+'fotos/' + img.filename
+]
+
+);
+
 });
 
 }
@@ -2179,7 +2311,13 @@ router.post(
 
 '/editar-lugar',
 
-subirFoto.single('imagen'),
+subirFoto.fields([
+{ name:'imagen', maxCount:1 },
+{ name:'imagen1', maxCount:1 },
+{ name:'imagen2', maxCount:1 },
+{ name:'imagen3', maxCount:1 },
+{ name:'imagen4', maxCount:1 }
+]),
 
 (req,res)=>{
 
@@ -2214,14 +2352,18 @@ longitud
 
 ];
 
-if(req.file){
+if(
+req.files &&
+req.files.imagen
+){
 
 sql += `,
 imagen=?
 `;
 
 valores.push(
-'fotos/' + req.file.filename
+'fotos/' +
+req.files.imagen[0].filename
 );
 
 }
@@ -2246,6 +2388,40 @@ console.log(error);
 
 return res.json({
 ok:false
+});
+
+}
+
+if(req.files){
+
+const imagenes = [
+
+req.files.imagen1?.[0],
+req.files.imagen2?.[0],
+req.files.imagen3?.[0],
+req.files.imagen4?.[0]
+
+].filter(Boolean);
+
+imagenes.forEach(img=>{
+
+conexion.query(
+
+`
+INSERT INTO imagenes_lugares(
+lugar_id,
+imagen
+)
+VALUES(?,?)
+`,
+
+[
+id,
+'fotos/' + img.filename
+]
+
+);
+
 });
 
 }
@@ -2886,6 +3062,327 @@ mensaje:
 }
 
 );
+
+/* =====================================
+   BANNERS
+===================================== */
+
+router.get(
+
+'/banners-admin',
+
+(req,res)=>{
+
+conexion.query(
+
+`
+SELECT *
+FROM banners_sitio
+ORDER BY pagina
+`,
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true,
+
+banners:resultados
+
+});
+
+}
+
+);
+
+}
+
+);
+
+router.post(
+
+'/editar-banner',
+
+subirFoto.single('imagen'),
+
+(req,res)=>{
+
+const id =
+req.body.id;
+
+if(
+!req.file
+){
+
+return res.json({
+
+ok:false,
+
+mensaje:
+'Debes seleccionar una imagen'
+
+});
+
+}
+
+const imagen =
+'fotos/' + req.file.filename;
+
+conexion.query(
+
+`
+UPDATE banners_sitio
+SET imagen=?
+WHERE id=?
+`,
+
+[
+imagen,
+id
+],
+
+(error)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true
+
+});
+
+}
+
+);
+
+}
+
+);
+
+/* =====================================
+   OBTENER BANNER
+===================================== */
+
+router.get(
+
+'/banner/:pagina',
+
+(req,res)=>{
+
+const pagina =
+req.params.pagina;
+
+conexion.query(
+
+`
+SELECT imagen
+FROM banners_sitio
+WHERE pagina=?
+LIMIT 1
+`,
+
+[pagina],
+
+(error,resultados)=>{
+
+if(error){
+
+console.log(error);
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+if(
+resultados.length === 0
+){
+
+return res.json({
+
+ok:false
+
+});
+
+}
+
+res.json({
+
+ok:true,
+
+imagen:
+resultados[0].imagen
+
+});
+
+}
+
+);
+
+}
+
+);
+
+router.get(
+
+'/imagenes-hotel/:id',
+
+(req,res)=>{
+
+conexion.query(
+
+`
+SELECT *
+FROM imagenes_hoteles
+WHERE hotel_id=?
+ORDER BY id ASC
+`,
+
+[
+req.params.id
+],
+
+(error,resultados)=>{
+
+if(error){
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+
+ok:true,
+
+imagenes:resultados
+
+});
+
+}
+
+);
+
+}
+
+);
+
+router.get(
+
+'/imagenes-lugar/:id',
+
+(req,res)=>{
+
+conexion.query(
+
+`
+SELECT *
+FROM imagenes_lugares
+WHERE lugar_id=?
+ORDER BY id ASC
+`,
+
+[
+req.params.id
+],
+
+(error,resultados)=>{
+
+if(error){
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+
+ok:true,
+
+imagenes:resultados
+
+});
+
+}
+
+);
+
+}
+
+);
+
+router.get(
+
+'/imagenes-restaurante/:id',
+
+(req,res)=>{
+
+conexion.query(
+
+`
+SELECT *
+FROM imagenes_restaurantes
+WHERE restaurante_id=?
+ORDER BY id ASC
+`,
+
+[
+req.params.id
+],
+
+(error,resultados)=>{
+
+if(error){
+
+return res.json({
+ok:false
+});
+
+}
+
+res.json({
+
+ok:true,
+
+imagenes:resultados
+
+});
+
+}
+
+);
+
+}
+
+);
+
 
 
 return router;

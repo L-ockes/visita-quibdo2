@@ -26,6 +26,11 @@ href="https://unpkg.com/leaflet/dist/leaflet.css"
 
 <link
 rel="stylesheet"
+href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"
+/>
+
+<link
+rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 >
 
@@ -33,7 +38,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 #mapa{
 
-height:350px;
+height:500px;
 
 width:100%;
 
@@ -55,6 +60,19 @@ border-radius:10px;
 
 }
 
+#calificacionBox{
+
+    position:sticky;
+    top:100px;
+
+}
+
+#calificacionBox .fa-star{
+
+    margin-right:3px;
+
+}
+
 </style>
 
 </head>
@@ -66,55 +84,59 @@ border-radius:10px;
 <div class="container mt-5 mb-5">
 
 <h2
-
 id="titulo"
-
 class="
-text-primary
 fw-bold
-text-center
 mb-4
-d-flex
-justify-content-center
-align-items-center
-gap-2
-flex-wrap
 "
-
-></h2>
-
-<div class="row">
-
-<!-- FOTO -->
-<div class="
-col-md-6
-mb-3
-">
-
-<img
-
-id="foto"
-
-class="foto-lugar"
-
-src="
-https://via.placeholder.com/700x450?text=Lugar+Turistico
+style="
+color:#111827;
 "
-
 >
+</h2>
+
+<div class="galeria-lugar">
+
+    <div class="foto-principal">
+
+        <img
+        id="imagenPrincipal"
+        src="https://via.placeholder.com/800x500"
+        >
+
+    </div>
+
+    <div
+    id="miniaturas"
+    class="miniaturas-grid"
+    ></div>
 
 </div>
 
-<!-- INFO -->
-<div class="
-col-md-6
-">
+<div class="menu-lugar">
 
-<div id="info"></div>
+    <a href="#descripcion">
+        Descripción
+    </a>
+
+    <a href="#direccion">
+        Dirección
+    </a>
+
+    <a href="#mapa">
+        Mapa
+    </a>
+
+    <a href="#resenas">
+        Reseñas
+    </a>
 
 </div>
 
-</div>
+<div
+id="info"
+class="mt-4"
+></div>
 
 <!-- MAPA -->
 <div id="mapa"></div>
@@ -149,21 +171,23 @@ mt-4
 mb-4
 ">
 
-<div class="
-col-lg-8
-mx-auto
-">
+<div class="col-12">
+
+<div id="resenas">
 
 <h4 class="
 fw-bold
-text-primary
 mb-3
-">
+"
+style="
+color:#111827;
+"
+>
 
 Calificaciones y comentarios
 
 </h4>
-
+</div>
 <div
 id="mensajeLogin"
 class="
@@ -294,7 +318,7 @@ col-lg-8
 ">
 
 <div
-id="resenas"
+id="listaResenas"
 class="list-group"
 ></div>
 
@@ -465,20 +489,20 @@ Guardar cambios
 </button>
 
 </div>
-
 </div>
-
 </div>
-
 </div>
 
 <div id="footer"></div>
-
 <script src="navbar.js"></script>
 <script src="footer.js"></script>
 
 <script src="
 https://unpkg.com/leaflet/dist/leaflet.js
+"></script>
+
+<script src="
+https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js
 "></script>
 
 <script>
@@ -575,7 +599,7 @@ document.getElementById(
 
 /* FOTO */
 document.getElementById(
-'foto'
+'imagenPrincipal'
 ).src =
 
 l.imagen
@@ -593,43 +617,67 @@ document.getElementById(
 'info'
 ).innerHTML = `
 
-<p>
+<div
+id="descripcion"
+class="
+card
+shadow-sm
+border-0
+rounded-4
+p-4
+mb-4
+"
+>
 
-<strong>
-Descripción:
-</strong>
+<h4
+class="fw-bold mb-3"
+style="
+color:#111827;
+"
+>
 
-<br>
+Descripción
+
+</h4>
+
+<p class="mb-0">
 
 ${l.descripcion || 'No disponible'}
 
 </p>
 
-<p>
+</div>
 
-<strong>
-Dirección:
-</strong>
+<div
+id="direccion"
+class="
+card
+shadow-sm
+border-0
+rounded-4
+p-4
+mb-4
+"
+>
 
-<br>
+<h4
+class="fw-bold mb-3"
+style="
+color:#111827;
+"
+>
+
+Dirección
+
+</h4>
+
+<p class="mb-0">
 
 ${l.direccion || 'No disponible'}
 
 </p>
 
-${
-l.latitud && l.longitud
-
-?
-
-`
-
-`
-
-:
-
-''
-}
+</div>
 
 `;
 
@@ -655,13 +703,23 @@ L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 
 {
-
 attribution:'© OpenStreetMap'
-
 }
 
 ).addTo(mapa);
 
+/* OBTENER UBICACION DEL USUARIO */
+navigator.geolocation.getCurrentPosition(
+
+(posicion)=>{
+
+const latUsuario =
+posicion.coords.latitude;
+
+const lngUsuario =
+posicion.coords.longitude;
+
+/* MARCADOR DESTINO */
 L.marker(
 
 [
@@ -679,11 +737,128 @@ l.nombre_lugar || l.nombre
 
 .openPopup();
 
-}
+/* MARCADOR USUARIO */
+L.marker(
+
+[
+latUsuario,
+lngUsuario
+]
+
+)
+
+.addTo(mapa)
+
+.bindPopup(
+'Tu ubicación'
+);
+
+/* RUTA */
+L.Routing.control({
+
+waypoints:[
+
+L.latLng(
+latUsuario,
+lngUsuario
+),
+
+L.latLng(
+l.latitud,
+l.longitud
+)
+
+],
+
+routeWhileDragging:false,
+
+show:false,
+
+addWaypoints:false,
+
+draggableWaypoints:false,
+
+fitSelectedRoutes:true
+
+})
+
+.addTo(mapa);
+
+},
+
+()=>{
+
+console.log(
+'No se pudo obtener ubicación'
+);
 
 }
 
-cargarLugar();
+);
+
+}
+
+}
+
+(async()=>{
+
+await cargarLugar();
+
+await cargarGaleriaLugar();
+
+cargarResenas();
+
+})();
+
+async function cargarGaleriaLugar(){
+
+const respuesta =
+await fetch(
+'https://visita-quibdo2.onrender.com/imagenes-lugar/' + id
+);
+
+const datos =
+await respuesta.json();
+
+if(!datos.ok){
+return;
+}
+
+const miniaturas =
+document.getElementById(
+'miniaturas'
+);
+
+miniaturas.innerHTML = '';
+
+datos.imagenes.forEach(img=>{
+
+const imagen =
+document.createElement('img');
+
+imagen.src =
+'https://visita-quibdo2.onrender.com/' +
+img.imagen;
+
+imagen.className =
+'miniatura-hotel';
+
+imagen.onclick = ()=>{
+
+document.getElementById(
+'imagenPrincipal'
+).src =
+imagen.src;
+
+};
+
+miniaturas.appendChild(
+imagen
+);
+
+});
+
+}
 
 /* RESEÑAS */
 async function cargarResenas(){
@@ -700,7 +875,7 @@ resenas;
 
 const contenedor =
 document.getElementById(
-'resenas'
+'listaResenas'
 );
 
 /* LIMPIAR */
@@ -1375,7 +1550,6 @@ console.log(error);
 }
 
 }
-
 </script>
 
 <script src="

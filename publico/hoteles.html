@@ -34,73 +34,39 @@ min-vh-100
 
 <div id="navbar"></div>
 
+<section class="hero-hoteles">
+
+    <div class="hero-overlay">
+
+        <h1>
+            Hoteles
+        </h1>
+
+        <p>
+            Encuentra los mejores hoteles para tu estadía en Quibdó
+        </p>
+
+        <div class="hero-search">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="search"
+                id="busqueda"
+                placeholder="Buscar hotel..."
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
 <div class="
 container
-mt-5
+py-5
 flex-grow-1
 ">
-
-<h2 class="
-text-primary
-fw-bold
-mb-4
-text-center
-">
-
-Hoteles en Quibdó
-
-</h2>
-
-<form
-
-id="formularioBusqueda"
-
-class="
-row
-g-3
-mb-4
-"
-
->
-
-<div class="col-md-10">
-
-<input
-
-type="search"
-
-id="busqueda"
-
-class="form-control"
-
-placeholder="
-Buscar hotel
-"
-
->
-
-</div>
-
-<div class="col-md-2 d-grid">
-
-<button
-
-type="submit"
-
-class="
-btn
-btn-primary
-"
-
->
-
-Buscar
-
-</button>
-
-</div>
-
-</form>
 
 <div
 class="row"
@@ -299,7 +265,7 @@ ver_hotel.html?id=${hotel.id}
 
 class="
 btn
-btn-outline-primary
+btn-detalle
 w-100
 mt-auto
 "
@@ -331,29 +297,18 @@ cargarHoteles();
 
 /* BUSQUEDA */
 document.getElementById(
-'formularioBusqueda'
+'busqueda'
 )
 
 .addEventListener(
-
-'submit',
-
-(e)=>{
-
-e.preventDefault();
-
-const termino =
-
-document.getElementById(
-'busqueda'
-).value;
+'input',
+function(){
 
 cargarHoteles(
-termino
+this.value
 );
 
 }
-
 );
 
 /* LIMPIAR BUSQUEDA */
@@ -378,6 +333,47 @@ cargarHoteles();
 }
 
 );
+
+async function cargarBanner(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+        'https://visita-quibdo2.onrender.com/banner/hoteles'
+        );
+
+        const datos =
+        await respuesta.json();
+
+        if(
+        datos.ok &&
+        datos.imagen
+        ){
+
+            document
+            .querySelector(
+            '.hero-hoteles'
+            )
+            .style.background =
+
+            `linear-gradient(
+                rgba(0,0,0,.55),
+                rgba(0,0,0,.55)
+            ),
+            url('https://visita-quibdo2.onrender.com/${datos.imagen}') center/cover`;
+
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+cargarBanner();
 
 </script>
 

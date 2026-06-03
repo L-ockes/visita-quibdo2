@@ -788,31 +788,6 @@ document.getElementById(
 
 miniaturas.innerHTML = '';
 
-/* IMAGEN PRINCIPAL */
-if(e.foto){
-
-const img =
-document.createElement('img');
-
-img.src =
-'https://visita-quibdo2.onrender.com/' + e.foto;
-
-img.className =
-'miniatura';
-
-img.onclick = ()=>{
-
-document.getElementById(
-'imagenPrincipal'
-).src =
-
-'https://visita-quibdo2.onrender.com/' + e.foto;
-
-};
-
-miniaturas.appendChild(img);
-
-}
 
 /* IMAGENES EXTRA */
 if(

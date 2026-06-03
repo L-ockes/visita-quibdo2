@@ -10,7 +10,7 @@ favicon.rel = 'icon';
 favicon.type = 'image/png';
 
 favicon.href =
-'/fotos/mascota.png';
+'/fotos/Mascota visita quibdó.png';
 
 document.head.appendChild(
 favicon
@@ -29,18 +29,67 @@ estilos.innerHTML = `
    NAVBAR
 ===================================== */
 
+
 .navbar-custom{
 
-background:
-linear-gradient(
+background:#ffffff;
 
-90deg,
+border-bottom:1px solid #e5e7eb;
 
-#2563eb,
+box-shadow:
+0 4px 20px
+rgba(0,0,0,.08);
 
-#1d4ed8
+}
 
-);
+.navbar-toggler{
+
+border:none !important;
+
+box-shadow:none !important;
+
+}
+
+.navbar-toggler-icon{
+
+filter:none;
+
+}
+
+@media (max-width: 991px){
+
+.navbar-collapse{
+
+margin-top:15px;
+
+padding-top:15px;
+
+border-top:1px solid #e5e7eb;
+
+max-height:70vh;
+overflow-y:auto;
+
+}
+
+.navbar-nav{
+
+gap:8px;
+
+}
+
+.nav-link{
+
+padding:12px !important;
+
+border-radius:10px;
+
+}
+
+.nav-link:hover{
+
+background:#f8fafc;
+
+}
 
 }
 
@@ -48,18 +97,37 @@ linear-gradient(
    LOGO
 ===================================== */
 
+@media (max-width: 991px){
+
+.navbar-brand{
+
+margin:0 auto;
+
+}
+
+}
+
+@media (max-width: 991px){
+
 .logo-navbar{
+
+display:none;
 
 object-fit:cover;
 
 border-radius:50%;
 
-border:2px solid white;
-
 background:white;
 
-padding:2px;
+padding:3px;
 
+width:60px;
+
+height:60px;
+
+transition:.3s;
+
+}
 }
 
 /* =====================================
@@ -73,9 +141,39 @@ padding:2px;
 
 .navbar-nav{
 
-gap:10px;
+gap:35px;
 
-margin-left:18px;
+}
+
+.navbar-brand{
+
+min-width:auto;
+
+}
+
+#usuarioNavbar{
+
+min-width:auto;
+
+display:flex;
+
+justify-content:flex-end;
+
+}
+
+@media (max-width:991px){
+
+.navbar-brand{
+
+margin:0;
+
+}
+
+#usuarioNavbar{
+
+min-width:0;
+
+}
 
 }
 
@@ -83,9 +181,9 @@ margin-left:18px;
 
 .nav-link{
 
-font-size:1.05rem !important;
+font-size:1rem !important;
 
-font-weight:700;
+font-weight:600;
 
 padding:8px 14px !important;
 
@@ -100,6 +198,38 @@ line-height:1 !important;
 display:inline-flex;
 
 align-items:center;
+
+}
+
+.nav-link{
+
+position:relative;
+
+}
+
+.nav-link::after{
+
+content:'';
+
+position:absolute;
+
+left:0;
+
+bottom:-5px;
+
+width:0;
+
+height:2px;
+
+background:#000;
+
+transition:.3s;
+
+}
+
+.nav-link:hover::after{
+
+width:100%;
 
 }
 
@@ -118,43 +248,31 @@ position:relative;
 
 }
 
-.nav-item:not(:last-child)::after{
+/* HOVER */
 
-content:'';
+.nav-link{
 
-position:absolute;
+color:#6b7280 !important;
 
-right:-2px;
-
-top:50%;
-
-transform:translateY(-50%);
-
-width:1px;
-
-height:22px;
-
-background:rgba(
-255,
-255,
-255,
-0.35
-);
+transition:all .3s ease;
 
 }
 
-/* HOVER */
-
 .nav-link:hover{
 
-background:rgba(
-255,
-255,
-255,
-0.14
-);
+color:#000 !important;
 
-transform:translateY(-2px);
+background:transparent;
+
+transform:none;
+
+}
+
+html,
+body{
+
+overflow-x:hidden;
+max-width:100%;
 
 }
 
@@ -171,13 +289,16 @@ document.getElementById(
 <nav class="
 navbar
 navbar-expand-lg
-navbar-dark
+navbar-light
 shadow-sm
 py-2
 navbar-custom
 ">
 
-<div class="container">
+<div class="
+container-fluid
+px-4
+">
 
 <!-- LOGO -->
 <a class="
@@ -185,21 +306,45 @@ navbar-brand
 fw-bold
 d-flex
 align-items-center
-gap-2
+gap-3
 "
 href="index.html">
 
 <img
-
-src="/fotos/mascota.png"
-
+src="/fotos/Mascota visita quibdó.png"
 width="50"
-
 height="50"
-
 class="logo-navbar"
-
 >
+
+<div>
+
+<div
+style="
+font-size:1.2rem;
+font-weight:800;
+color:#0f172a;
+line-height:1;
+"
+>
+
+VISITA QUIBDÓ
+
+</div>
+
+<div
+style="
+font-size:.75rem;
+color:#64748b;
+"
+class="d-none d-lg-block"
+>
+
+Turismo y emprendimientos
+
+</div>
+
+</div>
 
 </a>
 
@@ -218,36 +363,40 @@ data-bs-target="#menuNavbar"
 
 >
 
-<span class="
-navbar-toggler-icon
-"></span>
+<i
+class="fa-solid fa-bars"
+style="
+font-size:1.8rem;
+color:#0f172a;
+"
+></i>
 
 </button>
 
 <!-- MENU -->
-<div class="
+<div
+class="
 collapse
 navbar-collapse
+justify-content-between
 "
-
 id="menuNavbar"
-
 >
 
-<ul class="
+<ul
+class="
 navbar-nav
-me-auto
+mx-auto
 mb-2
 mb-lg-0
-ms-4
-">
+"
+>
 
 <li class="nav-item">
 
 <a class="
 nav-link
 fw-semibold
-text-white
 "
 
 href="emprendimientos.html"
@@ -265,7 +414,6 @@ Emprendimientos
 <a class="
 nav-link
 fw-semibold
-text-white
 "
 
 href="lugares_turisticos.html"
@@ -285,7 +433,6 @@ Lugares Turísticos
 <a class="
 nav-link
 fw-semibold
-text-white
 "
 
 href="hoteles.html"
@@ -304,7 +451,6 @@ Hoteles
 <a class="
 nav-link
 fw-semibold
-text-white
 "
 
 href="restaurantes.html"
@@ -324,7 +470,6 @@ Restaurantes
 <a class="
 nav-link
 fw-semibold
-text-white
 "
 
 href="eventos.html"
@@ -343,13 +488,17 @@ Eventos
 <!-- USUARIO -->
 <div id="usuarioNavbar"></div>
 
+
 </div>
 
 </div>
 
 </nav>
 
+
 `;
+
+
 
 /* USUARIO */
 async function cargarUsuarioNavbar(){
@@ -422,7 +571,6 @@ dropdown-toggle
 d-flex
 align-items-center
 gap-2
-text-white
 fw-semibold
 "
 
@@ -547,7 +695,7 @@ datos.usuario.rol === 'superadmin'
 dropdown-item
 "
 
-href="panel_superadmin.html">
+href="Panel_Superadmin.html">
 
 Panel SuperAdmin
 
@@ -592,41 +740,45 @@ else{
 
 usuarioNavbar.innerHTML = `
 
-<div class="
+<div
+class="
 d-flex
 gap-2
-">
-
-<a
-
-href="login.html"
-
-class="
-btn
-btn-light
-fw-semibold
 "
-
 >
 
+<a
+href="login.html"
+class="
+btn
+fw-semibold
+"
+style="
+background:white;
+color:#0f172a;
+border:1.5px solid #0f172a;
+padding:10px 22px;
+border-radius:999px;
+"
+>
 Iniciar sesión
-
 </a>
 
 <a
-
 href="registro.html"
-
 class="
 btn
-btn-outline-light
 fw-semibold
 "
-
+style="
+background:#0f172a;
+color:white;
+padding:10px 22px;
+border-radius:999px;
+border:none;
+"
 >
-
 Registrarse
-
 </a>
 
 </div>

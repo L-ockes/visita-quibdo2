@@ -26,6 +26,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
 
 </head>
 
+
 <body class="
 d-flex
 flex-column
@@ -34,22 +35,39 @@ min-vh-100
 
 <div id="navbar"></div>
 
+<section class="hero-emprendimientos">
+
+    <div class="hero-overlay">
+
+        <h1>
+            Emprendimientos
+        </h1>
+
+        <p>
+            Descubre negocios, productos y servicios de Quibdó
+        </p>
+
+        <div class="hero-search">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="search"
+                id="busqueda"
+                placeholder="Buscar emprendimiento..."
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
 <div class="
 container
 mt-5
 flex-grow-1
 ">
-
-<h2 class="
-text-primary
-fw-bold
-mb-4
-text-center
-">
-
-Emprendimientos
-
-</h2>
 
 <!-- FILTROS -->
 <div class="
@@ -57,25 +75,6 @@ row
 g-3
 mb-4
 ">
-
-<!-- BUSQUEDA -->
-<div class="col-md-8">
-
-<input
-
-type="search"
-
-id="busqueda"
-
-class="form-control"
-
-placeholder="
-Buscar emprendimiento
-"
-
->
-
-</div>
 
 <!-- CATEGORIA -->
 <div class="col-md-4">
@@ -251,12 +250,15 @@ flex-column
 <h5 class="
 card-title
 fw-bold
-text-primary
 d-flex
 align-items-center
 gap-2
 flex-wrap
-">
+"
+style="
+color:#111827;
+"
+>
 
 ${e.nombre_emprendimiento}
 
@@ -353,7 +355,7 @@ ver_mas.html?id=${e.id}
 
 class="
 btn
-btn-primary
+btn-detalle
 w-100
 "
 
@@ -378,6 +380,47 @@ Ver más
 }
 
 cargarEmprendimientos();
+
+async function cargarBanner(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+        'https://visita-quibdo2.onrender.com/banner/emprendimientos'
+        );
+
+        const datos =
+        await respuesta.json();
+
+        if(
+        datos.ok &&
+        datos.imagen
+        ){
+
+            document
+            .querySelector(
+            '.hero-emprendimientos'
+            )
+            .style.background =
+
+            `linear-gradient(
+                rgba(0,0,0,.55),
+                rgba(0,0,0,.55)
+            ),
+            url('https://visita-quibdo2.onrender.com/${datos.imagen}') center/cover`;
+
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+cargarBanner();
 
 /* FILTROS */
 document.getElementById(

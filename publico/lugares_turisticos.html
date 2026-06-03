@@ -33,70 +33,39 @@ min-vh-100
 ">
 <div id="navbar"></div>
 
+<section class="hero-lugares">
+
+    <div class="hero-overlay">
+
+        <h1>
+            Lugares Turísticos
+        </h1>
+
+        <p>
+            Descubre los mejores destinos y atractivos turísticos de Quibdó
+        </p>
+
+        <div class="hero-search">
+
+            <i class="fas fa-search"></i>
+
+            <input
+                type="search"
+                id="busqueda"
+                placeholder="Buscar lugar turístico..."
+            >
+
+        </div>
+
+    </div>
+
+</section>
+
 <div class="
 container
-mt-5
+py-5
 flex-grow-1
 ">
-
-<h2 class="
-text-primary
-fw-bold
-mb-4
-text-center
-">
-
-Lugares Turísticos
-
-</h2>
-
-<div class="
-row
-g-3
-mb-4
-">
-
-<div class="col-md-10">
-
-<input
-
-type="search"
-
-id="busqueda"
-
-class="form-control"
-
-placeholder="
-Buscar por nombre, descripción o dirección
-"
-
->
-
-</div>
-
-<div class="
-col-md-2
-d-grid
-">
-
-<button
-
-onclick="cargarLugares()"
-
-class="
-btn
-btn-primary
-"
-
->
-
-Buscar
-
-</button>
-
-</div>
-
-</div>
 
 <div
 id="contenedor"
@@ -197,6 +166,7 @@ class="card-img-top"
 style="
 height:220px;
 object-fit:cover;
+
 "
 
 >
@@ -205,13 +175,16 @@ object-fit:cover;
 
 <h5 class="
 card-title
-text-primary
 fw-bold
 d-flex
 align-items-center
 gap-2
 flex-wrap
-">
+"
+style="
+color:#111827;
+"
+>
 
 ${l.nombre}
 
@@ -287,7 +260,7 @@ ver_lugar.html?id=${l.id}
 
 class="
 btn
-btn-outline-primary
+btn-detalle
 w-100
 "
 
@@ -317,19 +290,8 @@ document.getElementById(
 )
 
 .addEventListener(
-
-'keypress',
-
-function(e){
-
-if(e.key === 'Enter'){
-
-cargarLugares();
-
-}
-
-}
-
+'input',
+cargarLugares
 );
 
 /* LIMPIAR BUSQUEDA */
@@ -354,6 +316,47 @@ cargarLugares();
 }
 
 );
+
+async function cargarBanner(){
+
+    try{
+
+        const respuesta =
+        await fetch(
+        'https://visita-quibdo2.onrender.com/banner/lugares'
+        );
+
+        const datos =
+        await respuesta.json();
+
+        if(
+        datos.ok &&
+        datos.imagen
+        ){
+
+            document
+            .querySelector(
+            '.hero-lugares'
+            )
+            .style.background =
+
+            `linear-gradient(
+                rgba(0,0,0,.55),
+                rgba(0,0,0,.55)
+            ),
+            url('https://visita-quibdo2.onrender.com/${datos.imagen}') center/cover`;
+
+        }
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+cargarBanner();
 
 </script>
 
